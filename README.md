@@ -1,2 +1,1 @@
-# protocols
-DFX Protocol V1
+# DFX Protocol V1
