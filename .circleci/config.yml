@@ -34,6 +34,8 @@ step_setup_solc_select: &step_setup_solc_select
       git clone https://github.com/crytic/solc-select.git
       bash ./solc-select/scripts/install.sh
 jobs:
+  unit-test:
+  
   security-test:
     <<: *job_python
     steps:

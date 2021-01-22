@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/harrychan/development/protocols/contracts/Token.sol": {
-      "lastModificationDate": 1611269629205,
-      "contentHash": "e53519ff9a99a430875dac4e1a1ee5b7",
+      "lastModificationDate": 1611295238653,
+      "contentHash": "a0962d8c36a95b9a363b3f76f37c51fb",
       "sourceName": "contracts/Token.sol",
       "solcConfig": {
         "version": "0.6.11",
