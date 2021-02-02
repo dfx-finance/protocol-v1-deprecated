@@ -15,32 +15,31 @@
 
 pragma solidity ^0.7.3;
 
-contract DFXStorage {
-    struct Curve {
-        int128 alpha;
-        int128 beta;
-        int128 delta;
-        int128 epsilon;
-        int128 lambda;
+import "./lib/ABDKMath64x64.sol";
 
-        int128 weight0;
-        int128 weight1;
+import "./DFXStorage.sol";
 
-        address token0;
-        address token1;
+contract DFX is DFXStorage {
+    using ABDKMath64x64 for int128;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "!owner");
+        _;
     }
 
-    // Curve parameters
-    Curve public curve;
+    constructor(
+        address _owner,
+        address _token0,
+        address _token1,
+        uint256 _weight0,
+        uint256 _weight1
+    ) {
+        owner = _owner;
+        
+        curve.token0 = _token0;
+        curve.token1 = _token1;
 
-    // Ownable
-    address public owner;
-
-    // ERC20
-    uint256 totalSupply;
-    mapping (address => uint256) balances;
-    mapping (address => mapping (address => uint)) allowances;
-
-    // Frozen
-    bool public paused = false;
+        curve.weight0 = ABDKMath64x64.fromUInt(_weight0);
+        curve.weight1 = ABDKMath64x64.fromUInt(_weight1);
+    }
 }
