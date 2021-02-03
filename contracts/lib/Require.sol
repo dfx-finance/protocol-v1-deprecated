@@ -22,17 +22,16 @@ pragma solidity ^0.7.3;
  * Stringifies parameters to pretty-print revert messages. Costs more gas than regular require()
  */
 library Require {
-
     // ============ Constants ============
 
-    uint256 constant ASCII_ZERO = 48; // '0'
-    uint256 constant ASCII_RELATIVE_ZERO = 87; // 'a' - 10
-    uint256 constant ASCII_LOWER_EX = 120; // 'x'
-    bytes2 constant COLON = 0x3a20; // ': '
-    bytes2 constant COMMA = 0x2c20; // ', '
-    bytes2 constant LPAREN = 0x203c; // ' <'
-    byte constant RPAREN = 0x3e; // '>'
-    uint256 constant FOUR_BIT_MASK = 0xf;
+    uint256 private constant ASCII_ZERO = 48; // '0'
+    uint256 private constant ASCII_RELATIVE_ZERO = 87; // 'a' - 10
+    uint256 private constant ASCII_LOWER_EX = 120; // 'x'
+    bytes2 private constant COLON = 0x3a20; // ': '
+    bytes2 private constant COMMA = 0x2c20; // ', '
+    bytes2 private constant LPAREN = 0x203c; // ' <'
+    byte private constant RPAREN = 0x3e; // '>'
+    uint256 private constant FOUR_BIT_MASK = 0xf;
 
     // ============ Library Functions ============
 

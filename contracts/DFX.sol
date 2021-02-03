@@ -35,7 +35,7 @@ contract DFX is DFXStorage {
         uint256 _weight1
     ) {
         owner = _owner;
-        
+
         curve.token0 = _token0;
         curve.token1 = _token1;
 

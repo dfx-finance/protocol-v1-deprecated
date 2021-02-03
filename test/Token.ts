@@ -10,5 +10,6 @@ describe("Token", function () {
 
   it("should do something right", async function () {
     // Do something with the accounts
+    console.log(accounts);
   });
 });

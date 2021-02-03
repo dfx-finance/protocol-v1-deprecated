@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pragma solidity ^0.7.0;
+pragma solidity ^0.7.3;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
@@ -27,15 +27,20 @@ library Orchestrator {
     using ABDKMath64x64 for int128;
     using ABDKMath64x64 for uint256;
 
-    int128 constant ONE_WEI = 0x12;
+    int128 private constant ONE_WEI = 0x12;
 
     event ParametersSet(uint256 alpha, uint256 beta, uint256 delta, uint256 epsilon, uint256 lambda);
 
-    event AssetIncluded(address indexed numeraire, address indexed reserve, uint weight);
+    event AssetIncluded(address indexed numeraire, address indexed reserve, uint256 weight);
 
-    event AssimilatorIncluded(address indexed derivative, address indexed numeraire, address indexed reserve, address assimilator);
+    event AssimilatorIncluded(
+        address indexed derivative,
+        address indexed numeraire,
+        address indexed reserve,
+        address assimilator
+    );
 
-    function setParams (
+    function setParams(
         DFXStorage.Curve storage curve,
         uint256 _alpha,
         uint256 _beta,
@@ -43,7 +48,6 @@ library Orchestrator {
         uint256 _epsilon,
         uint256 _lambda
     ) external {
-
         require(0 < _alpha && _alpha < 1e18, "Curve/parameter-invalid-alpha");
 
         require(0 <= _beta && _beta < _alpha, "Curve/parameter-invalid-beta");
@@ -60,38 +64,30 @@ library Orchestrator {
 
         curve.beta = (_beta + 1).divu(1e18);
 
-        curve.delta = ( _feeAtHalt ).divu(1e18).div(uint(2).fromUInt().mul(curve.alpha.sub(curve.beta))) + ONE_WEI;
+        curve.delta = (_feeAtHalt).divu(1e18).div(uint256(2).fromUInt().mul(curve.alpha.sub(curve.beta))) + ONE_WEI;
 
         curve.epsilon = (_epsilon + 1).divu(1e18);
 
         curve.lambda = (_lambda + 1).divu(1e18);
-        
+
         int128 _psi = getFee(curve);
-        
+
         require(_omega >= _psi, "Curve/parameters-increase-fee");
 
         emit ParametersSet(_alpha, _beta, curve.delta.mulu(1e18), _epsilon, _lambda);
-
     }
 
-    function viewNumeraireBalance (
-        address _token
-    ) private view returns (int128) {
+    function viewNumeraireBalance(address _token) private view returns (int128) {
         uint256 decimals = ERC20(_token).decimals();
         uint256 balance = ERC20(_token).balanceOf(address(this));
 
         return balance.divu(10**decimals);
     }
 
-    function getFee (
-        DFXStorage.Curve storage curve
-    ) private view returns (
-        int128 fee_
-    ) {
-
+    function getFee(DFXStorage.Curve storage curve) private view returns (int128 fee_) {
         int128 _gLiq;
 
-        // Always paits
+        // Always pairs
         int128[] memory _bals = new int128[](2);
 
         address[] memory assets = new address[](2);
@@ -102,17 +98,14 @@ library Orchestrator {
         weights[0] = curve.weight0;
         weights[1] = curve.weight1;
 
-        for (uint i = 0; i < _bals.length; i++) {
-
+        for (uint256 i = 0; i < _bals.length; i++) {
             int128 _bal = viewNumeraireBalance(assets[i]);
 
             _bals[i] = _bal;
 
             _gLiq += _bal;
-
         }
 
         fee_ = CurveMath.calculateFee(_gLiq, _bals, curve.beta, curve.delta, weights);
     }
-
 }

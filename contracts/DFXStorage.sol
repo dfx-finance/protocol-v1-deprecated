@@ -22,10 +22,8 @@ contract DFXStorage {
         int128 delta;
         int128 epsilon;
         int128 lambda;
-
         int128 weight0;
         int128 weight1;
-
         address token0;
         address token1;
     }
@@ -37,9 +35,9 @@ contract DFXStorage {
     address public owner;
 
     // ERC20
-    uint256 totalSupply;
-    mapping (address => uint256) balances;
-    mapping (address => mapping (address => uint)) allowances;
+    uint256 public totalSupply;
+    mapping(address => uint256) public balances;
+    mapping(address => mapping(address => uint256)) public allowances;
 
     // Frozen
     bool public paused = false;

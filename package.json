@@ -6,7 +6,12 @@
   "scripts": {
     "compile": "hardhat compile",
     "clean": "hardhat clean",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "hardhat test",
+    "lint": "yarn run lint:sol && yarn run lint:ts && yarn run prettier:list-different",
+    "lint:sol": "solhint --config ./.solhint.json --max-warnings 0 \"contracts/**/*.sol\"",
+    "lint:ts": "eslint --ext .js,.ts .",
+    "prettier:list-different": "prettier --config .prettierrc --list-different \"**/*.{js,json,md,sol,ts}\"",
+    "prettier": "prettier --write \"**/*.{js,json,md,sol,ts}\""
   },
   "repository": {
     "type": "git",
@@ -19,20 +24,93 @@
     "url": "https://github.com/dfx-finance/protocols/issues"
   },
   "homepage": "https://github.com/dfx-finance/protocols#readme",
-  "devDependencies": {
+  "dependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.1",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "@openzeppelin/contracts": "^3.3.0",
     "@types/chai": "^4.2.14",
     "@types/mocha": "^8.2.0",
     "@types/node": "^14.14.22",
+    "@typescript-eslint/eslint-plugin": "^4.14.2",
+    "@typescript-eslint/parser": "^4.14.2",
     "chai": "^4.2.0",
+    "eslint": "^7.19.0",
+    "eslint-config-prettier": "^7.2.0",
     "ethereum-waffle": "^3.2.1",
     "ethers": "^5.0.26",
     "hardhat": "^2.0.8",
+    "husky": "^5.0.8",
+    "pinst": "^2.1.4",
+    "prettier": "^2.2.1",
+    "prettier-plugin-solidity": "^1.0.0-beta.3",
+    "solc": "^0.7.3",
+    "solhint": "^3.3.2",
+    "solhint-plugin-prettier": "^0.0.5",
     "ts-node": "^9.1.1",
     "typescript": "^4.1.3"
   },
-  "dependencies": {
-    "@openzeppelin/contracts": "^3.3.0"
+  "prettier": {
+    "arrowParens": "avoid",
+    "bracketSpacing": true,
+    "endOfLine": "auto",
+    "printWidth": 120,
+    "singleQuote": false,
+    "tabWidth": 2,
+    "trailingComma": "all",
+    "overrides": [
+      {
+        "files": "*.sol",
+        "options": {
+          "tabWidth": 4
+        }
+      }
+    ]
+  },
+  "eslintConfig": {
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/eslint-recommended",
+      "plugin:@typescript-eslint/recommended",
+      "prettier/@typescript-eslint"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "project": "tsconfig.json"
+    },
+    "env": {
+      "node": true,
+      "mocha": true,
+      "es6": true
+    },
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "root": true,
+    "rules": {
+      "@typescript-eslint/no-floating-promises": [
+        "error",
+        {
+          "ignoreIIFE": true,
+          "ignoreVoid": true
+        }
+      ],
+      "@typescript-eslint/no-inferrable-types": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          "argsIgnorePattern": "_",
+          "varsIgnorePattern": "_"
+        }
+      ]
+    },
+    "ignorePatterns": [
+      "artifacts/**",
+      "build/**",
+      "cache/**",
+      "coverage/**",
+      "dist/**",
+      "lib/**",
+      "node_modules/**"
+    ]
   }
 }
