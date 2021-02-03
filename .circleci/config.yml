@@ -15,7 +15,7 @@ step_pull_solc_docker: &step_pull_solc_docker
   run:
     name: "Pull solc docker images"
     command: |
-      docker pull ethereum/solc:0.6.11
+      docker pull ethereum/solc:0.7.3
 step_setup_global_packages: &step_setup_global_packages
   run:
     name: "Set up global packages"
