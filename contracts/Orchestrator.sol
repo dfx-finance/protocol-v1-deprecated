@@ -21,6 +21,8 @@ import "./lib/ABDKMath64x64.sol";
 
 import "./DFXStorage.sol";
 
+import "./CurveMath.sol";
+
 library Orchestrator {
     using ABDKMath64x64 for int128;
     using ABDKMath64x64 for uint256;
@@ -52,8 +54,7 @@ library Orchestrator {
 
         require(0 <= _lambda && _lambda <= 1e18, "Curve/parameter-invalid-lambda");
 
-        // TODO: Fee
-        int128 _omega = 0; // getFee(curve);
+        int128 _omega = getFee(curve);
 
         curve.alpha = (_alpha + 1).divu(1e18);
 
@@ -65,7 +66,7 @@ library Orchestrator {
 
         curve.lambda = (_lambda + 1).divu(1e18);
         
-        int128 _psi = 0; // getFee(curve);
+        int128 _psi = getFee(curve);
         
         require(_omega >= _psi, "Curve/parameters-increase-fee");
 
@@ -73,13 +74,45 @@ library Orchestrator {
 
     }
 
-    function viewBalance (
+    function viewNumeraireBalance (
         address _token
     ) private view returns (int128) {
         uint256 decimals = ERC20(_token).decimals();
         uint256 balance = ERC20(_token).balanceOf(address(this));
 
         return balance.divu(10**decimals);
+    }
+
+    function getFee (
+        DFXStorage.Curve storage curve
+    ) private view returns (
+        int128 fee_
+    ) {
+
+        int128 _gLiq;
+
+        // Always paits
+        int128[] memory _bals = new int128[](2);
+
+        address[] memory assets = new address[](2);
+        assets[0] = curve.token0;
+        assets[1] = curve.token1;
+
+        int128[] memory weights = new int128[](2);
+        weights[0] = curve.weight0;
+        weights[1] = curve.weight1;
+
+        for (uint i = 0; i < _bals.length; i++) {
+
+            int128 _bal = viewNumeraireBalance(assets[i]);
+
+            _bals[i] = _bal;
+
+            _gLiq += _bal;
+
+        }
+
+        fee_ = CurveMath.calculateFee(_gLiq, _bals, curve.beta, curve.delta, weights);
     }
 
 }
