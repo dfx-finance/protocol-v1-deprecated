@@ -10,7 +10,7 @@
     "lint": "yarn run lint:sol && yarn run lint:ts && yarn run prettier:list-different",
     "lint:sol": "solhint --config ./.solhint.json --max-warnings 0 \"contracts/**/*.sol\"",
     "lint:ts": "eslint --ext .js,.ts .",
-    "prettier:list-different": "prettier --config .prettierrc --list-different \"**/*.{js,json,md,sol,ts}\"",
+    "prettier:list-different": "prettier --list-different \"**/*.{js,json,md,sol,ts}\"",
     "prettier": "prettier --write \"**/*.{js,json,md,sol,ts}\""
   },
   "repository": {
