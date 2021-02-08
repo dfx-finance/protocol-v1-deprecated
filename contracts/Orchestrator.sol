@@ -108,4 +108,38 @@ library Orchestrator {
 
         fee_ = CurveMath.calculateFee(_gLiq, _bals, curve.beta, curve.delta, weights);
     }
+
+    function safeApprove(
+        address _token,
+        address _spender,
+        uint256 _value
+    ) private {
+        (bool success, ) =
+            // solhint-disable-next-line
+            _token.call(abi.encodeWithSignature("approve(address,uint256)", _spender, _value));
+
+        require(success, "SafeERC20: low-level call failed");
+    }
+
+    function viewCurve(DFXStorage.Curve storage curve)
+        external
+        view
+        returns (
+            uint256 alpha_,
+            uint256 beta_,
+            uint256 delta_,
+            uint256 epsilon_,
+            uint256 lambda_
+        )
+    {
+        alpha_ = curve.alpha.mulu(1e18);
+
+        beta_ = curve.beta.mulu(1e18);
+
+        delta_ = curve.delta.mulu(1e18);
+
+        epsilon_ = curve.epsilon.mulu(1e18);
+
+        lambda_ = curve.lambda.mulu(1e18);
+    }
 }

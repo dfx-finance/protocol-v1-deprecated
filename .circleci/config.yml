@@ -49,7 +49,7 @@ jobs:
       - run:
           name: "Run slither on infrastructure contracts"
           command:  |
-            slither . --filter-paths "openzepellin"
+            slither . --filter-paths "openzeppelin" --exclude-informational
           when: always
 
 workflows:
