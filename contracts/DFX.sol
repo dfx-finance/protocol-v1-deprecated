@@ -34,6 +34,8 @@ contract DFX is DFXStorage {
         uint256 _weight0,
         uint256 _weight1
     ) {
+        require(_owner != address(0), "!zero-address");
+
         owner = _owner;
 
         curve.token0 = _token0;

@@ -159,7 +159,7 @@ library CurveMath {
         int128 _liqDiff = _nGLiq.sub(_oGLiq);
         int128 _oUtil = _oGLiq.sub(_omega);
         int128 _totalShells = _totalSupply.divu(1e18);
-        int128 _shellMultiplier;
+        int128 _shellMultiplier = 0;
 
         if (_totalShells == 0) {
             curves_ = _nGLiq.sub(_psi);

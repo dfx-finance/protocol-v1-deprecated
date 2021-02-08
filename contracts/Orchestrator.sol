@@ -47,16 +47,16 @@ library Orchestrator {
         uint256 _feeAtHalt,
         uint256 _epsilon,
         uint256 _lambda
-    ) external {
+    ) external nonReentrant {
         require(0 < _alpha && _alpha < 1e18, "Curve/parameter-invalid-alpha");
 
-        require(0 <= _beta && _beta < _alpha, "Curve/parameter-invalid-beta");
+        require(_beta < _alpha, "Curve/parameter-invalid-beta");
 
-        require(_feeAtHalt <= .5e18, "Curve/parameter-invalid-max");
+        require(_feeAtHalt <= 5e17, "Curve/parameter-invalid-max");
 
-        require(0 <= _epsilon && _epsilon <= .01e18, "Curve/parameter-invalid-epsilon");
+        require(_epsilon <= 1e16, "Curve/parameter-invalid-epsilon");
 
-        require(0 <= _lambda && _lambda <= 1e18, "Curve/parameter-invalid-lambda");
+        require(_lambda <= 1e18, "Curve/parameter-invalid-lambda");
 
         int128 _omega = getFee(curve);
 
