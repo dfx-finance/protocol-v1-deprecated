@@ -130,6 +130,54 @@ library CurveMath {
         revert("Curve/swap-convergence-failed");
     }
 
+    function calculateLiquidityMembrane(
+        DFXStorage.Curve storage _curve,
+        uint256 _totalSupply,
+        int128 _oGLiq,
+        int128 _nGLiq,
+        int128[] memory _oBals,
+        int128[] memory _nBals
+    ) internal view returns (int128 curves_) {
+        int128[] memory _weights = new int128[](2);
+        _weights[0] = _curve.weight0;
+        _weights[1] = _curve.weight1;
+
+        enforceHalts(_curve, _oGLiq, _nGLiq, _oBals, _nBals, _weights);
+
+        int128 _omega;
+        int128 _psi;
+
+        {
+            int128 _beta = _curve.beta;
+            int128 _delta = _curve.delta;
+
+            _omega = calculateFee(_oGLiq, _oBals, _beta, _delta, _weights);
+            _psi = calculateFee(_nGLiq, _nBals, _beta, _delta, _weights);
+        }
+
+        int128 _feeDiff = _psi.sub(_omega);
+        int128 _liqDiff = _nGLiq.sub(_oGLiq);
+        int128 _oUtil = _oGLiq.sub(_omega);
+        int128 _totalShells = _totalSupply.divu(1e18);
+        int128 _shellMultiplier;
+
+        if (_totalShells == 0) {
+            curves_ = _nGLiq.sub(_psi);
+        } else if (_feeDiff >= 0) {
+            _shellMultiplier = _liqDiff.sub(_feeDiff).div(_oUtil);
+        } else {
+            _shellMultiplier = _liqDiff.sub(_curve.lambda.mul(_feeDiff));
+
+            _shellMultiplier = _shellMultiplier.div(_oUtil);
+        }
+
+        if (_totalShells != 0) {
+            curves_ = _totalShells.us_mul(_shellMultiplier);
+
+            enforceLiquidityInvariant(_totalShells, curves_, _oGLiq, _nGLiq, _omega, _psi);
+        }
+    }
+
     function enforceSwapInvariant(
         int128 _oGLiq,
         int128 _omega,
@@ -143,6 +191,25 @@ library CurveMath {
         int128 _diff = _nextUtil - _prevUtil;
 
         require(0 < _diff || _diff >= MAX_DIFF, "Curve/swap-invariant-violation");
+    }
+
+    function enforceLiquidityInvariant(
+        int128 _totalShells,
+        int128 _newShells,
+        int128 _oGLiq,
+        int128 _nGLiq,
+        int128 _omega,
+        int128 _psi
+    ) internal pure {
+        if (_totalShells == 0 || 0 == _totalShells + _newShells) return;
+
+        int128 _prevUtilPerShell = _oGLiq.sub(_omega).div(_totalShells);
+
+        int128 _nextUtilPerShell = _nGLiq.sub(_psi).div(_totalShells.add(_newShells));
+
+        int128 _diff = _nextUtilPerShell - _prevUtilPerShell;
+
+        require(0 < _diff || _diff >= MAX_DIFF, "Curve/liquidity-invariant-violation");
     }
 
     function enforceHalts(
