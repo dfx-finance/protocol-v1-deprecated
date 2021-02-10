@@ -19,14 +19,20 @@ import "./Assimilators.sol";
 
 contract DFXStorage {
     struct Curve {
+        // Curve parameters
         int128 alpha;
         int128 beta;
         int128 delta;
         int128 epsilon;
         int128 lambda;
         int128[] weights;
+        // Assets and their assimilators
         Assimilator[] assets;
         mapping(address => Assimilator) assimilators;
+        // ERC20 Interface
+        uint256 totalSupply;
+        mapping(address => uint256) balances;
+        mapping(address => mapping(address => uint256)) allowances;
     }
 
     struct Assimilator {
@@ -40,11 +46,20 @@ contract DFXStorage {
     // Ownable
     address public owner;
 
-    // ERC20
-    uint256 public totalSupply;
-    mapping(address => uint256) public balances;
-    mapping(address => mapping(address => uint256)) public allowances;
+    // Logic
+    mapping(address => PartitionTicket) public partitionTickets;
 
-    // Frozen
-    bool public paused = false;
+    struct PartitionTicket {
+        uint256[] claims;
+        bool initialized;
+    }
+
+    address[] public derivatives;
+    address[] public numeraires;
+    address[] public reserves;
+
+    // Curve operational state
+    bool public partitioned = false;
+    bool public frozen = false;
+    bool internal notEntered = true;
 }

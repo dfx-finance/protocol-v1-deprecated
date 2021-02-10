@@ -167,15 +167,15 @@ library Orchestrator {
         address _reserveApproveTo,
         uint256 _weight
     ) private {
-        require(_numeraire != address(0), "Shell/numeraire-cannot-be-zeroth-adress");
+        require(_numeraire != address(0), "Curve/numeraire-cannot-be-zeroth-adress");
 
-        require(_numeraireAssim != address(0), "Shell/numeraire-assimilator-cannot-be-zeroth-adress");
+        require(_numeraireAssim != address(0), "Curve/numeraire-assimilator-cannot-be-zeroth-adress");
 
-        require(_reserve != address(0), "Shell/reserve-cannot-be-zeroth-adress");
+        require(_reserve != address(0), "Curve/reserve-cannot-be-zeroth-adress");
 
-        require(_reserveAssim != address(0), "Shell/reserve-assimilator-cannot-be-zeroth-adress");
+        require(_reserveAssim != address(0), "Curve/reserve-assimilator-cannot-be-zeroth-adress");
 
-        require(_weight < 1e18, "Shell/weight-must-be-less-than-one");
+        require(_weight < 1e18, "Curve/weight-must-be-less-than-one");
 
         if (_numeraire != _reserve) safeApprove(_numeraire, _reserveApproveTo, uint256(-1));
 
@@ -214,13 +214,13 @@ library Orchestrator {
         address _assimilator,
         address _derivativeApproveTo
     ) private {
-        require(_derivative != address(0), "Shell/derivative-cannot-be-zeroth-address");
+        require(_derivative != address(0), "Curve/derivative-cannot-be-zeroth-address");
 
-        require(_numeraire != address(0), "Shell/numeraire-cannot-be-zeroth-address");
+        require(_numeraire != address(0), "Curve/numeraire-cannot-be-zeroth-address");
 
-        require(_reserve != address(0), "Shell/numeraire-cannot-be-zeroth-address");
+        require(_reserve != address(0), "Curve/numeraire-cannot-be-zeroth-address");
 
-        require(_assimilator != address(0), "Shell/assimilator-cannot-be-zeroth-address");
+        require(_assimilator != address(0), "Curve/assimilator-cannot-be-zeroth-address");
 
         safeApprove(_numeraire, _derivativeApproveTo, uint256(-1));
 
