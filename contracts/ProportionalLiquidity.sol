@@ -47,7 +47,12 @@ library ProportionalLiquidity {
 
         int128 _totalShells = curve.totalSupply.divu(1e18);
 
-        int128 _newShells = _totalShells > 0 ? __deposit.div(_oGLiq).mul(_totalShells) : __deposit;
+        int128 _newShells = __deposit;
+
+        if (_totalShells > 0) {
+            _newShells = __deposit.div(_oGLiq);
+            _newShells = _newShells.mul(_totalShells);
+        }
 
         requireLiquidityInvariant(curve, _totalShells, _newShells, _oGLiq, _oBals);
 
@@ -83,7 +88,12 @@ library ProportionalLiquidity {
 
         int128 _totalShells = curve.totalSupply.divu(1e18);
 
-        int128 _newShells = _totalShells > 0 ? __deposit.div(_oGLiq).mul(_totalShells) : __deposit;
+        int128 _newShells = __deposit;
+
+        if (_totalShells > 0) {
+            _newShells = __deposit.div(_oGLiq);
+            _newShells = _newShells.mul(_totalShells);
+        }
 
         curves_ = _newShells.mulu(1e18);
 
