@@ -113,6 +113,124 @@ library Orchestrator {
         require(success, "SafeERC20: low-level call failed");
     }
 
+    function initialize(
+        DFXStorage.Curve storage curve,
+        address[] storage numeraires,
+        address[] storage reserves,
+        address[] storage derivatives,
+        address[] calldata _assets,
+        uint256[] calldata _assetWeights,
+        address[] calldata _derivativeAssimilators
+    ) external {
+        for (uint256 i = 0; i < _assetWeights.length; i++) {
+            uint256 ix = i * 5;
+
+            numeraires.push(_assets[ix]);
+            derivatives.push(_assets[ix]);
+
+            reserves.push(_assets[2 + ix]);
+            if (_assets[ix] != _assets[2 + ix]) derivatives.push(_assets[2 + ix]);
+
+            includeAsset(
+                curve,
+                _assets[ix], // numeraire
+                _assets[1 + ix], // numeraire assimilator
+                _assets[2 + ix], // reserve
+                _assets[3 + ix], // reserve assimilator
+                _assets[4 + ix], // reserve approve to
+                _assetWeights[i]
+            );
+        }
+
+        for (uint256 i = 0; i < _derivativeAssimilators.length / 5; i++) {
+            uint256 ix = i * 5;
+
+            derivatives.push(_derivativeAssimilators[ix]);
+
+            includeAssimilator(
+                curve,
+                _derivativeAssimilators[ix], // derivative
+                _derivativeAssimilators[1 + ix], // numeraire
+                _derivativeAssimilators[2 + ix], // reserve
+                _derivativeAssimilators[3 + ix], // assimilator
+                _derivativeAssimilators[4 + ix] // derivative approve to
+            );
+        }
+    }
+
+    function includeAsset(
+        DFXStorage.Curve storage curve,
+        address _numeraire,
+        address _numeraireAssim,
+        address _reserve,
+        address _reserveAssim,
+        address _reserveApproveTo,
+        uint256 _weight
+    ) private {
+        require(_numeraire != address(0), "Shell/numeraire-cannot-be-zeroth-adress");
+
+        require(_numeraireAssim != address(0), "Shell/numeraire-assimilator-cannot-be-zeroth-adress");
+
+        require(_reserve != address(0), "Shell/reserve-cannot-be-zeroth-adress");
+
+        require(_reserveAssim != address(0), "Shell/reserve-assimilator-cannot-be-zeroth-adress");
+
+        require(_weight < 1e18, "Shell/weight-must-be-less-than-one");
+
+        if (_numeraire != _reserve) safeApprove(_numeraire, _reserveApproveTo, uint256(-1));
+
+        DFXStorage.Assimilator storage _numeraireAssimilator = curve.assimilators[_numeraire];
+
+        _numeraireAssimilator.addr = _numeraireAssim;
+
+        _numeraireAssimilator.ix = uint8(curve.assets.length);
+
+        DFXStorage.Assimilator storage _reserveAssimilator = curve.assimilators[_reserve];
+
+        _reserveAssimilator.addr = _reserveAssim;
+
+        _reserveAssimilator.ix = uint8(curve.assets.length);
+
+        int128 __weight = _weight.divu(1e18).add(uint256(1).divu(1e18));
+
+        curve.weights.push(__weight);
+
+        curve.assets.push(_numeraireAssimilator);
+
+        emit AssetIncluded(_numeraire, _reserve, _weight);
+
+        emit AssimilatorIncluded(_numeraire, _numeraire, _reserve, _numeraireAssim);
+
+        if (_numeraireAssim != _reserveAssim) {
+            emit AssimilatorIncluded(_reserve, _numeraire, _reserve, _reserveAssim);
+        }
+    }
+
+    function includeAssimilator(
+        DFXStorage.Curve storage curve,
+        address _derivative,
+        address _numeraire,
+        address _reserve,
+        address _assimilator,
+        address _derivativeApproveTo
+    ) private {
+        require(_derivative != address(0), "Shell/derivative-cannot-be-zeroth-address");
+
+        require(_numeraire != address(0), "Shell/numeraire-cannot-be-zeroth-address");
+
+        require(_reserve != address(0), "Shell/numeraire-cannot-be-zeroth-address");
+
+        require(_assimilator != address(0), "Shell/assimilator-cannot-be-zeroth-address");
+
+        safeApprove(_numeraire, _derivativeApproveTo, uint256(-1));
+
+        DFXStorage.Assimilator storage _numeraireAssim = curve.assimilators[_numeraire];
+
+        curve.assimilators[_derivative] = DFXStorage.Assimilator(_assimilator, _numeraireAssim.ix);
+
+        emit AssimilatorIncluded(_derivative, _numeraire, _reserve, _assimilator);
+    }
+
     function viewCurve(DFXStorage.Curve storage curve)
         external
         view
