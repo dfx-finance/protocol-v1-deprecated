@@ -94,9 +94,7 @@ library CurveMath {
         int128 _lambda = curve.lambda;
         int128 _beta = curve.beta;
         int128 _delta = curve.delta;
-        int128[] memory _weights = new int128[](2);
-        _weights[0] = curve.weight0;
-        _weights[1] = curve.weight1;
+        int128[] memory _weights = curve.weights;
 
         int128 _omega = calculateFee(_oGLiq, _oBals, _beta, _delta, _weights);
         int128 _psi;
@@ -138,9 +136,7 @@ library CurveMath {
         int128[] memory _oBals,
         int128[] memory _nBals
     ) internal view returns (int128 curves_) {
-        int128[] memory _weights = new int128[](2);
-        _weights[0] = _curve.weight0;
-        _weights[1] = _curve.weight1;
+        int128[] memory _weights = _curve.weights;
 
         enforceHalts(_curve, _oGLiq, _nGLiq, _oBals, _nBals, _weights);
 

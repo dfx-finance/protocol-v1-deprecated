@@ -15,6 +15,8 @@
 
 pragma solidity ^0.7.3;
 
+import "./Assimilators.sol";
+
 contract DFXStorage {
     struct Curve {
         int128 alpha;
@@ -22,10 +24,14 @@ contract DFXStorage {
         int128 delta;
         int128 epsilon;
         int128 lambda;
-        int128 weight0;
-        int128 weight1;
-        address token0;
-        address token1;
+        int128[] weights;
+        Assimilator[] assets;
+        mapping(address => Assimilator) assimilators;
+    }
+
+    struct Assimilator {
+        address addr;
+        uint8 ix;
     }
 
     // Curve parameters

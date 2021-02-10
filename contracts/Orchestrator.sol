@@ -47,7 +47,7 @@ library Orchestrator {
         uint256 _feeAtHalt,
         uint256 _epsilon,
         uint256 _lambda
-    ) external nonReentrant {
+    ) external {
         require(0 < _alpha && _alpha < 1e18, "Curve/parameter-invalid-alpha");
 
         require(_beta < _alpha, "Curve/parameter-invalid-beta");
@@ -90,23 +90,15 @@ library Orchestrator {
         // Always pairs
         int128[] memory _bals = new int128[](2);
 
-        address[] memory assets = new address[](2);
-        assets[0] = curve.token0;
-        assets[1] = curve.token1;
-
-        int128[] memory weights = new int128[](2);
-        weights[0] = curve.weight0;
-        weights[1] = curve.weight1;
-
         for (uint256 i = 0; i < _bals.length; i++) {
-            int128 _bal = viewNumeraireBalance(assets[i]);
+            int128 _bal = viewNumeraireBalance(curve.assets[i].addr);
 
             _bals[i] = _bal;
 
             _gLiq += _bal;
         }
 
-        fee_ = CurveMath.calculateFee(_gLiq, _bals, curve.beta, curve.delta, weights);
+        fee_ = CurveMath.calculateFee(_gLiq, _bals, curve.beta, curve.delta, curve.weights);
     }
 
     function safeApprove(

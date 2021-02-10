@@ -27,21 +27,9 @@ contract DFX is DFXStorage {
         _;
     }
 
-    constructor(
-        address _owner,
-        address _token0,
-        address _token1,
-        uint256 _weight0,
-        uint256 _weight1
-    ) {
+    constructor(address _owner) {
         require(_owner != address(0), "!zero-address");
 
         owner = _owner;
-
-        curve.token0 = _token0;
-        curve.token1 = _token1;
-
-        curve.weight0 = ABDKMath64x64.fromUInt(_weight0);
-        curve.weight1 = ABDKMath64x64.fromUInt(_weight1);
     }
 }
