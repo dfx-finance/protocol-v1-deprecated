@@ -17,19 +17,462 @@ pragma solidity ^0.7.3;
 
 import "./lib/ABDKMath64x64.sol";
 
+import "./Orchestrator.sol";
+
+import "./PartitionedLiquidity.sol";
+
+import "./ProportionalLiquidity.sol";
+
+import "./SelectiveLiquidity.sol";
+
+import "./DFXERC20.sol";
+
+import "./Swaps.sol";
+
+import "./ViewLiquidity.sol";
+
 import "./DFXStorage.sol";
 
-contract DFX is DFXStorage {
-    using ABDKMath64x64 for int128;
+import "./interfaces/IFreeFromUpTo.sol";
+
+contract Curve is DFXStorage {
+    event Approval(address indexed _owner, address indexed spender, uint256 value);
+
+    event ParametersSet(uint256 alpha, uint256 beta, uint256 delta, uint256 epsilon, uint256 lambda);
+
+    event AssetIncluded(address indexed numeraire, address indexed reserve, uint256 weight);
+
+    event AssimilatorIncluded(
+        address indexed derivative,
+        address indexed numeraire,
+        address indexed reserve,
+        address assimilator
+    );
+
+    event PartitionRedeemed(address indexed token, address indexed redeemer, uint256 value);
+
+    event PoolPartitioned(bool partitioned);
+
+    event OwnershipTransfered(address indexed previousOwner, address indexed newOwner);
+
+    event FrozenSet(bool isFrozen);
+
+    event Trade(
+        address indexed trader,
+        address indexed origin,
+        address indexed target,
+        uint256 originAmount,
+        uint256 targetAmount
+    );
+
+    event Transfer(address indexed from, address indexed to, uint256 value);
+
+    IFreeFromUpTo public constant chi = IFreeFromUpTo(0x0000000000004946c0e9F43F4Dee607b0eF1fA1c);
+
+    modifier discountCHI {
+        uint256 gasStart = gasleft();
+        _;
+        uint256 gasSpent = 21000 + gasStart - gasleft() + 16 * msg.data.length;
+        chi.freeFromUpTo(msg.sender, (gasSpent + 14154) / 41130);
+    }
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "!owner");
+        require(msg.sender == owner, "Curve/caller-is-not-owner");
         _;
     }
 
-    constructor(address _owner) {
-        require(_owner != address(0), "!zero-address");
+    modifier nonReentrant() {
+        require(notEntered, "Curve/re-entered");
+        notEntered = false;
+        _;
+        notEntered = true;
+    }
 
-        owner = _owner;
+    modifier transactable() {
+        require(!frozen, "Curve/frozen-only-allowing-proportional-withdraw");
+        _;
+    }
+
+    modifier unpartitioned() {
+        require(!partitioned, "Curve/pool-partitioned");
+        _;
+    }
+
+    modifier isPartitioned() {
+        require(partitioned, "Curve/pool-not-partitioned");
+        _;
+    }
+
+    modifier deadline(uint256 _deadline) {
+        require(block.timestamp < _deadline, "Curve/tx-deadline-passed");
+        _;
+    }
+
+    constructor(
+        address[] memory _assets,
+        uint256[] memory _assetWeights,
+        address[] memory _derivativeAssimilators
+    ) {
+        owner = msg.sender;
+        emit OwnershipTransfered(address(0), msg.sender);
+
+        Orchestrator.initialize(
+            curve,
+            numeraires,
+            reserves,
+            derivatives,
+            _assets,
+            _assetWeights,
+            _derivativeAssimilators
+        );
+    }
+
+    /// @notice sets the parameters for the pool
+    /// @param _alpha the value for alpha (halt threshold) must be less than or equal to 1 and greater than 0
+    /// @param _beta the value for beta must be less than alpha and greater than 0
+    /// @param _feeAtHalt the maximum value for the fee at the halt point
+    /// @param _epsilon the base fee for the pool
+    /// @param _lambda the value for lambda must be less than or equal to 1 and greater than zero
+    function setParams(
+        uint256 _alpha,
+        uint256 _beta,
+        uint256 _feeAtHalt,
+        uint256 _epsilon,
+        uint256 _lambda
+    ) external onlyOwner {
+        Orchestrator.setParams(curve, _alpha, _beta, _feeAtHalt, _epsilon, _lambda);
+    }
+
+    /// @notice excludes an assimilator from the curve
+    /// @param _derivative the address of the assimilator to exclude
+    function excludeDerivative(address _derivative) external onlyOwner {
+        for (uint256 i = 0; i < numeraires.length; i++) {
+            if (_derivative == numeraires[i]) revert("Curve/cannot-delete-numeraire");
+            if (_derivative == reserves[i]) revert("Curve/cannot-delete-reserve");
+        }
+
+        delete curve.assimilators[_derivative];
+    }
+
+    /// @notice view the current parameters of the curve
+    /// @return alpha_ the current alpha value
+    ///  beta_ the current beta value
+    ///  delta_ the current delta value
+    ///  epsilon_ the current epsilon value
+    ///  lambda_ the current lambda value
+    ///  omega_ the current omega value
+    function viewCurve()
+        external
+        view
+        returns (
+            uint256 alpha_,
+            uint256 beta_,
+            uint256 delta_,
+            uint256 epsilon_,
+            uint256 lambda_
+        )
+    {
+        return Orchestrator.viewCurve(curve);
+    }
+
+    function setFrozen(bool _toFreezeOrNotToFreeze) external onlyOwner {
+        emit FrozenSet(_toFreezeOrNotToFreeze);
+
+        frozen = _toFreezeOrNotToFreeze;
+    }
+
+    function transferOwnership(address _newOwner) external onlyOwner {
+        emit OwnershipTransfered(owner, _newOwner);
+
+        owner = _newOwner;
+    }
+
+    /// @notice swap a dynamic origin amount for a fixed target amount
+    /// @param _origin the address of the origin
+    /// @param _target the address of the target
+    /// @param _originAmount the origin amount
+    /// @param _minTargetAmount the minimum target amount
+    /// @param _deadline deadline in block number after which the trade will not execute
+    /// @return targetAmount_ the amount of target that has been swapped for the origin amount
+    function originSwap(
+        address _origin,
+        address _target,
+        uint256 _originAmount,
+        uint256 _minTargetAmount,
+        uint256 _deadline
+    ) external deadline(_deadline) transactable nonReentrant returns (uint256 targetAmount_) {
+        targetAmount_ = Swaps.originSwap(curve, _origin, _target, _originAmount, msg.sender);
+
+        require(targetAmount_ > _minTargetAmount, "Curve/below-min-target-amount");
+    }
+
+    function originSwapDiscountCHI(
+        address _origin,
+        address _target,
+        uint256 _originAmount,
+        uint256 _minTargetAmount,
+        uint256 _deadline
+    ) external deadline(_deadline) transactable nonReentrant discountCHI returns (uint256 targetAmount_) {
+        targetAmount_ = Swaps.originSwap(curve, _origin, _target, _originAmount, msg.sender);
+
+        require(targetAmount_ > _minTargetAmount, "Curve/below-min-target-amount");
+    }
+
+    /// @notice view how much target amount a fixed origin amount will swap for
+    /// @param _origin the address of the origin
+    /// @param _target the address of the target
+    /// @param _originAmount the origin amount
+    /// @return targetAmount_ the target amount that would have been swapped for the origin amount
+    function viewOriginSwap(
+        address _origin,
+        address _target,
+        uint256 _originAmount
+    ) external view transactable returns (uint256 targetAmount_) {
+        targetAmount_ = Swaps.viewOriginSwap(curve, _origin, _target, _originAmount);
+    }
+
+    /// @notice swap a dynamic origin amount for a fixed target amount
+    /// @param _origin the address of the origin
+    /// @param _target the address of the target
+    /// @param _maxOriginAmount the maximum origin amount
+    /// @param _targetAmount the target amount
+    /// @param _deadline deadline in block number after which the trade will not execute
+    /// @return originAmount_ the amount of origin that has been swapped for the target
+    function targetSwap(
+        address _origin,
+        address _target,
+        uint256 _maxOriginAmount,
+        uint256 _targetAmount,
+        uint256 _deadline
+    ) external deadline(_deadline) transactable nonReentrant returns (uint256 originAmount_) {
+        originAmount_ = Swaps.targetSwap(curve, _origin, _target, _targetAmount, msg.sender);
+
+        require(originAmount_ < _maxOriginAmount, "Curve/above-max-origin-amount");
+    }
+
+    /// @notice view how much of the origin currency the target currency will take
+    /// @param _origin the address of the origin
+    /// @param _target the address of the target
+    /// @param _targetAmount the target amount
+    /// @return originAmount_ the amount of target that has been swapped for the origin
+    function viewTargetSwap(
+        address _origin,
+        address _target,
+        uint256 _targetAmount
+    ) external view transactable returns (uint256 originAmount_) {
+        originAmount_ = Swaps.viewTargetSwap(curve, _origin, _target, _targetAmount);
+    }
+
+    /// @notice selectively deposit any supported stablecoin flavor into the contract in return for corresponding amount of curve tokens
+    /// @param _derivatives an array containing the addresses of the flavors being deposited into
+    /// @param _amounts An array containing the values of the flavors you wish to deposit into the contract.
+    ///                 Each amount should have the same index as the flavor it is meant to deposit
+    /// @param _minCurves minimum acceptable amount of curves
+    /// @param _deadline deadline for tx
+    /// @return the amount of curves to mint for the deposited stablecoin flavors
+    function selectiveDeposit(
+        address[] calldata _derivatives,
+        uint256[] calldata _amounts,
+        uint256 _minCurves,
+        uint256 _deadline
+    ) external deadline(_deadline) transactable nonReentrant returns (uint256) {
+        return SelectiveLiquidity.selectiveDeposit(curve, _derivatives, _amounts, _minCurves);
+    }
+
+    /// @notice view how many curve tokens a deposit will mint
+    /// @param _derivatives an array containing the addresses of the flavors being deposited into
+    /// @param _amounts An array containing the values of the flavors you wish to deposit into the contract.
+    ///                 Each amount should have the same index as the flavor it is meant to deposit
+    /// @return curvesToMint_ the amount of curves to mint for the deposited stablecoin flavors
+    function viewSelectiveDeposit(address[] calldata _derivatives, uint256[] calldata _amounts)
+        external
+        view
+        transactable
+        returns (uint256 curvesToMint_)
+    {
+        curvesToMint_ = SelectiveLiquidity.viewSelectiveDeposit(curve, _derivatives, _amounts);
+    }
+
+    /// @notice deposit into the pool with no slippage from the numeraire assets the pool supports
+    /// @param  _deposit the full amount you want to deposit into the pool which will be divided up evenly amongst
+    ///                  the numeraire assets of the pool
+    /// @return (the amount of curves you receive in return for your deposit,
+    ///          the amount deposited for each numeraire)
+    function proportionalDeposit(uint256 _deposit, uint256 _deadline)
+        external
+        deadline(_deadline)
+        transactable
+        nonReentrant
+        returns (uint256, uint256[] memory)
+    {
+        // (curvesMinted_,  deposits_)
+        return ProportionalLiquidity.proportionalDeposit(curve, _deposit);
+    }
+
+    /// @notice view deposits and curves minted a given deposit would return
+    /// @param _deposit the full amount of stablecoins you want to deposit. Divided evenly according to the
+    ///                 prevailing proportions of the numeraire assets of the pool
+    /// @return (the amount of curves you receive in return for your deposit,
+    ///          the amount deposited for each numeraire)
+    function viewProportionalDeposit(uint256 _deposit) external view transactable returns (uint256, uint256[] memory) {
+        // curvesToMint_, depositsToMake_
+        return ProportionalLiquidity.viewProportionalDeposit(curve, _deposit);
+    }
+
+    /// @notice selectively withdrawal any supported stablecoin flavor from the contract by burning a corresponding amount of curve tokens
+    /// @param _derivatives an array of flavors to withdraw from the reserves
+    /// @param _amounts an array of amounts to withdraw that maps to _flavors
+    /// @param _maxCurves the maximum amount of curves you want to burn
+    /// @param _deadline timestamp after which the transaction is no longer valid
+    /// @return curvesBurned_ the corresponding amount of curve tokens to withdraw the specified amount of specified flavors
+    function selectiveWithdraw(
+        address[] calldata _derivatives,
+        uint256[] calldata _amounts,
+        uint256 _maxCurves,
+        uint256 _deadline
+    ) external deadline(_deadline) transactable nonReentrant returns (uint256 curvesBurned_) {
+        curvesBurned_ = SelectiveLiquidity.selectiveWithdraw(curve, _derivatives, _amounts, _maxCurves);
+    }
+
+    /// @notice view how many curve tokens a withdraw will consume
+    /// @param _derivatives an array of flavors to withdraw from the reserves
+    /// @param _amounts an array of amounts to withdraw that maps to _flavors
+    /// @return the corresponding amount of curve tokens to withdraw the specified amount of specified flavors
+    function viewSelectiveWithdraw(address[] calldata _derivatives, uint256[] calldata _amounts)
+        external
+        view
+        transactable
+        returns (uint256)
+    {
+        // curvesToBurn_
+        return SelectiveLiquidity.viewSelectiveWithdraw(curve, _derivatives, _amounts);
+    }
+
+    /// @notice  withdrawas amount of curve tokens from the the pool equally from the numeraire assets of the pool with no slippage
+    /// @param   _curvesToBurn the full amount you want to withdraw from the pool which will be withdrawn from evenly amongst the
+    ///                        numeraire assets of the pool
+    /// @return withdrawals_ the amonts of numeraire assets withdrawn from the pool
+    function proportionalWithdraw(uint256 _curvesToBurn, uint256 _deadline)
+        external
+        deadline(_deadline)
+        unpartitioned
+        nonReentrant
+        returns (uint256[] memory withdrawals_)
+    {
+        return ProportionalLiquidity.proportionalWithdraw(curve, _curvesToBurn);
+    }
+
+    function supportsInterface(bytes4 _interface) public pure returns (bool supports_) {
+        supports_ =
+            this.supportsInterface.selector == _interface || // erc165
+            bytes4(0x7f5828d0) == _interface || // eip173
+            bytes4(0x36372b07) == _interface; // erc20
+    }
+
+    /// @notice withdrawals amount of curve tokens from the the pool equally from the numeraire assets of the pool with no slippage
+    /// @param _curvesToBurn the full amount you want to withdraw from the pool which will be withdrawn from evenly amongst the numeraire
+    ///                      assets of the pool
+    /// @return withdrawalsToHappen_ the amonts of numeraire assets withdrawn from the pool
+    function viewProportionalWithdraw(uint256 _curvesToBurn)
+        external
+        view
+        unpartitioned
+        returns (uint256[] memory withdrawalsToHappen_)
+    {
+        return ProportionalLiquidity.viewProportionalWithdraw(curve, _curvesToBurn);
+    }
+
+    function partition() external onlyOwner {
+        require(frozen, "Curve/must-be-frozen");
+
+        PartitionedLiquidity.partition(curve, partitionTickets);
+
+        partitioned = true;
+    }
+
+    /// @notice  withdraws amount of curve tokens from the the pool equally from the numeraire assets of the pool with no slippage
+    /// @param _tokens an array of the numeraire assets you will withdraw
+    /// @param _amounts an array of the amounts in terms of partitioned shels you want to withdraw from that numeraire partition
+    /// @return withdrawals_ the amounts of the numeraire assets withdrawn
+    function partitionedWithdraw(address[] calldata _tokens, uint256[] calldata _amounts)
+        external
+        isPartitioned
+        returns (uint256[] memory withdrawals_)
+    {
+        return PartitionedLiquidity.partitionedWithdraw(curve, partitionTickets, _tokens, _amounts);
+    }
+
+    /// @notice  views the balance of the users partition ticket
+    /// @param _addr the address whose balances in partitioned curves to be seen
+    /// @return claims_ the remaining claims in terms of partitioned curves the address has in its partition ticket
+    function viewPartitionClaims(address _addr) external view isPartitioned returns (uint256[] memory claims_) {
+        return PartitionedLiquidity.viewPartitionClaims(curve, partitionTickets, _addr);
+    }
+
+    /// @notice transfers curve tokens
+    /// @param _recipient the address of where to send the curve tokens
+    /// @param _amount the amount of curve tokens to send
+    /// @return success_ the success bool of the call
+    function transfer(address _recipient, uint256 _amount) public nonReentrant returns (bool success_) {
+        require(!partitionTickets[msg.sender].initialized, "Curve/no-transfers-once-partitioned");
+
+        success_ = DFXERC20.transfer(curve, _recipient, _amount);
+    }
+
+    /// @notice transfers curve tokens from one address to another address
+    /// @param _sender the account from which the curve tokens will be sent
+    /// @param _recipient the account to which the curve tokens will be sent
+    /// @param _amount the amount of curve tokens to transfer
+    /// @return success_ the success bool of the call
+    function transferFrom(
+        address _sender,
+        address _recipient,
+        uint256 _amount
+    ) public nonReentrant returns (bool success_) {
+        require(!partitionTickets[_sender].initialized, "Curve/no-transfers-once-partitioned");
+
+        success_ = DFXERC20.transferFrom(curve, _sender, _recipient, _amount);
+    }
+
+    /// @notice approves a user to spend curve tokens on their behalf
+    /// @param _spender the account to allow to spend from msg.sender
+    /// @param _amount the amount to specify the spender can spend
+    /// @return success_ the success bool of this call
+    function approve(address _spender, uint256 _amount) public nonReentrant returns (bool success_) {
+        success_ = DFXERC20.approve(curve, _spender, _amount);
+    }
+
+    /// @notice view the curve token balance of a given account
+    /// @param _account the account to view the balance of
+    /// @return balance_ the curve token ballance of the given account
+    function balanceOf(address _account) public view returns (uint256 balance_) {
+        balance_ = curve.balances[_account];
+    }
+
+    /// @notice views the total curve supply of the pool
+    /// @return totalSupply_ the total supply of curve tokens
+    function totalSupply() public view returns (uint256 totalSupply_) {
+        totalSupply_ = curve.totalSupply;
+    }
+
+    /// @notice views the total allowance one address has to spend from another address
+    /// @param _owner the address of the owner
+    /// @param _spender the address of the spender
+    /// @return allowance_ the amount the owner has allotted the spender
+    function allowance(address _owner, address _spender) public view returns (uint256 allowance_) {
+        allowance_ = curve.allowances[_owner][_spender];
+    }
+
+    /// @notice views the total amount of liquidity in the curve in numeraire value and format - 18 decimals
+    /// @return total_ the total value in the curve
+    /// @return individual_ the individual values in the curve
+    function liquidity() public view returns (uint256 total_, uint256[] memory individual_) {
+        return ViewLiquidity.viewLiquidity(curve);
+    }
+
+    /// @notice view the assimilator address for a derivative
+    /// @return assimilator_ the assimilator address
+    function assimilator(address _derivative) public view returns (address assimilator_) {
+        assimilator_ = curve.assimilators[_derivative].addr;
     }
 }
