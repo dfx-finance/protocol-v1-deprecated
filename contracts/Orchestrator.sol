@@ -77,13 +77,6 @@ library Orchestrator {
         emit ParametersSet(_alpha, _beta, curve.delta.mulu(1e18), _epsilon, _lambda);
     }
 
-    function viewNumeraireBalance(address _token) private view returns (int128) {
-        uint256 decimals = ERC20(_token).decimals();
-        uint256 balance = ERC20(_token).balanceOf(address(this));
-
-        return balance.divu(10**decimals);
-    }
-
     function getFee(DFXStorage.Curve storage curve) private view returns (int128 fee_) {
         int128 _gLiq;
 
@@ -91,7 +84,7 @@ library Orchestrator {
         int128[] memory _bals = new int128[](2);
 
         for (uint256 i = 0; i < _bals.length; i++) {
-            int128 _bal = viewNumeraireBalance(curve.assets[i].addr);
+            int128 _bal = Assimilators.viewNumeraireBalance(curve.assets[i].addr);
 
             _bals[i] = _bal;
 

@@ -15,6 +15,7 @@
 
 pragma solidity ^0.7.3;
 
+import "./interfaces/IOracle.sol";
 import "./Assimilators.sol";
 
 contract DFXStorage {
@@ -29,6 +30,10 @@ contract DFXStorage {
         // Assets and their assimilators
         Assimilator[] assets;
         mapping(address => Assimilator) assimilators;
+        // Oracles to determine the price
+        // Note that 0'th index should always be USDC 1e18
+        // Oracle's pricing should be denominated in Currency/USDC
+        mapping(address => IOracle) oracles;
         // ERC20 Interface
         uint256 totalSupply;
         mapping(address => uint256) balances;
