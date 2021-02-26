@@ -77,11 +77,11 @@ library PartitionedLiquidity {
         for (uint256 i = 0; i < _length; i++) {
             DFXStorage.Assimilator memory _assim = curve.assimilators[_derivatives[i]];
 
-            require(totalSuppliesTicket.claims[_assim.ix] >= _withdrawals[i], "Shell/burn-exceeds-total-supply");
+            require(totalSuppliesTicket.claims[_assim.ix] >= _withdrawals[i], "Curve/burn-exceeds-total-supply");
 
-            require(ticket.claims[_assim.ix] >= _withdrawals[i], "Shell/insufficient-balance");
+            require(ticket.claims[_assim.ix] >= _withdrawals[i], "Curve/insufficient-balance");
 
-            require(_assim.addr != address(0), "Shell/unsupported-asset");
+            require(_assim.addr != address(0), "Curve/unsupported-asset");
 
             int128 _reserveBalance = Assimilators.viewNumeraireBalance(_assim.addr);
 

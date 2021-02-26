@@ -32,7 +32,7 @@ library SelectiveLiquidity {
 
         curves_ = _curves.mulu(1e18);
 
-        require(_minShells < curves_, "Shell/under-minimum-curves");
+        require(_minShells < curves_, "Curve/under-minimum-curves");
 
         mint(curve, msg.sender, curves_);
     }
@@ -65,7 +65,7 @@ library SelectiveLiquidity {
 
         curves_ = _curves.mulu(1e18);
 
-        require(curves_ < _maxShells, "Shell/above-maximum-curves");
+        require(curves_ < _maxShells, "Curve/above-maximum-curves");
 
         burn(curve, msg.sender, curves_);
     }
@@ -105,7 +105,7 @@ library SelectiveLiquidity {
         for (uint256 i = 0; i < _derivatives.length; i++) {
             DFXStorage.Assimilator memory _assim = curve.assimilators[_derivatives[i]];
 
-            require(_assim.addr != address(0), "Shell/unsupported-derivative");
+            require(_assim.addr != address(0), "Curve/unsupported-derivative");
 
             if (nBals_[_assim.ix] == 0 && 0 == oBals_[_assim.ix]) {
                 (int128 _amount, int128 _balance) = Assimilators.intakeRawAndGetBalance(_assim.addr, _amounts[i]);
@@ -144,7 +144,7 @@ library SelectiveLiquidity {
         for (uint256 i = 0; i < _derivatives.length; i++) {
             DFXStorage.Assimilator memory _assim = curve.assimilators[_derivatives[i]];
 
-            require(_assim.addr != address(0), "Shell/unsupported-derivative");
+            require(_assim.addr != address(0), "Curve/unsupported-derivative");
 
             if (nBals_[_assim.ix] == 0 && 0 == oBals_[_assim.ix]) {
                 (int128 _amount, int128 _balance) =
@@ -183,7 +183,7 @@ library SelectiveLiquidity {
         for (uint256 i = 0; i < _derivatives.length; i++) {
             DFXStorage.Assimilator memory _assim = curve.assimilators[_derivatives[i]];
 
-            require(_assim.addr != address(0), "Shell/unsupported-derivative");
+            require(_assim.addr != address(0), "Curve/unsupported-derivative");
 
             if (nBals_[_assim.ix] == 0 && 0 == oBals_[_assim.ix]) {
                 (int128 _amount, int128 _balance) =
@@ -223,7 +223,7 @@ library SelectiveLiquidity {
         for (uint256 i = 0; i < _derivatives.length; i++) {
             DFXStorage.Assimilator memory _assim = curve.assimilators[_derivatives[i]];
 
-            require(_assim.addr != address(0), "Shell/unsupported-derivative");
+            require(_assim.addr != address(0), "Curve/unsupported-derivative");
 
             if (nBals_[_assim.ix] == 0 && 0 == oBals_[_assim.ix]) {
                 (int128 _amount, int128 _balance) =
@@ -295,10 +295,10 @@ library SelectiveLiquidity {
     }
 
     function mintAdd(uint256 x, uint256 y) private pure returns (uint256 z) {
-        require((z = x + y) >= x, "Shell/mint-overflow");
+        require((z = x + y) >= x, "Curve/mint-overflow");
     }
 
     function burnSub(uint256 x, uint256 y) private pure returns (uint256 z) {
-        require((z = x - y) <= x, "Shell/burn-underflow");
+        require((z = x - y) <= x, "Curve/burn-underflow");
     }
 }

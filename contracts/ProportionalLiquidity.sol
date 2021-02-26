@@ -214,10 +214,10 @@ library ProportionalLiquidity {
     }
 
     function mintAdd(uint256 x, uint256 y) private pure returns (uint256 z) {
-        require((z = x + y) >= x, "Shell/mint-overflow");
+        require((z = x + y) >= x, "Curve/mint-overflow");
     }
 
     function burnSub(uint256 x, uint256 y) private pure returns (uint256 z) {
-        require((z = x - y) <= x, "Shell/burn-underflow");
+        require((z = x - y) <= x, "Curve/burn-underflow");
     }
 }

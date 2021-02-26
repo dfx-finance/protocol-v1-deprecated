@@ -97,7 +97,7 @@ library DFXERC20 {
             curve,
             sender,
             msg.sender,
-            sub(curve.allowances[sender][msg.sender], amount, "Shell/insufficient-allowance")
+            sub(curve.allowances[sender][msg.sender], amount, "Curve/insufficient-allowance")
         );
         return true;
     }
@@ -123,7 +123,7 @@ library DFXERC20 {
             curve,
             msg.sender,
             spender,
-            add(curve.allowances[msg.sender][spender], addedValue, "Shell/approval-overflow")
+            add(curve.allowances[msg.sender][spender], addedValue, "Curve/approval-overflow")
         );
         return true;
     }
@@ -151,7 +151,7 @@ library DFXERC20 {
             curve,
             msg.sender,
             spender,
-            sub(curve.allowances[msg.sender][spender], subtractedValue, "Shell/allowance-decrease-underflow")
+            sub(curve.allowances[msg.sender][spender], subtractedValue, "Curve/allowance-decrease-underflow")
         );
         return true;
     }
@@ -179,8 +179,8 @@ library DFXERC20 {
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
 
-        curve.balances[sender] = sub(curve.balances[sender], amount, "Shell/insufficient-balance");
-        curve.balances[recipient] = add(curve.balances[recipient], amount, "Shell/transfer-overflow");
+        curve.balances[sender] = sub(curve.balances[sender], amount, "Curve/insufficient-balance");
+        curve.balances[recipient] = add(curve.balances[recipient], amount, "Curve/transfer-overflow");
         emit Transfer(sender, recipient, amount);
     }
 
