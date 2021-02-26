@@ -18,7 +18,7 @@ pragma solidity ^0.7.3;
 import "./interfaces/IOracle.sol";
 import "./Assimilators.sol";
 
-contract DFXStorage {
+contract Storage {
     struct Curve {
         // Curve parameters
         int128 alpha;

@@ -4,7 +4,7 @@ pragma solidity ^0.7.3;
 
 import "./Assimilators.sol";
 
-import "./DFXStorage.sol";
+import "./Storage.sol";
 
 import "./lib/ABDKMath64x64.sol";
 import "./lib/UnsafeMath64x64.sol";
@@ -21,12 +21,12 @@ library PartitionedLiquidity {
     int128 public constant ONE = 0x10000000000000000;
 
     function partition(
-        DFXStorage.Curve storage curve,
-        mapping(address => DFXStorage.PartitionTicket) storage partitionTickets
+        Storage.Curve storage curve,
+        mapping(address => Storage.PartitionTicket) storage partitionTickets
     ) external {
         uint256 _length = curve.assets.length;
 
-        DFXStorage.PartitionTicket storage totalSupplyTicket = partitionTickets[address(this)];
+        Storage.PartitionTicket storage totalSupplyTicket = partitionTickets[address(this)];
 
         totalSupplyTicket.initialized = true;
 
@@ -36,11 +36,11 @@ library PartitionedLiquidity {
     }
 
     function viewPartitionClaims(
-        DFXStorage.Curve storage curve,
-        mapping(address => DFXStorage.PartitionTicket) storage partitionTickets,
+        Storage.Curve storage curve,
+        mapping(address => Storage.PartitionTicket) storage partitionTickets,
         address _addr
     ) external view returns (uint256[] memory claims_) {
-        DFXStorage.PartitionTicket storage ticket = partitionTickets[_addr];
+        Storage.PartitionTicket storage ticket = partitionTickets[_addr];
 
         if (ticket.initialized) return ticket.claims;
 
@@ -54,16 +54,16 @@ library PartitionedLiquidity {
     }
 
     function partitionedWithdraw(
-        DFXStorage.Curve storage curve,
-        mapping(address => DFXStorage.PartitionTicket) storage partitionTickets,
+        Storage.Curve storage curve,
+        mapping(address => Storage.PartitionTicket) storage partitionTickets,
         address[] calldata _derivatives,
         uint256[] calldata _withdrawals
     ) external returns (uint256[] memory) {
         uint256 _length = curve.assets.length;
         uint256 _balance = curve.balances[msg.sender];
 
-        DFXStorage.PartitionTicket storage totalSuppliesTicket = partitionTickets[address(this)];
-        DFXStorage.PartitionTicket storage ticket = partitionTickets[msg.sender];
+        Storage.PartitionTicket storage totalSuppliesTicket = partitionTickets[address(this)];
+        Storage.PartitionTicket storage ticket = partitionTickets[msg.sender];
 
         if (!ticket.initialized) {
             for (uint256 i = 0; i < _length; i++) ticket.claims.push(_balance);
@@ -75,7 +75,7 @@ library PartitionedLiquidity {
         uint256[] memory withdrawals_ = new uint256[](_length);
 
         for (uint256 i = 0; i < _length; i++) {
-            DFXStorage.Assimilator memory _assim = curve.assimilators[_derivatives[i]];
+            Storage.Assimilator memory _assim = curve.assimilators[_derivatives[i]];
 
             require(totalSuppliesTicket.claims[_assim.ix] >= _withdrawals[i], "Curve/burn-exceeds-total-supply");
 

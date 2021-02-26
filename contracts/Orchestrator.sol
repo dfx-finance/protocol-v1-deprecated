@@ -19,7 +19,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 import "./lib/ABDKMath64x64.sol";
 
-import "./DFXStorage.sol";
+import "./Storage.sol";
 
 import "./CurveMath.sol";
 
@@ -41,7 +41,7 @@ library Orchestrator {
     );
 
     function setParams(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         uint256 _alpha,
         uint256 _beta,
         uint256 _feeAtHalt,
@@ -77,7 +77,7 @@ library Orchestrator {
         emit ParametersSet(_alpha, _beta, curve.delta.mulu(1e18), _epsilon, _lambda);
     }
 
-    function getFee(DFXStorage.Curve storage curve) private view returns (int128 fee_) {
+    function getFee(Storage.Curve storage curve) private view returns (int128 fee_) {
         int128 _gLiq;
 
         // Always pairs
@@ -107,7 +107,7 @@ library Orchestrator {
     }
 
     function initialize(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         address[] storage numeraires,
         address[] storage reserves,
         address[] storage derivatives,
@@ -152,7 +152,7 @@ library Orchestrator {
     }
 
     function includeAsset(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         address _numeraire,
         address _numeraireAssim,
         address _reserve,
@@ -172,13 +172,13 @@ library Orchestrator {
 
         if (_numeraire != _reserve) safeApprove(_numeraire, _reserveApproveTo, uint256(-1));
 
-        DFXStorage.Assimilator storage _numeraireAssimilator = curve.assimilators[_numeraire];
+        Storage.Assimilator storage _numeraireAssimilator = curve.assimilators[_numeraire];
 
         _numeraireAssimilator.addr = _numeraireAssim;
 
         _numeraireAssimilator.ix = uint8(curve.assets.length);
 
-        DFXStorage.Assimilator storage _reserveAssimilator = curve.assimilators[_reserve];
+        Storage.Assimilator storage _reserveAssimilator = curve.assimilators[_reserve];
 
         _reserveAssimilator.addr = _reserveAssim;
 
@@ -200,7 +200,7 @@ library Orchestrator {
     }
 
     function includeAssimilator(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         address _derivative,
         address _numeraire,
         address _reserve,
@@ -217,14 +217,14 @@ library Orchestrator {
 
         safeApprove(_numeraire, _derivativeApproveTo, uint256(-1));
 
-        DFXStorage.Assimilator storage _numeraireAssim = curve.assimilators[_numeraire];
+        Storage.Assimilator storage _numeraireAssim = curve.assimilators[_numeraire];
 
-        curve.assimilators[_derivative] = DFXStorage.Assimilator(_assimilator, _numeraireAssim.ix);
+        curve.assimilators[_derivative] = Storage.Assimilator(_assimilator, _numeraireAssim.ix);
 
         emit AssimilatorIncluded(_derivative, _numeraire, _reserve, _assimilator);
     }
 
-    function viewCurve(DFXStorage.Curve storage curve)
+    function viewCurve(Storage.Curve storage curve)
         external
         view
         returns (

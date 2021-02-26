@@ -15,7 +15,7 @@
 
 pragma solidity ^0.7.3;
 
-import "./DFXStorage.sol";
+import "./Storage.sol";
 
 import "./lib/UnsafeMath64x64.sol";
 import "./lib/ABDKMath64x64.sol";
@@ -81,7 +81,7 @@ library CurveMath {
     }
 
     function calculateTrade(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         int128 _oGLiq,
         int128 _nGLiq,
         int128[] memory _oBals,
@@ -129,7 +129,7 @@ library CurveMath {
     }
 
     function calculateLiquidityMembrane(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         int128 _oGLiq,
         int128 _nGLiq,
         int128[] memory _oBals,
@@ -207,7 +207,7 @@ library CurveMath {
     }
 
     function enforceHalts(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         int128 _oGLiq,
         int128 _nGLiq,
         int128[] memory _oBals,

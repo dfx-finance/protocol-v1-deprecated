@@ -4,7 +4,7 @@ pragma solidity ^0.7.3;
 
 import "./Assimilators.sol";
 
-import "./DFXStorage.sol";
+import "./Storage.sol";
 
 import "./lib/UnsafeMath64x64.sol";
 import "./lib/ABDKMath64x64.sol";
@@ -20,7 +20,7 @@ library SelectiveLiquidity {
     int128 public constant ONE = 0x10000000000000000;
 
     function selectiveDeposit(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         address[] calldata _derivatives,
         uint256[] calldata _amounts,
         uint256 _minShells
@@ -38,7 +38,7 @@ library SelectiveLiquidity {
     }
 
     function viewSelectiveDeposit(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         address[] calldata _derivatives,
         uint256[] calldata _amounts
     ) external view returns (uint256 curves_) {
@@ -51,7 +51,7 @@ library SelectiveLiquidity {
     }
 
     function selectiveWithdraw(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         address[] calldata _derivatives,
         uint256[] calldata _amounts,
         uint256 _maxShells
@@ -71,7 +71,7 @@ library SelectiveLiquidity {
     }
 
     function viewSelectiveWithdraw(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         address[] calldata _derivatives,
         uint256[] calldata _amounts
     ) external view returns (uint256 curves_) {
@@ -86,7 +86,7 @@ library SelectiveLiquidity {
     }
 
     function getLiquidityDepositData(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         address[] memory _derivatives,
         uint256[] memory _amounts
     )
@@ -103,7 +103,7 @@ library SelectiveLiquidity {
         int128[] memory nBals_ = new int128[](_length);
 
         for (uint256 i = 0; i < _derivatives.length; i++) {
-            DFXStorage.Assimilator memory _assim = curve.assimilators[_derivatives[i]];
+            Storage.Assimilator memory _assim = curve.assimilators[_derivatives[i]];
 
             require(_assim.addr != address(0), "Curve/unsupported-derivative");
 
@@ -124,7 +124,7 @@ library SelectiveLiquidity {
     }
 
     function getLiquidityWithdrawData(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         address[] memory _derivatives,
         address _rcpnt,
         uint256[] memory _amounts
@@ -142,7 +142,7 @@ library SelectiveLiquidity {
         int128[] memory nBals_ = new int128[](_length);
 
         for (uint256 i = 0; i < _derivatives.length; i++) {
-            DFXStorage.Assimilator memory _assim = curve.assimilators[_derivatives[i]];
+            Storage.Assimilator memory _assim = curve.assimilators[_derivatives[i]];
 
             require(_assim.addr != address(0), "Curve/unsupported-derivative");
 
@@ -163,7 +163,7 @@ library SelectiveLiquidity {
     }
 
     function viewLiquidityDepositData(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         address[] memory _derivatives,
         uint256[] memory _amounts
     )
@@ -181,7 +181,7 @@ library SelectiveLiquidity {
         int128[] memory nBals_ = new int128[](_length);
 
         for (uint256 i = 0; i < _derivatives.length; i++) {
-            DFXStorage.Assimilator memory _assim = curve.assimilators[_derivatives[i]];
+            Storage.Assimilator memory _assim = curve.assimilators[_derivatives[i]];
 
             require(_assim.addr != address(0), "Curve/unsupported-derivative");
 
@@ -203,7 +203,7 @@ library SelectiveLiquidity {
     }
 
     function viewLiquidityWithdrawData(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         address[] memory _derivatives,
         uint256[] memory _amounts
     )
@@ -221,7 +221,7 @@ library SelectiveLiquidity {
         int128[] memory nBals_ = new int128[](_length);
 
         for (uint256 i = 0; i < _derivatives.length; i++) {
-            DFXStorage.Assimilator memory _assim = curve.assimilators[_derivatives[i]];
+            Storage.Assimilator memory _assim = curve.assimilators[_derivatives[i]];
 
             require(_assim.addr != address(0), "Curve/unsupported-derivative");
 
@@ -243,7 +243,7 @@ library SelectiveLiquidity {
     }
 
     function completeLiquidityData(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         int128[] memory oBals_,
         int128[] memory nBals_
     )
@@ -271,7 +271,7 @@ library SelectiveLiquidity {
     }
 
     function burn(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         address account,
         uint256 amount
     ) private {
@@ -283,7 +283,7 @@ library SelectiveLiquidity {
     }
 
     function mint(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         address account,
         uint256 amount
     ) private {

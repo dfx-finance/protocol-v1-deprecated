@@ -3,7 +3,7 @@
 pragma solidity ^0.7.3;
 
 import "./Assimilators.sol";
-import "./DFXStorage.sol";
+import "./Storage.sol";
 import "./CurveMath.sol";
 import "./lib/UnsafeMath64x64.sol";
 import "./lib/ABDKMath64x64.sol";
@@ -23,12 +23,12 @@ library Swaps {
     int128 public constant ONE = 0x10000000000000000;
 
     function getOriginAndTarget(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         address _o,
         address _t
-    ) private view returns (DFXStorage.Assimilator memory, DFXStorage.Assimilator memory) {
-        DFXStorage.Assimilator memory o_ = curve.assimilators[_o];
-        DFXStorage.Assimilator memory t_ = curve.assimilators[_t];
+    ) private view returns (Storage.Assimilator memory, Storage.Assimilator memory) {
+        Storage.Assimilator memory o_ = curve.assimilators[_o];
+        Storage.Assimilator memory t_ = curve.assimilators[_t];
 
         require(o_.addr != address(0), "Curve/origin-not-supported");
         require(t_.addr != address(0), "Curve/target-not-supported");
@@ -37,14 +37,13 @@ library Swaps {
     }
 
     function originSwap(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         address _origin,
         address _target,
         uint256 _originAmount,
         address _recipient
     ) external returns (uint256 tAmt_) {
-        (DFXStorage.Assimilator memory _o, DFXStorage.Assimilator memory _t) =
-            getOriginAndTarget(curve, _origin, _target);
+        (Storage.Assimilator memory _o, Storage.Assimilator memory _t) = getOriginAndTarget(curve, _origin, _target);
 
         if (_o.ix == _t.ix)
             return Assimilators.outputNumeraire(_t.addr, _recipient, Assimilators.intakeRaw(_o.addr, _originAmount));
@@ -62,13 +61,12 @@ library Swaps {
     }
 
     function viewOriginSwap(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         address _origin,
         address _target,
         uint256 _originAmount
     ) external view returns (uint256 tAmt_) {
-        (DFXStorage.Assimilator memory _o, DFXStorage.Assimilator memory _t) =
-            getOriginAndTarget(curve, _origin, _target);
+        (Storage.Assimilator memory _o, Storage.Assimilator memory _t) = getOriginAndTarget(curve, _origin, _target);
 
         if (_o.ix == _t.ix)
             return Assimilators.viewRawAmount(_t.addr, Assimilators.viewNumeraireAmount(_o.addr, _originAmount));
@@ -84,14 +82,13 @@ library Swaps {
     }
 
     function targetSwap(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         address _origin,
         address _target,
         uint256 _targetAmount,
         address _recipient
     ) external returns (uint256 oAmt_) {
-        (DFXStorage.Assimilator memory _o, DFXStorage.Assimilator memory _t) =
-            getOriginAndTarget(curve, _origin, _target);
+        (Storage.Assimilator memory _o, Storage.Assimilator memory _t) = getOriginAndTarget(curve, _origin, _target);
 
         if (_o.ix == _t.ix)
             return Assimilators.intakeNumeraire(_o.addr, Assimilators.outputRaw(_t.addr, _recipient, _targetAmount));
@@ -109,13 +106,12 @@ library Swaps {
     }
 
     function viewTargetSwap(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         address _origin,
         address _target,
         uint256 _targetAmount
     ) external view returns (uint256 oAmt_) {
-        (DFXStorage.Assimilator memory _o, DFXStorage.Assimilator memory _t) =
-            getOriginAndTarget(curve, _origin, _target);
+        (Storage.Assimilator memory _o, Storage.Assimilator memory _t) = getOriginAndTarget(curve, _origin, _target);
 
         if (_o.ix == _t.ix)
             return Assimilators.viewRawAmount(_o.addr, Assimilators.viewNumeraireAmount(_t.addr, _targetAmount));
@@ -131,7 +127,7 @@ library Swaps {
     }
 
     function getOriginSwapData(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         uint256 _inputIx,
         uint256 _outputIx,
         address _assim,
@@ -150,7 +146,7 @@ library Swaps {
 
         int128[] memory oBals_ = new int128[](_length);
         int128[] memory nBals_ = new int128[](_length);
-        DFXStorage.Assimilator[] memory _reserves = curve.assets;
+        Storage.Assimilator[] memory _reserves = curve.assets;
 
         for (uint256 i = 0; i < _length; i++) {
             if (i != _inputIx) nBals_[i] = oBals_[i] = Assimilators.viewNumeraireBalance(_reserves[i].addr);
@@ -173,7 +169,7 @@ library Swaps {
     }
 
     function getTargetSwapData(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         uint256 _inputIx,
         uint256 _outputIx,
         address _assim,
@@ -193,7 +189,7 @@ library Swaps {
 
         int128[] memory oBals_ = new int128[](_length);
         int128[] memory nBals_ = new int128[](_length);
-        DFXStorage.Assimilator[] memory _reserves = curve.assets;
+        Storage.Assimilator[] memory _reserves = curve.assets;
 
         for (uint256 i = 0; i < _length; i++) {
             if (i != _inputIx) nBals_[i] = oBals_[i] = Assimilators.viewNumeraireBalance(_reserves[i].addr);
@@ -216,7 +212,7 @@ library Swaps {
     }
 
     function viewOriginSwapData(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         uint256 _inputIx,
         uint256 _outputIx,
         uint256 _amt,
@@ -257,7 +253,7 @@ library Swaps {
     }
 
     function viewTargetSwapData(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         uint256 _inputIx,
         uint256 _outputIx,
         uint256 _amt,

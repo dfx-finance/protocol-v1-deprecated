@@ -15,7 +15,7 @@
 
 pragma solidity ^0.7.3;
 
-import "./DFXStorage.sol";
+import "./Storage.sol";
 
 import "./Assimilators.sol";
 
@@ -24,7 +24,7 @@ import "./lib/ABDKMath64x64.sol";
 library ViewLiquidity {
     using ABDKMath64x64 for int128;
 
-    function viewLiquidity(DFXStorage.Curve storage curve)
+    function viewLiquidity(Storage.Curve storage curve)
         external
         view
         returns (uint256 total_, uint256[] memory individual_)

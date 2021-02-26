@@ -4,7 +4,7 @@ pragma solidity ^0.7.3;
 
 import "./Assimilators.sol";
 
-import "./DFXStorage.sol";
+import "./Storage.sol";
 
 import "./lib/UnsafeMath64x64.sol";
 import "./lib/ABDKMath64x64.sol";
@@ -21,7 +21,7 @@ library ProportionalLiquidity {
     int128 public constant ONE = 0x10000000000000000;
     int128 public constant ONE_WEI = 0x12;
 
-    function proportionalDeposit(DFXStorage.Curve storage curve, uint256 _deposit)
+    function proportionalDeposit(Storage.Curve storage curve, uint256 _deposit)
         external
         returns (uint256 curves_, uint256[] memory)
     {
@@ -61,7 +61,7 @@ library ProportionalLiquidity {
         return (curves_, deposits_);
     }
 
-    function viewProportionalDeposit(DFXStorage.Curve storage curve, uint256 _deposit)
+    function viewProportionalDeposit(Storage.Curve storage curve, uint256 _deposit)
         external
         view
         returns (uint256 curves_, uint256[] memory)
@@ -100,7 +100,7 @@ library ProportionalLiquidity {
         return (curves_, deposits_);
     }
 
-    function proportionalWithdraw(DFXStorage.Curve storage curve, uint256 _withdrawal)
+    function proportionalWithdraw(Storage.Curve storage curve, uint256 _withdrawal)
         external
         returns (uint256[] memory)
     {
@@ -130,7 +130,7 @@ library ProportionalLiquidity {
         return withdrawals_;
     }
 
-    function viewProportionalWithdraw(DFXStorage.Curve storage curve, uint256 _withdrawal)
+    function viewProportionalWithdraw(Storage.Curve storage curve, uint256 _withdrawal)
         external
         view
         returns (uint256[] memory)
@@ -150,7 +150,7 @@ library ProportionalLiquidity {
         return withdrawals_;
     }
 
-    function getGrossLiquidityAndBalances(DFXStorage.Curve storage curve)
+    function getGrossLiquidityAndBalances(Storage.Curve storage curve)
         internal
         view
         returns (int128 grossLiquidity_, int128[] memory)
@@ -170,7 +170,7 @@ library ProportionalLiquidity {
     }
 
     function requireLiquidityInvariant(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         int128 _curves,
         int128 _newShells,
         int128 _oGLiq,
@@ -190,7 +190,7 @@ library ProportionalLiquidity {
     }
 
     function burn(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         address account,
         uint256 amount
     ) private {
@@ -202,7 +202,7 @@ library ProportionalLiquidity {
     }
 
     function mint(
-        DFXStorage.Curve storage curve,
+        Storage.Curve storage curve,
         address account,
         uint256 amount
     ) private {
