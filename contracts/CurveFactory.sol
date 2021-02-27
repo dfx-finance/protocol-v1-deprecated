@@ -30,15 +30,6 @@ contract CurveFactory {
 
     mapping(address => bool) private _isCurve;
 
-    IFreeFromUpTo public constant chi = IFreeFromUpTo(0x0000000000004946c0e9F43F4Dee607b0eF1fA1c);
-
-    modifier discountCHI {
-        uint256 gasStart = gasleft();
-        _;
-        uint256 gasSpent = 21000 + gasStart - gasleft() + 16 * msg.data.length;
-        chi.freeFromUpTo(msg.sender, (gasSpent + 14154) / 41130);
-    }
-
     function isCurve(address _curve) external view returns (bool) {
         return _isCurve[_curve];
     }
@@ -47,7 +38,7 @@ contract CurveFactory {
         address[] memory _assets,
         uint256[] memory _assetWeights,
         address[] memory _derivativeAssimilators
-    ) public discountCHI returns (Curve) {
+    ) public returns (Curve) {
         if (msg.sender != dfx) revert("Curve/must-be-dfx");
 
         Curve curve = new Curve(_assets, _assetWeights, _derivativeAssimilators);
