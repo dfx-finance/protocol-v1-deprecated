@@ -1,10 +1,29 @@
 import { ethers } from "hardhat";
-import { Signer, Contract, ContractFactory } from "ethers";
+import { Signer, Contract, ContractFactory, ContractReceipt } from "ethers";
+import { TOKENS } from "./Constants";
+import { mintCADC, mintUSDC, getFutureTime } from "./Utils";
 
 const { parseUnits } = ethers.utils;
 
+const getCurveAddressFromTxRecp = (txRecp: ContractReceipt) => {
+  const abi = ["event NewCurve(address indexed caller, address indexed curve)"];
+  const iface = new ethers.utils.Interface(abi);
+
+  const events = txRecp.logs
+    .map(x => {
+      try {
+        return iface.parseLog(x);
+      } catch (e) {
+        return null;
+      }
+    })
+    .filter(x => x !== null);
+
+  return events[0]?.args[1];
+};
+
 describe("Curve", function () {
-  let accounts: Signer[];
+  let [user]: Signer[] = [];
 
   let CurvesLib: ContractFactory;
   let OrchestratorLib: ContractFactory;
@@ -28,7 +47,6 @@ describe("Curve", function () {
   let cadcToUsdAssimilator: Contract;
   let usdcToUsdAssimilator: Contract;
 
-  let MockToken: ContractFactory;
   let CurveFactory: ContractFactory;
 
   let curveFactory: Contract;
@@ -36,7 +54,7 @@ describe("Curve", function () {
   let cadc: Contract;
 
   before(async function () {
-    accounts = await ethers.getSigners();
+    [user] = await ethers.getSigners();
 
     CurvesLib = await ethers.getContractFactory("Curves");
     OrchestratorLib = await ethers.getContractFactory("Orchestrator");
@@ -71,17 +89,16 @@ describe("Curve", function () {
         ViewLiquidity: viewLiquidityLib.address,
       },
     });
-    MockToken = await ethers.getContractFactory("MockToken");
   });
 
   beforeEach(async function () {
     curveFactory = await CurveFactory.deploy();
 
-    usdc = await MockToken.deploy("USD Coin", "USDC", 8);
-    cadc = await MockToken.deploy("CAD Coin", "CADC", 18);
+    usdc = await ethers.getContractAt("ERC20", TOKENS.USDC.address);
+    cadc = await ethers.getContractAt("ERC20", TOKENS.CADC.address);
   });
 
-  it("new factory", async function () {
+  it("new curve", async function () {
     const assets = [
       usdc.address,
       usdcToUsdAssimilator.address,
@@ -98,10 +115,41 @@ describe("Curve", function () {
     const assetWeights = [parseUnits("0.5"), parseUnits("0.5")];
     const derivativeAssimilators = [usdcToUsdAssimilator.address, cadcToUsdAssimilator.address];
 
-    const tx = await curveFactory.newCurve(assets, assetWeights, derivativeAssimilators);
+    let tx = await curveFactory.newCurve(assets, assetWeights, derivativeAssimilators);
     const txRecp = await tx.wait();
 
-    console.log(txRecp);
-    console.log(await accounts[0].getAddress());
+    // Get curve address from logs
+    const curveAddress = getCurveAddressFromTxRecp(txRecp);
+    const curve = await ethers.getContractAt("Curve", curveAddress);
+
+    // Mint tokens and approve
+    await mintUSDC(await user.getAddress(), parseUnits("100", 6));
+    await mintCADC(await user.getAddress(), parseUnits("100"));
+    await usdc.approve(curveAddress, parseUnits("100", 6));
+    await cadc.approve(curveAddress, parseUnits("100"));
+
+    // Set params
+    tx = await curve.setParams(
+      parseUnits("0.5"),
+      parseUnits("0.25"),
+      parseUnits("0.05"),
+      parseUnits("2.5", 14),
+      parseUnits("0.2"),
+    );
+    await tx.wait();
+
+    // Proportional Supply
+    tx = await curve.proportionalDeposit(parseUnits("100"), await getFutureTime());
+    await tx.wait();
+
+    console.log("usdc balance", await usdc.balanceOf(await user.getAddress()));
+    console.log("cadc balance", await cadc.balanceOf(await user.getAddress()));
+
+    // Swap
+    tx = await curve.originSwap(usdc.address, cadc.address, parseUnits("1", 6), 0, await getFutureTime());
+    await tx.wait();
+
+    console.log("usdc balance", await usdc.balanceOf(await user.getAddress()));
+    console.log("cadc balance", await cadc.balanceOf(await user.getAddress()));
   });
 });
