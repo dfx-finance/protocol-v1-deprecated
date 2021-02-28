@@ -21,12 +21,12 @@ import "../lib/ABDKMath64x64.sol";
 import "../interfaces/IAssimilator.sol";
 import "../interfaces/IOracle.sol";
 
-contract CadcToUsdAssimilator is IAssimilator {
+contract EursToUsdAssimilator is IAssimilator {
     using ABDKMath64x64 for int128;
     using ABDKMath64x64 for uint256;
 
-    IOracle public constant oracle = IOracle(0xa34317DB73e77d453b1B8d04550c44D10e981C8e);
-    IERC20 public constant cadc = IERC20(0xcaDC0acd4B445166f12d2C07EAc6E2544FbE2Eef);
+    IOracle public constant oracle = IOracle(0xb49f677943BC038e9857d61E7d053CaA2C1734C1);
+    IERC20 public constant eurs = IERC20(0xdB25f211AB05b1c97D595516F45794528a807ad8);
 
     // solhint-disable-next-line
     constructor() {}
@@ -35,44 +35,44 @@ contract CadcToUsdAssimilator is IAssimilator {
         return uint256(oracle.latestAnswer());
     }
 
-    // takes raw cadc amount, transfers it in, calculates corresponding numeraire amount and returns it
+    // takes raw eurs amount, transfers it in, calculates corresponding numeraire amount and returns it
     function intakeRawAndGetBalance(uint256 _amount) public override returns (int128 amount_, int128 balance_) {
-        bool _transferSuccess = cadc.transferFrom(msg.sender, address(this), _amount);
+        bool _transferSuccess = eurs.transferFrom(msg.sender, address(this), _amount);
 
-        require(_transferSuccess, "Curve/CADC-transfer-from-failed");
+        require(_transferSuccess, "Curve/EURS-transfer-from-failed");
 
-        uint256 _balance = cadc.balanceOf(address(this));
+        uint256 _balance = eurs.balanceOf(address(this));
 
         uint256 _rate = getRate();
 
-        balance_ = _balance.divu(1e18);
+        balance_ = _balance.divu(1e2);
 
-        amount_ = ((_amount * _rate) / 1e8).divu(1e18);
+        amount_ = ((_amount * _rate) / 1e8).divu(1e2);
     }
 
-    // takes raw cadc amount, transfers it in, calculates corresponding numeraire amount and returns it
+    // takes raw eurs amount, transfers it in, calculates corresponding numeraire amount and returns it
     function intakeRaw(uint256 _amount) public override returns (int128 amount_) {
-        bool _transferSuccess = cadc.transferFrom(msg.sender, address(this), _amount);
+        bool _transferSuccess = eurs.transferFrom(msg.sender, address(this), _amount);
 
-        require(_transferSuccess, "Curve/cadc-transfer-from-failed");
+        require(_transferSuccess, "Curve/eurs-transfer-from-failed");
 
         uint256 _rate = getRate();
 
-        amount_ = ((_amount * _rate) / 1e8).divu(1e18);
+        amount_ = ((_amount * _rate) / 1e8).divu(1e2);
     }
 
     // takes a numeraire amount, calculates the raw amount of xsgd, transfers it in and returns the corresponding raw amount
     function intakeNumeraire(int128 _amount) public override returns (uint256 amount_) {
         uint256 _rate = getRate();
 
-        amount_ = (_amount.mulu(1e18) * 1e8) / _rate;
+        amount_ = (_amount.mulu(1e2) * 1e8) / _rate;
 
-        bool _transferSuccess = cadc.transferFrom(msg.sender, address(this), amount_);
+        bool _transferSuccess = eurs.transferFrom(msg.sender, address(this), amount_);
 
-        require(_transferSuccess, "Curve/CADC-transfer-from-failed");
+        require(_transferSuccess, "Curve/EURS-transfer-from-failed");
     }
 
-    // takes a raw amount of cadc and transfers it out, returns numeraire value of the raw amount
+    // takes a raw amount of eurs and transfers it out, returns numeraire value of the raw amount
     function outputRawAndGetBalance(address _dst, uint256 _amount)
         public
         override
@@ -80,64 +80,64 @@ contract CadcToUsdAssimilator is IAssimilator {
     {
         uint256 _rate = getRate();
 
-        uint256 _cadcAmount = ((_amount) * _rate) / 1e8;
+        uint256 _eursAmount = ((_amount) * _rate) / 1e8;
 
-        bool _transferSuccess = cadc.transfer(_dst, _cadcAmount);
+        bool _transferSuccess = eurs.transfer(_dst, _eursAmount);
 
-        require(_transferSuccess, "Curve/CADC-transfer-failed");
+        require(_transferSuccess, "Curve/EURS-transfer-failed");
 
-        uint256 _balance = cadc.balanceOf(address(this));
+        uint256 _balance = eurs.balanceOf(address(this));
 
-        amount_ = _cadcAmount.divu(1e18);
+        amount_ = _eursAmount.divu(1e2);
 
-        balance_ = _balance.divu(1e18);
+        balance_ = _balance.divu(1e2);
     }
 
     // takes a raw amount of xsgd and transfers it out, returns numeraire value of the raw amount
     function outputRaw(address _dst, uint256 _amount) public override returns (int128 amount_) {
         uint256 _rate = getRate();
 
-        uint256 _cadcAmount = (_amount * _rate) / 1e8;
+        uint256 _eursAmount = (_amount * _rate) / 1e8;
 
-        bool _transferSuccess = cadc.transfer(_dst, _cadcAmount);
+        bool _transferSuccess = eurs.transfer(_dst, _eursAmount);
 
-        require(_transferSuccess, "Curve/CADC-transfer-failed");
+        require(_transferSuccess, "Curve/EURS-transfer-failed");
 
-        amount_ = _cadcAmount.divu(1e18);
+        amount_ = _eursAmount.divu(1e2);
     }
 
     // takes a numeraire value of xsgd, figures out the raw amount, transfers raw amount out, and returns raw amount
     function outputNumeraire(address _dst, int128 _amount) public override returns (uint256 amount_) {
         uint256 _rate = getRate();
 
-        amount_ = (_amount.mulu(1e18) * 1e8) / _rate;
+        amount_ = (_amount.mulu(1e2) * 1e8) / _rate;
 
-        bool _transferSuccess = cadc.transfer(_dst, amount_);
+        bool _transferSuccess = eurs.transfer(_dst, amount_);
 
-        require(_transferSuccess, "Curve/CADC-transfer-failed");
+        require(_transferSuccess, "Curve/EURS-transfer-failed");
     }
 
     // takes a numeraire amount and returns the raw amount
     function viewRawAmount(int128 _amount) public view override returns (uint256 amount_) {
         uint256 _rate = getRate();
 
-        amount_ = (_amount.mulu(1e18) * 1e8) / _rate;
+        amount_ = (_amount.mulu(1e2) * 1e8) / _rate;
     }
 
     // takes a raw amount and returns the numeraire amount
     function viewNumeraireAmount(uint256 _amount) public view override returns (int128 amount_) {
         uint256 _rate = getRate();
 
-        amount_ = ((_amount * _rate) / 1e8).divu(1e18);
+        amount_ = ((_amount * _rate) / 1e8).divu(1e2);
     }
 
     // views the numeraire value of the current balance of the reserve, in this case xsgd
     function viewNumeraireBalance(address _addr) public view override returns (int128 balance_) {
-        uint256 _balance = cadc.balanceOf(_addr);
+        uint256 _balance = eurs.balanceOf(_addr);
 
         if (_balance == 0) return ABDKMath64x64.fromUInt(0);
 
-        balance_ = _balance.divu(1e18);
+        balance_ = _balance.divu(1e2);
     }
 
     // views the numeraire value of the current balance of the reserve, in this case xsgd
@@ -149,10 +149,10 @@ contract CadcToUsdAssimilator is IAssimilator {
     {
         uint256 _rate = getRate();
 
-        amount_ = ((_amount * _rate) / 1e8).divu(1e18);
+        amount_ = ((_amount * _rate) / 1e8).divu(1e2);
 
-        uint256 _balance = cadc.balanceOf(_addr);
+        uint256 _balance = eurs.balanceOf(_addr);
 
-        balance_ = _balance.divu(1e18);
+        balance_ = _balance.divu(1e2);
     }
 }

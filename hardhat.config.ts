@@ -25,6 +25,9 @@ const config: HardhatUserConfig = {
       blockGasLimit: 20000000,
     },
   },
+  mocha: {
+    timeout: 60000,
+  },
 };
 
 export default config;
