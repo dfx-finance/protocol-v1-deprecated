@@ -20,3 +20,18 @@ export const TOKENS = {
     decimals: 6,
   },
 };
+
+export const ORACLES = {
+  CAD: {
+    address: "0xa34317DB73e77d453b1B8d04550c44D10e981C8e",
+    decimals: 8,
+  },
+  EURS: {
+    address: "0xb49f677943BC038e9857d61E7d053CaA2C1734C1",
+    decimals: 8,
+  },
+  XSGD: {
+    address: "0xe25277fF4bbF9081C75Ab0EB13B4A13a721f3E13",
+    decimals: 8,
+  },
+};

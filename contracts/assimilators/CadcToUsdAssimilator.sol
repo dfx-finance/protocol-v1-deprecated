@@ -16,6 +16,7 @@
 pragma solidity ^0.7.3;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 
 import "../lib/ABDKMath64x64.sol";
 import "../interfaces/IAssimilator.sol";
@@ -25,8 +26,12 @@ contract CadcToUsdAssimilator is IAssimilator {
     using ABDKMath64x64 for int128;
     using ABDKMath64x64 for uint256;
 
+    using SafeMath for uint256;
+
     IOracle public constant oracle = IOracle(0xa34317DB73e77d453b1B8d04550c44D10e981C8e);
     IERC20 public constant cadc = IERC20(0xcaDC0acd4B445166f12d2C07EAc6E2544FbE2Eef);
+
+    IERC20 private constant usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
 
     // solhint-disable-next-line
     constructor() {}
@@ -133,11 +138,30 @@ contract CadcToUsdAssimilator is IAssimilator {
 
     // views the numeraire value of the current balance of the reserve, in this case xsgd
     function viewNumeraireBalance(address _addr) public view override returns (int128 balance_) {
+        uint256 _rate = getRate();
+
         uint256 _balance = cadc.balanceOf(_addr);
 
         if (_balance == 0) return ABDKMath64x64.fromUInt(0);
 
-        balance_ = _balance.divu(1e18);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e18);
+    }
+
+    // views the numeraire value of the current balance of the reserve, in this case cadc
+    // instead of calculating with chainlink's "rate" it'll be determined by the existing
+    // token ratio
+    // Mainly to protect LP from losing
+    function viewNumeraireBalanceLPRatio(address _addr) public view override returns (int128 balance_) {
+        uint256 _cadcBal = cadc.balanceOf(_addr);
+
+        if (_cadcBal == 0) return ABDKMath64x64.fromUInt(0);
+
+        uint256 _usdcBal = usdc.balanceOf(_addr);
+
+        // 1e30 = (1e18-1e6) (usdc decimals) + 1e18 (cadc decimals)
+        uint256 _ratio = _usdcBal.mul(1e30).div(_cadcBal);
+
+        balance_ = (_cadcBal.mul(_ratio)).divu(1e18);
     }
 
     // views the numeraire value of the current balance of the reserve, in this case xsgd

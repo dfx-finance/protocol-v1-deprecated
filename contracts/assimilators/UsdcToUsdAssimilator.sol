@@ -103,6 +103,14 @@ contract UsdcToUsdAssimilator is IAssimilator {
         balance_ = _balance.divu(1e6);
     }
 
+    // views the numeraire value of the current balance of the reserve, in this case xsgd
+    // instead of calculating with chainlink's "rate" it'll be determined by the existing
+    // token ratio
+    // Mainly to protect LP from losing
+    function viewNumeraireBalanceLPRatio(address _addr) public view override returns (int128 balance_) {
+        return viewNumeraireBalance(_addr);
+    }
+
     function viewNumeraireAmountAndBalance(address _addr, uint256 _amount)
         public
         view

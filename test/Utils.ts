@@ -1,7 +1,8 @@
 import { ethers } from "hardhat";
 import { TOKENS } from "./Constants";
-import { BigNumberish, ContractReceipt } from "ethers";
+import { BigNumberish, ContractReceipt, Signer } from "ethers";
 
+import EACAggregatorProxyABI from "./abi/EACAggregatorProxy.json";
 import EURSABI from "./abi/EURSABI.json";
 import FiatTokenV1ABI from "./abi/FiatTokenV1ABI.json";
 import FiatTokenV2ABI from "./abi/FiatTokenV2ABI.json";
@@ -17,7 +18,7 @@ const sendETH = async (address, amount = 0.1) => {
   });
 };
 
-const unlockAccountAndGetSigner = async address => {
+export const unlockAccountAndGetSigner = async (address: string): Promise<Signer> => {
   await provider.send("hardhat_impersonateAccount", [address]);
 
   return provider.getSigner(address);
@@ -78,6 +79,21 @@ export const mintEURS = async (recipient: string, amount: BigNumberish | number)
   // Function is payable so need value: 0
   await EURS.createTokens(amount, { value: 0 });
   await EURS.transfer(recipient, amount);
+};
+
+export const updateOracleAnswer = async (oracleAddress: string, amount: BigNumberish | number): Promise<void> => {
+  let oracle = await ethers.getContractAt(EACAggregatorProxyABI, oracleAddress);
+  const owner = await unlockAccountAndGetSigner(await oracle.owner());
+  oracle = oracle.connect(owner);
+  await sendETH(await owner.getAddress(), 0.1);
+
+  const NewAggregator = await ethers.getContractFactory("MockAggregator", owner);
+  const aggregator = await NewAggregator.deploy();
+  await aggregator.deployed();
+
+  aggregator.setAnswer(amount);
+  await oracle.proposeAggregator(aggregator.address);
+  await oracle.confirmAggregator(aggregator.address);
 };
 
 export const getLatestBlockTime = async (): Promise<number> => {

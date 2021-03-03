@@ -16,6 +16,7 @@
 pragma solidity ^0.7.3;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 
 import "../lib/ABDKMath64x64.sol";
 import "../interfaces/IAssimilator.sol";
@@ -24,6 +25,10 @@ import "../interfaces/IOracle.sol";
 contract XsgdToUsdAssimilator is IAssimilator {
     using ABDKMath64x64 for int128;
     using ABDKMath64x64 for uint256;
+
+    using SafeMath for uint256;
+
+    IERC20 private constant usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
 
     IOracle public constant oracle = IOracle(0xe25277fF4bbF9081C75Ab0EB13B4A13a721f3E13);
     IERC20 public constant xsgd = IERC20(0x70e8dE73cE538DA2bEEd35d14187F6959a8ecA96);
@@ -138,6 +143,23 @@ contract XsgdToUsdAssimilator is IAssimilator {
         if (_balance == 0) return ABDKMath64x64.fromUInt(0);
 
         balance_ = _balance.divu(1e6);
+    }
+
+    // views the numeraire value of the current balance of the reserve, in this case cadc
+    // instead of calculating with chainlink's "rate" it'll be determined by the existing
+    // token ratio
+    // Mainly to protect LP from losing
+    function viewNumeraireBalanceLPRatio(address _addr) public view override returns (int128 balance_) {
+        uint256 _xsgdBal = xsgd.balanceOf(_addr);
+
+        if (_xsgdBal == 0) return ABDKMath64x64.fromUInt(0);
+
+        uint256 _usdcBal = usdc.balanceOf(_addr);
+
+        // 1e30 = (1e18-1e6) (xsgd decimals) + 1e18 (cadc decimals)
+        uint256 _ratio = _usdcBal.mul(1e30).div(_xsgdBal);
+
+        balance_ = (_xsgdBal.mul(_ratio)).divu(1e18);
     }
 
     // views the numeraire value of the current balance of the reserve, in this case xsgd

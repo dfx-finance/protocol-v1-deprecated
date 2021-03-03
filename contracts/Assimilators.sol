@@ -57,6 +57,10 @@ library Assimilators {
         bal_ = IAssimilator(_assim).viewNumeraireBalance(address(this));
     }
 
+    function viewNumeraireBalanceLPRatio(address _assim) internal view returns (int128 bal_) {
+        bal_ = IAssimilator(_assim).viewNumeraireBalanceLPRatio(address(this));
+    }
+
     function intakeRaw(address _assim, uint256 _amt) internal returns (int128 amt_) {
         bytes memory data = abi.encodeWithSelector(iAsmltr.intakeRaw.selector, _amt);
 

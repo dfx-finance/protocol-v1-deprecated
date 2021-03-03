@@ -1,13 +1,21 @@
 import { ethers } from "hardhat";
-import { Signer, Contract, ContractFactory } from "ethers";
-import { TOKENS } from "./Constants";
-import { mintCADC, mintUSDC, mintEURS, mintXSGD, getCurveAddressFromTxRecp, getFutureTime } from "./Utils";
+import { Signer, Contract, ContractFactory, BigNumber } from "ethers";
+import { ORACLES, TOKENS } from "./Constants";
+import {
+  mintCADC,
+  mintUSDC,
+  mintEURS,
+  mintXSGD,
+  getCurveAddressFromTxRecp,
+  getFutureTime,
+  updateOracleAnswer,
+} from "./Utils";
 
 const { parseUnits, formatUnits } = ethers.utils;
 
 describe("Curve", function () {
-  let [user]: Signer[] = [];
-  let [userAddress]: string[] = [];
+  let [user1, user2]: Signer[] = [];
+  let [user1Address, user2Address]: string[] = [];
 
   let CurvesLib: ContractFactory;
   let OrchestratorLib: ContractFactory;
@@ -53,8 +61,8 @@ describe("Curve", function () {
   };
 
   before(async function () {
-    [user] = await ethers.getSigners();
-    userAddress = await user.getAddress();
+    [user1, user2] = await ethers.getSigners();
+    [user1Address, user2Address] = await Promise.all([user1, user2].map(x => x.getAddress()));
 
     CurvesLib = await ethers.getContractFactory("Curves");
     OrchestratorLib = await ethers.getContractFactory("Orchestrator");
@@ -104,6 +112,95 @@ describe("Curve", function () {
     xsgd = await ethers.getContractAt("ERC20", TOKENS.XSGD.address);
   });
 
+  it.only("curve logic", async function () {
+    const assets = [
+      usdc.address,
+      usdcToUsdAssimilator.address,
+      usdc.address,
+      usdcToUsdAssimilator.address,
+      usdc.address,
+
+      cadc.address,
+      cadcToUsdAssimilator.address,
+      cadc.address,
+      cadcToUsdAssimilator.address,
+      cadc.address,
+    ];
+
+    const assetWeights = [parseUnits("0.5"), parseUnits("0.5")];
+    const derivativeAssimilators = [usdcToUsdAssimilator.address, cadcToUsdAssimilator.address];
+
+    let tx = await curveFactory.newCurve(assets, assetWeights, derivativeAssimilators);
+    const txRecp = await tx.wait();
+
+    // Get curve address from logs
+    const curveAddress = getCurveAddressFromTxRecp(txRecp);
+    const curve = await ethers.getContractAt("Curve", curveAddress);
+
+    // Set params
+    tx = await curve.setParams(
+      parseUnits("0.5"), // Alpha
+      parseUnits("0.35"), // Beta
+      parseUnits("0.15"), // Max
+      parseUnits("2", 14), // Epsilon
+      parseUnits("0.2"), // Lambda
+    );
+    await tx.wait();
+
+    // Mint tokens and approve
+    await mintUSDC(user1Address, parseUnits("1000000", TOKENS.USDC.decimals));
+    await mintCADC(user1Address, parseUnits("1000000", TOKENS.CADC.decimals));
+
+    await mintUSDC(user2Address, parseUnits("1000000", TOKENS.USDC.decimals));
+    await mintCADC(user2Address, parseUnits("1000000", TOKENS.CADC.decimals));
+
+    await usdc.approve(curveAddress, ethers.constants.MaxUint256);
+    await cadc.approve(curveAddress, ethers.constants.MaxUint256);
+
+    await usdc.connect(user2).approve(curveAddress, ethers.constants.MaxUint256);
+    await cadc.connect(user2).approve(curveAddress, ethers.constants.MaxUint256);
+
+    // Proportional Supply
+    tx = await curve.proportionalDeposit(parseUnits("200000"), await getFutureTime());
+    await tx.wait();
+    tx = await curve.connect(user2).proportionalDeposit(parseUnits("200000"), await getFutureTime());
+    await tx.wait();
+
+    // Swap
+    console.log("Swapping ...");
+    tx = await curve.originSwap(
+      cadc.address,
+      usdc.address,
+      parseUnits("1000", TOKENS.CADC.decimals),
+      0,
+      await getFutureTime(),
+    );
+    await tx.wait();
+
+    // Update oracle
+    await updateOracleAnswer(ORACLES.CAD.address, parseUnits("0.93", ORACLES.CAD.decimals));
+
+    console.log("User 1");
+    await logTokenBalances(user1Address);
+    console.log("User 2");
+    await logTokenBalances(user2Address);
+    console.log("Curve");
+    await logTokenBalances(curveAddress);
+
+    // Proportional withdraw
+    const curveLpToken = await ethers.getContractAt("ERC20", curveAddress);
+    console.log("Withdrawing...");
+    await curve.connect(user1).proportionalWithdraw(await curveLpToken.balanceOf(user1Address), await getFutureTime());
+    await curve.connect(user2).proportionalWithdraw(await curveLpToken.balanceOf(user2Address), await getFutureTime());
+
+    console.log("User 1");
+    await logTokenBalances(user1Address);
+    console.log("User 2");
+    await logTokenBalances(user2Address);
+    console.log("Curve");
+    await logTokenBalances(curveAddress);
+  });
+
   it("new curve", async function () {
     const assets = [
       usdc.address,
@@ -118,20 +215,20 @@ describe("Curve", function () {
       cadcToUsdAssimilator.address,
       cadc.address,
 
-      eurs.address,
-      eursToUsdAssimilator.address,
-      eurs.address,
-      eursToUsdAssimilator.address,
-      eurs.address,
+      // eurs.address,
+      // eursToUsdAssimilator.address,
+      // eurs.address,
+      // eursToUsdAssimilator.address,
+      // eurs.address,
 
-      xsgd.address,
-      xsgdToUsdAssimilator.address,
-      xsgd.address,
-      xsgdToUsdAssimilator.address,
-      xsgd.address,
+      // xsgd.address,
+      // xsgdToUsdAssimilator.address,
+      // xsgd.address,
+      // xsgdToUsdAssimilator.address,
+      // xsgd.address,
     ];
-    const assetWeights = [parseUnits("0.25"), parseUnits("0.25"), parseUnits("0.25"), parseUnits("0.25")];
-    // const assetWeights = [parseUnits("0.5"), parseUnits("0.5")];
+    // const assetWeights = [parseUnits("0.25"), parseUnits("0.25"), parseUnits("0.25"), parseUnits("0.25")];
+    const assetWeights = [parseUnits("0.5"), parseUnits("0.5")];
     const derivativeAssimilators = [
       usdcToUsdAssimilator.address,
       cadcToUsdAssimilator.address,
@@ -147,10 +244,10 @@ describe("Curve", function () {
     const curve = await ethers.getContractAt("Curve", curveAddress);
 
     // Mint tokens and approve
-    await mintUSDC(userAddress, parseUnits("100000", TOKENS.USDC.decimals));
-    await mintCADC(userAddress, parseUnits("100000", TOKENS.CADC.decimals));
-    await mintXSGD(userAddress, parseUnits("100000", TOKENS.XSGD.decimals));
-    await mintEURS(userAddress, parseUnits("100000", TOKENS.EURS.decimals));
+    await mintUSDC(user1Address, parseUnits("1000000", TOKENS.USDC.decimals));
+    await mintCADC(user1Address, parseUnits("1000000", TOKENS.CADC.decimals));
+    await mintXSGD(user1Address, parseUnits("1000000", TOKENS.XSGD.decimals));
+    await mintEURS(user1Address, parseUnits("1000000", TOKENS.EURS.decimals));
 
     await usdc.approve(curveAddress, ethers.constants.MaxUint256);
     await cadc.approve(curveAddress, ethers.constants.MaxUint256);
@@ -160,9 +257,9 @@ describe("Curve", function () {
     // Set params
     tx = await curve.setParams(
       parseUnits("0.5"), // Alpha
-      parseUnits("0.25"), // Beta
-      parseUnits("0.05"), // Max
-      parseUnits("2.5", 14), // Epsilon
+      parseUnits("0.35"), // Beta
+      parseUnits("0.15"), // Max
+      parseUnits("2", 14), // Epsilon
       parseUnits("0.2"), // Lambda
     );
     await tx.wait();
@@ -178,8 +275,8 @@ describe("Curve", function () {
     console.log("Swapping ...");
     tx = await curve.originSwap(
       cadc.address,
-      eurs.address,
-      parseUnits("1", TOKENS.CADC.decimals),
+      usdc.address,
+      parseUnits("1000", TOKENS.CADC.decimals),
       0,
       await getFutureTime(),
     );
@@ -187,33 +284,24 @@ describe("Curve", function () {
 
     await logTokenBalances(curveAddress);
 
-    console.log("View origin swap");
-    let amount = await curve.viewOriginSwap(cadc.address, eurs.address, parseUnits("1", TOKENS.CADC.decimals));
-    console.log(`1 CADC -> ${formatUnits(amount, TOKENS.EURS.decimals)} EURS`);
-    amount = await curve.viewOriginSwap(cadc.address, xsgd.address, parseUnits("1", TOKENS.CADC.decimals));
-    console.log(`1 CADC -> ${formatUnits(amount, TOKENS.XSGD.decimals)} XSGD`);
-    amount = await curve.viewOriginSwap(cadc.address, usdc.address, parseUnits("1", TOKENS.CADC.decimals));
-    console.log(`1 CADC -> ${formatUnits(amount, TOKENS.USDC.decimals)} USDC`);
+    // Update oracle
+    // await updateOracleAnswer(ORACLES.CAD.address, parseUnits("0.90", 8));
 
-    amount = await curve.viewOriginSwap(eurs.address, cadc.address, parseUnits("1", TOKENS.EURS.decimals));
-    console.log(`1 EURS -> ${formatUnits(amount, TOKENS.CADC.decimals)} CADC`);
-    amount = await curve.viewOriginSwap(eurs.address, xsgd.address, parseUnits("1", TOKENS.EURS.decimals));
-    console.log(`1 EURS -> ${formatUnits(amount, TOKENS.XSGD.decimals)} XSGD`);
-    amount = await curve.viewOriginSwap(eurs.address, usdc.address, parseUnits("1", TOKENS.EURS.decimals));
-    console.log(`1 EURS -> ${formatUnits(amount, TOKENS.USDC.decimals)} USDC`);
+    // Proportional deposit
+    // tx = await curve.proportionalDeposit(parseUnits("200000"), await getFutureTime());
+    // await tx.wait();
 
-    amount = await curve.viewOriginSwap(xsgd.address, cadc.address, parseUnits("1", TOKENS.XSGD.decimals));
-    console.log(`1 XSGD -> ${formatUnits(amount, TOKENS.CADC.decimals)} CADC`);
-    amount = await curve.viewOriginSwap(xsgd.address, eurs.address, parseUnits("1", TOKENS.XSGD.decimals));
-    console.log(`1 XSGD -> ${formatUnits(amount, TOKENS.EURS.decimals)} EURS`);
-    amount = await curve.viewOriginSwap(xsgd.address, usdc.address, parseUnits("1", TOKENS.XSGD.decimals));
-    console.log(`1 XSGD -> ${formatUnits(amount, TOKENS.USDC.decimals)} USDC`);
+    // Proportional withdraw
+    console.log("Withdrawing...");
+    const curveLpToken = await ethers.getContractAt("ERC20", curveAddress);
+    const curveLpTokenBal = await curveLpToken.balanceOf(user1Address);
+    console.log("curveLpTokenBal", formatUnits(curveLpTokenBal, 18));
+    await curve.proportionalWithdraw(
+      curveLpTokenBal.mul(BigNumber.from(10)).div(BigNumber.from(100)),
+      await getFutureTime(),
+    );
 
-    amount = await curve.viewOriginSwap(usdc.address, cadc.address, parseUnits("1", TOKENS.USDC.decimals));
-    console.log(`1 USDC -> ${formatUnits(amount, TOKENS.CADC.decimals)} CADC`);
-    amount = await curve.viewOriginSwap(usdc.address, eurs.address, parseUnits("1", TOKENS.USDC.decimals));
-    console.log(`1 USDC -> ${formatUnits(amount, TOKENS.EURS.decimals)} EURS`);
-    amount = await curve.viewOriginSwap(usdc.address, xsgd.address, parseUnits("1", TOKENS.USDC.decimals));
-    console.log(`1 USDC -> ${formatUnits(amount, TOKENS.XSGD.decimals)} XSGD`);
+    // Withdraw
+    await logTokenBalances(curveAddress);
   });
 });

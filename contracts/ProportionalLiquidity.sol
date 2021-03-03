@@ -9,6 +9,8 @@ import "./Storage.sol";
 import "./lib/UnsafeMath64x64.sol";
 import "./lib/ABDKMath64x64.sol";
 
+import "hardhat/console.sol";
+
 import "./CurveMath.sol";
 
 library ProportionalLiquidity {
@@ -70,7 +72,7 @@ library ProportionalLiquidity {
 
         uint256 _length = curve.assets.length;
 
-        (int128 _oGLiq, int128[] memory _oBals) = getGrossLiquidityAndBalances(curve);
+        (int128 _oGLiq, int128[] memory _oBals) = getGrossLiquidityAndBalancesForDeposit(curve);
 
         uint256[] memory deposits_ = new uint256[](_length);
 
@@ -148,6 +150,25 @@ library ProportionalLiquidity {
         }
 
         return withdrawals_;
+    }
+
+    function getGrossLiquidityAndBalancesForDeposit(Storage.Curve storage curve)
+        internal
+        view
+        returns (int128 grossLiquidity_, int128[] memory)
+    {
+        uint256 _length = curve.assets.length;
+
+        int128[] memory balances_ = new int128[](_length);
+
+        for (uint256 i = 0; i < _length; i++) {
+            int128 _bal = Assimilators.viewNumeraireBalanceLPRatio(curve.assets[i].addr);
+
+            balances_[i] = _bal;
+            grossLiquidity_ += _bal;
+        }
+
+        return (grossLiquidity_, balances_);
     }
 
     function getGrossLiquidityAndBalances(Storage.Curve storage curve)
