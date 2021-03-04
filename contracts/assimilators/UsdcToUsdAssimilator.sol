@@ -29,7 +29,7 @@ contract UsdcToUsdAssimilator is IAssimilator {
     // solhint-disable-next-line
     constructor() {}
 
-    function intakeRawAndGetBalance(uint256 _amount) public override returns (int128 amount_, int128 balance_) {
+    function intakeRawAndGetBalance(uint256 _amount) external override returns (int128 amount_, int128 balance_) {
         bool _success = usdc.transferFrom(msg.sender, address(this), _amount);
 
         require(_success, "Curve/USDC-transfer-from-failed");
@@ -41,7 +41,7 @@ contract UsdcToUsdAssimilator is IAssimilator {
         balance_ = _balance.divu(1e6);
     }
 
-    function intakeRaw(uint256 _amount) public override returns (int128 amount_) {
+    function intakeRaw(uint256 _amount) external override returns (int128 amount_) {
         bool _success = usdc.transferFrom(msg.sender, address(this), _amount);
 
         require(_success, "Curve/USDC-transfer-from-failed");
@@ -49,7 +49,7 @@ contract UsdcToUsdAssimilator is IAssimilator {
         amount_ = _amount.divu(1e6);
     }
 
-    function intakeNumeraire(int128 _amount) public override returns (uint256 amount_) {
+    function intakeNumeraire(int128 _amount) external override returns (uint256 amount_) {
         amount_ = _amount.mulu(1e6);
 
         bool _success = usdc.transferFrom(msg.sender, address(this), amount_);
@@ -58,7 +58,7 @@ contract UsdcToUsdAssimilator is IAssimilator {
     }
 
     function outputRawAndGetBalance(address _dst, uint256 _amount)
-        public
+        external
         override
         returns (int128 amount_, int128 balance_)
     {
@@ -73,7 +73,7 @@ contract UsdcToUsdAssimilator is IAssimilator {
         balance_ = _balance.divu(1e6);
     }
 
-    function outputRaw(address _dst, uint256 _amount) public override returns (int128 amount_) {
+    function outputRaw(address _dst, uint256 _amount) external override returns (int128 amount_) {
         bool _success = usdc.transfer(_dst, _amount);
 
         require(_success, "Curve/USDC-transfer-failed");
@@ -81,7 +81,7 @@ contract UsdcToUsdAssimilator is IAssimilator {
         amount_ = _amount.divu(1e6);
     }
 
-    function outputNumeraire(address _dst, int128 _amount) public override returns (uint256 amount_) {
+    function outputNumeraire(address _dst, int128 _amount) external override returns (uint256 amount_) {
         amount_ = _amount.mulu(1e6);
 
         bool _success = usdc.transfer(_dst, amount_);
@@ -89,11 +89,11 @@ contract UsdcToUsdAssimilator is IAssimilator {
         require(_success, "Curve/USDC-transfer-failed");
     }
 
-    function viewRawAmount(int128 _amount) public pure override returns (uint256 amount_) {
+    function viewRawAmount(int128 _amount) external pure override returns (uint256 amount_) {
         amount_ = _amount.mulu(1e6);
     }
 
-    function viewNumeraireAmount(uint256 _amount) public pure override returns (int128 amount_) {
+    function viewNumeraireAmount(uint256 _amount) external pure override returns (int128 amount_) {
         amount_ = _amount.divu(1e6);
     }
 
@@ -107,12 +107,12 @@ contract UsdcToUsdAssimilator is IAssimilator {
     // instead of calculating with chainlink's "rate" it'll be determined by the existing
     // token ratio
     // Mainly to protect LP from losing
-    function viewNumeraireBalanceLPRatio(address _addr) public view override returns (int128 balance_) {
+    function viewNumeraireBalanceLPRatio(address _addr) external view override returns (int128 balance_) {
         return viewNumeraireBalance(_addr);
     }
 
     function viewNumeraireAmountAndBalance(address _addr, uint256 _amount)
-        public
+        external
         view
         override
         returns (int128 amount_, int128 balance_)

@@ -30,8 +30,8 @@ contract EursToUsdAssimilator is IAssimilator {
 
     IERC20 private constant usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
 
-    IOracle public constant oracle = IOracle(0xb49f677943BC038e9857d61E7d053CaA2C1734C1);
-    IERC20 public constant eurs = IERC20(0xdB25f211AB05b1c97D595516F45794528a807ad8);
+    IOracle private constant oracle = IOracle(0xb49f677943BC038e9857d61E7d053CaA2C1734C1);
+    IERC20 private constant eurs = IERC20(0xdB25f211AB05b1c97D595516F45794528a807ad8);
 
     // solhint-disable-next-line
     constructor() {}
@@ -41,7 +41,7 @@ contract EursToUsdAssimilator is IAssimilator {
     }
 
     // takes raw eurs amount, transfers it in, calculates corresponding numeraire amount and returns it
-    function intakeRawAndGetBalance(uint256 _amount) public override returns (int128 amount_, int128 balance_) {
+    function intakeRawAndGetBalance(uint256 _amount) external override returns (int128 amount_, int128 balance_) {
         bool _transferSuccess = eurs.transferFrom(msg.sender, address(this), _amount);
 
         require(_transferSuccess, "Curve/EURS-transfer-from-failed");
@@ -56,7 +56,7 @@ contract EursToUsdAssimilator is IAssimilator {
     }
 
     // takes raw eurs amount, transfers it in, calculates corresponding numeraire amount and returns it
-    function intakeRaw(uint256 _amount) public override returns (int128 amount_) {
+    function intakeRaw(uint256 _amount) external override returns (int128 amount_) {
         bool _transferSuccess = eurs.transferFrom(msg.sender, address(this), _amount);
 
         require(_transferSuccess, "Curve/eurs-transfer-from-failed");
@@ -67,7 +67,7 @@ contract EursToUsdAssimilator is IAssimilator {
     }
 
     // takes a numeraire amount, calculates the raw amount of eurs, transfers it in and returns the corresponding raw amount
-    function intakeNumeraire(int128 _amount) public override returns (uint256 amount_) {
+    function intakeNumeraire(int128 _amount) external override returns (uint256 amount_) {
         uint256 _rate = getRate();
 
         amount_ = (_amount.mulu(1e2) * 1e8) / _rate;
@@ -79,7 +79,7 @@ contract EursToUsdAssimilator is IAssimilator {
 
     // takes a raw amount of eurs and transfers it out, returns numeraire value of the raw amount
     function outputRawAndGetBalance(address _dst, uint256 _amount)
-        public
+        external
         override
         returns (int128 amount_, int128 balance_)
     {
@@ -99,7 +99,7 @@ contract EursToUsdAssimilator is IAssimilator {
     }
 
     // takes a raw amount of eurs and transfers it out, returns numeraire value of the raw amount
-    function outputRaw(address _dst, uint256 _amount) public override returns (int128 amount_) {
+    function outputRaw(address _dst, uint256 _amount) external override returns (int128 amount_) {
         uint256 _rate = getRate();
 
         uint256 _eursAmount = (_amount * _rate) / 1e8;
@@ -112,7 +112,7 @@ contract EursToUsdAssimilator is IAssimilator {
     }
 
     // takes a numeraire value of eurs, figures out the raw amount, transfers raw amount out, and returns raw amount
-    function outputNumeraire(address _dst, int128 _amount) public override returns (uint256 amount_) {
+    function outputNumeraire(address _dst, int128 _amount) external override returns (uint256 amount_) {
         uint256 _rate = getRate();
 
         amount_ = (_amount.mulu(1e2) * 1e8) / _rate;
@@ -123,31 +123,31 @@ contract EursToUsdAssimilator is IAssimilator {
     }
 
     // takes a numeraire amount and returns the raw amount
-    function viewRawAmount(int128 _amount) public view override returns (uint256 amount_) {
+    function viewRawAmount(int128 _amount) external view override returns (uint256 amount_) {
         uint256 _rate = getRate();
 
         amount_ = (_amount.mulu(1e2) * 1e8) / _rate;
     }
 
     // takes a raw amount and returns the numeraire amount
-    function viewNumeraireAmount(uint256 _amount) public view override returns (int128 amount_) {
+    function viewNumeraireAmount(uint256 _amount) external view override returns (int128 amount_) {
         uint256 _rate = getRate();
 
         amount_ = ((_amount * _rate) / 1e8).divu(1e2);
     }
 
     // views the numeraire value of the current balance of the reserve, in this case eurs
-    function viewNumeraireBalance(address _addr) public view override returns (int128 balance_) {
+    function viewNumeraireBalance(address _addr) external view override returns (int128 balance_) {
         uint256 _balance = eurs.balanceOf(_addr);
 
-        if (_balance == 0) return ABDKMath64x64.fromUInt(0);
+        if (_balance <= 0) return ABDKMath64x64.fromUInt(0);
 
         balance_ = _balance.divu(1e2);
     }
 
     // views the numeraire value of the current balance of the reserve, in this case eurs
     function viewNumeraireAmountAndBalance(address _addr, uint256 _amount)
-        public
+        external
         view
         override
         returns (int128 amount_, int128 balance_)
@@ -164,10 +164,10 @@ contract EursToUsdAssimilator is IAssimilator {
     // views the numeraire value of the current balance of the reserve, in this case cadc
     // instead of calculating with chainlink's "rate" it'll be determined by the existing
     // token ratio. This is in here to prevent LPs from losing out on future oracle price updates
-    function viewNumeraireBalanceLPRatio(address _addr) public view override returns (int128 balance_) {
+    function viewNumeraireBalanceLPRatio(address _addr) external view override returns (int128 balance_) {
         uint256 _eursBal = eurs.balanceOf(_addr);
 
-        if (_eursBal == 0) return ABDKMath64x64.fromUInt(0);
+        if (_eursBal <= 0) return ABDKMath64x64.fromUInt(0);
 
         uint256 _usdcBal = usdc.balanceOf(_addr);
 

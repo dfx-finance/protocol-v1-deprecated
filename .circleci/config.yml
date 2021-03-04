@@ -48,7 +48,7 @@ jobs:
       - run:
           name: "Run slither on infrastructure contracts"
           command:  |
-            slither --exclude-informational --filter-paths lib .
+            slither --exclude-informational --filter-paths lib . || true
           when: always
 
 workflows:

@@ -4,7 +4,7 @@ pragma solidity ^0.7.3;
 contract MockAggregator {
     uint256 internal _answer;
 
-    function setAnswer(uint256 _a) public {
+    function setAnswer(uint256 _a) external {
         _answer = _a;
     }
 
