@@ -21,51 +21,53 @@ import "./Curve.sol";
 
 import "./interfaces/IFreeFromUpTo.sol";
 
-contract CurveFactory {
-    address private dfx;
+import "@openzeppelin/contracts/access/Ownable.sol";
 
+contract CurveFactory is Ownable {
     event NewCurve(address indexed caller, address indexed curve);
 
-    event DFXSet(address indexed caller, address indexed dfx);
-
-    mapping(address => bool) private _isCurve;
-
-    function isCurve(address _curve) external view returns (bool) {
-        return _isCurve[_curve];
-    }
+    mapping(address => bool) public isCurve;
 
     function newCurve(
-        address[] memory _assets,
-        uint256[] memory _assetWeights,
-        address[] memory _derivativeAssimilators
-    ) public returns (Curve) {
-        if (msg.sender != dfx) revert("Curve/must-be-dfx");
+        address _baseCurrency,
+        address _quoteCurrency,
+        uint256 _baseWeight,
+        uint256 _quoteWeight,
+        address _baseAssimilator,
+        address _quoteAssimilator
+    ) public onlyOwner returns (Curve) {
+        address[] memory _assets = new address[](10);
+        uint256[] memory _assetWeights = new uint256[](2);
+        address[] memory _derivativeAssimilators = new address[](2);
 
+        // Base Currency
+        _assets[0] = _baseCurrency;
+        _assets[1] = _baseAssimilator;
+        _assets[2] = _baseCurrency;
+        _assets[3] = _baseAssimilator;
+        _assets[4] = _baseCurrency;
+
+        // Quote Currency (typically USDC)
+        _assets[5] = _quoteCurrency;
+        _assets[6] = _quoteAssimilator;
+        _assets[7] = _quoteCurrency;
+        _assets[8] = _quoteAssimilator;
+        _assets[9] = _quoteCurrency;
+
+        // Weights
+        _assetWeights[0] = _baseWeight;
+        _assetWeights[1] = _quoteWeight;
+
+        // Assimilators
+        _derivativeAssimilators[0] = _baseAssimilator;
+        _derivativeAssimilators[1] = _quoteAssimilator;
+
+        // New curve
         Curve curve = new Curve(_assets, _assetWeights, _derivativeAssimilators);
-
         curve.transferOwnership(msg.sender);
-
-        _isCurve[address(curve)] = true;
-
+        isCurve[address(curve)] = true;
         emit NewCurve(msg.sender, address(curve));
 
         return curve;
-    }
-
-    constructor() {
-        dfx = msg.sender;
-        emit DFXSet(msg.sender, msg.sender);
-    }
-
-    function getDFX() external view returns (address) {
-        return dfx;
-    }
-
-    function setDFX(address _c) external {
-        require(msg.sender == dfx, "Curve/must-be-dfx");
-
-        emit DFXSet(msg.sender, _c);
-
-        dfx = _c;
     }
 }

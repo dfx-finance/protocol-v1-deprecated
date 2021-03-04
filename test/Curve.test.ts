@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { ethers } from "hardhat";
 import { Signer, Contract, ContractFactory } from "ethers";
 import { ORACLES, TOKENS } from "./Constants";
@@ -105,24 +104,14 @@ describe("Curve", function () {
   });
 
   it.only("curve logic", async function () {
-    const assets = [
-      usdc.address,
-      usdcToUsdAssimilator.address,
-      usdc.address,
-      usdcToUsdAssimilator.address,
-      usdc.address,
-
+    let tx = await curveFactory.newCurve(
       cadc.address,
+      usdc.address,
+      parseUnits("0.5"),
+      parseUnits("0.5"),
       cadcToUsdAssimilator.address,
-      cadc.address,
-      cadcToUsdAssimilator.address,
-      cadc.address,
-    ];
-
-    const assetWeights = [parseUnits("0.5"), parseUnits("0.5")];
-    const derivativeAssimilators = [usdcToUsdAssimilator.address, cadcToUsdAssimilator.address];
-
-    let tx = await curveFactory.newCurve(assets, assetWeights, derivativeAssimilators);
+      usdcToUsdAssimilator.address,
+    );
     const txRecp = await tx.wait();
 
     // Get curve address from logs

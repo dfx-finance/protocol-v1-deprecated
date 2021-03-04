@@ -237,8 +237,6 @@ contract Curve is Storage {
 
     event PartitionRedeemed(address indexed token, address indexed redeemer, uint256 value);
 
-    event PoolPartitioned(bool partitioned);
-
     event OwnershipTransfered(address indexed previousOwner, address indexed newOwner);
 
     event FrozenSet(bool isFrozen);
@@ -276,16 +274,6 @@ contract Curve is Storage {
 
     modifier transactable() {
         require(!frozen, "Curve/frozen-only-allowing-proportional-withdraw");
-        _;
-    }
-
-    modifier unpartitioned() {
-        require(!partitioned, "Curve/pool-partitioned");
-        _;
-    }
-
-    modifier isPartitioned() {
-        require(partitioned, "Curve/pool-not-partitioned");
         _;
     }
 
@@ -482,7 +470,6 @@ contract Curve is Storage {
     function proportionalWithdraw(uint256 _curvesToBurn, uint256 _deadline)
         external
         deadline(_deadline)
-        unpartitioned
         nonReentrant
         returns (uint256[] memory withdrawals_)
     {

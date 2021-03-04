@@ -56,7 +56,6 @@ contract Storage {
     address[] public reserves;
 
     // Curve operational state
-    bool public partitioned = false;
     bool public frozen = false;
     bool internal notEntered = true;
 }
