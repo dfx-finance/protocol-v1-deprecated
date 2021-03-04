@@ -117,3 +117,5 @@ dist
 
 cache
 artifacts
+
+.vscode/
