@@ -33,7 +33,7 @@ library ProportionalLiquidity {
 
         uint256[] memory deposits_ = new uint256[](_length);
 
-        (int128 _oGLiq, int128[] memory _oBals) = getGrossLiquidityAndBalances(curve);
+        (int128 _oGLiq, int128[] memory _oBals) = getGrossLiquidityAndBalancesForDeposit(curve);
 
         if (_oGLiq == 0) {
             for (uint256 i = 0; i < _length; i++) {

@@ -19,11 +19,7 @@ import "./lib/ABDKMath64x64.sol";
 
 import "./Orchestrator.sol";
 
-import "./PartitionedLiquidity.sol";
-
 import "./ProportionalLiquidity.sol";
-
-import "./SelectiveLiquidity.sol";
 
 import "./Swaps.sol";
 
@@ -453,36 +449,6 @@ contract Curve is Storage {
         originAmount_ = Swaps.viewTargetSwap(curve, _origin, _target, _targetAmount);
     }
 
-    /// @notice selectively deposit any supported stablecoin flavor into the contract in return for corresponding amount of curve tokens
-    /// @param _derivatives an array containing the addresses of the flavors being deposited into
-    /// @param _amounts An array containing the values of the flavors you wish to deposit into the contract.
-    ///                 Each amount should have the same index as the flavor it is meant to deposit
-    /// @param _minCurves minimum acceptable amount of curves
-    /// @param _deadline deadline for tx
-    /// @return the amount of curves to mint for the deposited stablecoin flavors
-    function selectiveDeposit(
-        address[] calldata _derivatives,
-        uint256[] calldata _amounts,
-        uint256 _minCurves,
-        uint256 _deadline
-    ) external deadline(_deadline) transactable nonReentrant returns (uint256) {
-        return SelectiveLiquidity.selectiveDeposit(curve, _derivatives, _amounts, _minCurves);
-    }
-
-    /// @notice view how many curve tokens a deposit will mint
-    /// @param _derivatives an array containing the addresses of the flavors being deposited into
-    /// @param _amounts An array containing the values of the flavors you wish to deposit into the contract.
-    ///                 Each amount should have the same index as the flavor it is meant to deposit
-    /// @return curvesToMint_ the amount of curves to mint for the deposited stablecoin flavors
-    function viewSelectiveDeposit(address[] calldata _derivatives, uint256[] calldata _amounts)
-        external
-        view
-        transactable
-        returns (uint256 curvesToMint_)
-    {
-        curvesToMint_ = SelectiveLiquidity.viewSelectiveDeposit(curve, _derivatives, _amounts);
-    }
-
     /// @notice deposit into the pool with no slippage from the numeraire assets the pool supports
     /// @param  _deposit the full amount you want to deposit into the pool which will be divided up evenly amongst
     ///                  the numeraire assets of the pool
@@ -509,35 +475,6 @@ contract Curve is Storage {
         return ProportionalLiquidity.viewProportionalDeposit(curve, _deposit);
     }
 
-    /// @notice selectively withdrawal any supported stablecoin flavor from the contract by burning a corresponding amount of curve tokens
-    /// @param _derivatives an array of flavors to withdraw from the reserves
-    /// @param _amounts an array of amounts to withdraw that maps to _flavors
-    /// @param _maxCurves the maximum amount of curves you want to burn
-    /// @param _deadline timestamp after which the transaction is no longer valid
-    /// @return curvesBurned_ the corresponding amount of curve tokens to withdraw the specified amount of specified flavors
-    function selectiveWithdraw(
-        address[] calldata _derivatives,
-        uint256[] calldata _amounts,
-        uint256 _maxCurves,
-        uint256 _deadline
-    ) external deadline(_deadline) transactable nonReentrant returns (uint256 curvesBurned_) {
-        curvesBurned_ = SelectiveLiquidity.selectiveWithdraw(curve, _derivatives, _amounts, _maxCurves);
-    }
-
-    /// @notice view how many curve tokens a withdraw will consume
-    /// @param _derivatives an array of flavors to withdraw from the reserves
-    /// @param _amounts an array of amounts to withdraw that maps to _flavors
-    /// @return the corresponding amount of curve tokens to withdraw the specified amount of specified flavors
-    function viewSelectiveWithdraw(address[] calldata _derivatives, uint256[] calldata _amounts)
-        external
-        view
-        transactable
-        returns (uint256)
-    {
-        // curvesToBurn_
-        return SelectiveLiquidity.viewSelectiveWithdraw(curve, _derivatives, _amounts);
-    }
-
     /// @notice  withdrawas amount of curve tokens from the the pool equally from the numeraire assets of the pool with no slippage
     /// @param   _curvesToBurn the full amount you want to withdraw from the pool which will be withdrawn from evenly amongst the
     ///                        numeraire assets of the pool
@@ -559,53 +496,11 @@ contract Curve is Storage {
             bytes4(0x36372b07) == _interface; // erc20
     }
 
-    /// @notice withdrawals amount of curve tokens from the the pool equally from the numeraire assets of the pool with no slippage
-    /// @param _curvesToBurn the full amount you want to withdraw from the pool which will be withdrawn from evenly amongst the numeraire
-    ///                      assets of the pool
-    /// @return withdrawalsToHappen_ the amonts of numeraire assets withdrawn from the pool
-    function viewProportionalWithdraw(uint256 _curvesToBurn)
-        external
-        view
-        unpartitioned
-        returns (uint256[] memory withdrawalsToHappen_)
-    {
-        return ProportionalLiquidity.viewProportionalWithdraw(curve, _curvesToBurn);
-    }
-
-    function partition() external onlyOwner {
-        require(frozen, "Curve/must-be-frozen");
-
-        PartitionedLiquidity.partition(curve, partitionTickets);
-
-        partitioned = true;
-    }
-
-    /// @notice  withdraws amount of curve tokens from the the pool equally from the numeraire assets of the pool with no slippage
-    /// @param _tokens an array of the numeraire assets you will withdraw
-    /// @param _amounts an array of the amounts in terms of partitioned shels you want to withdraw from that numeraire partition
-    /// @return withdrawals_ the amounts of the numeraire assets withdrawn
-    function partitionedWithdraw(address[] calldata _tokens, uint256[] calldata _amounts)
-        external
-        isPartitioned
-        returns (uint256[] memory withdrawals_)
-    {
-        return PartitionedLiquidity.partitionedWithdraw(curve, partitionTickets, _tokens, _amounts);
-    }
-
-    /// @notice  views the balance of the users partition ticket
-    /// @param _addr the address whose balances in partitioned curves to be seen
-    /// @return claims_ the remaining claims in terms of partitioned curves the address has in its partition ticket
-    function viewPartitionClaims(address _addr) external view isPartitioned returns (uint256[] memory claims_) {
-        return PartitionedLiquidity.viewPartitionClaims(curve, partitionTickets, _addr);
-    }
-
     /// @notice transfers curve tokens
     /// @param _recipient the address of where to send the curve tokens
     /// @param _amount the amount of curve tokens to send
     /// @return success_ the success bool of the call
     function transfer(address _recipient, uint256 _amount) public nonReentrant returns (bool success_) {
-        require(!partitionTickets[msg.sender].initialized, "Curve/no-transfers-once-partitioned");
-
         success_ = Curves.transfer(curve, _recipient, _amount);
     }
 
@@ -619,8 +514,6 @@ contract Curve is Storage {
         address _recipient,
         uint256 _amount
     ) public nonReentrant returns (bool success_) {
-        require(!partitionTickets[_sender].initialized, "Curve/no-transfers-once-partitioned");
-
         success_ = Curves.transferFrom(curve, _sender, _recipient, _amount);
     }
 

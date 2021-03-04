@@ -51,14 +51,6 @@ contract Storage {
     // Ownable
     address public owner;
 
-    // Logic
-    mapping(address => PartitionTicket) public partitionTickets;
-
-    struct PartitionTicket {
-        uint256[] claims;
-        bool initialized;
-    }
-
     address[] public derivatives;
     address[] public numeraires;
     address[] public reserves;

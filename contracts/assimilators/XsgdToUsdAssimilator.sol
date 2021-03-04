@@ -145,23 +145,6 @@ contract XsgdToUsdAssimilator is IAssimilator {
         balance_ = _balance.divu(1e6);
     }
 
-    // views the numeraire value of the current balance of the reserve, in this case cadc
-    // instead of calculating with chainlink's "rate" it'll be determined by the existing
-    // token ratio
-    // Mainly to protect LP from losing
-    function viewNumeraireBalanceLPRatio(address _addr) public view override returns (int128 balance_) {
-        uint256 _xsgdBal = xsgd.balanceOf(_addr);
-
-        if (_xsgdBal == 0) return ABDKMath64x64.fromUInt(0);
-
-        uint256 _usdcBal = usdc.balanceOf(_addr);
-
-        // 1e30 = (1e18-1e6) (xsgd decimals) + 1e18 (cadc decimals)
-        uint256 _ratio = _usdcBal.mul(1e30).div(_xsgdBal);
-
-        balance_ = (_xsgdBal.mul(_ratio)).divu(1e18);
-    }
-
     // views the numeraire value of the current balance of the reserve, in this case xsgd
     function viewNumeraireAmountAndBalance(address _addr, uint256 _amount)
         public
@@ -176,5 +159,22 @@ contract XsgdToUsdAssimilator is IAssimilator {
         uint256 _balance = xsgd.balanceOf(_addr);
 
         balance_ = _balance.divu(1e6);
+    }
+
+    // views the numeraire value of the current balance of the reserve, in this case xsgd
+    // instead of calculating with chainlink's "rate" it'll be determined by the existing
+    // token ratio
+    // Mainly to protect LP from losing
+    function viewNumeraireBalanceLPRatio(address _addr) public view override returns (int128 balance_) {
+        uint256 _xsgdBal = xsgd.balanceOf(_addr);
+
+        if (_xsgdBal == 0) return ABDKMath64x64.fromUInt(0);
+
+        uint256 _usdcBal = usdc.balanceOf(_addr);
+
+        // Rate is in 1e6
+        uint256 _rate = _usdcBal.mul(1e18).div(_xsgdBal);
+
+        balance_ = ((_xsgdBal * _rate) / 1e6).divu(1e18);
     }
 }

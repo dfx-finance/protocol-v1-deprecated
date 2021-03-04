@@ -66,7 +66,7 @@ contract EursToUsdAssimilator is IAssimilator {
         amount_ = ((_amount * _rate) / 1e8).divu(1e2);
     }
 
-    // takes a numeraire amount, calculates the raw amount of xsgd, transfers it in and returns the corresponding raw amount
+    // takes a numeraire amount, calculates the raw amount of eurs, transfers it in and returns the corresponding raw amount
     function intakeNumeraire(int128 _amount) public override returns (uint256 amount_) {
         uint256 _rate = getRate();
 
@@ -98,7 +98,7 @@ contract EursToUsdAssimilator is IAssimilator {
         balance_ = _balance.divu(1e2);
     }
 
-    // takes a raw amount of xsgd and transfers it out, returns numeraire value of the raw amount
+    // takes a raw amount of eurs and transfers it out, returns numeraire value of the raw amount
     function outputRaw(address _dst, uint256 _amount) public override returns (int128 amount_) {
         uint256 _rate = getRate();
 
@@ -111,7 +111,7 @@ contract EursToUsdAssimilator is IAssimilator {
         amount_ = _eursAmount.divu(1e2);
     }
 
-    // takes a numeraire value of xsgd, figures out the raw amount, transfers raw amount out, and returns raw amount
+    // takes a numeraire value of eurs, figures out the raw amount, transfers raw amount out, and returns raw amount
     function outputNumeraire(address _dst, int128 _amount) public override returns (uint256 amount_) {
         uint256 _rate = getRate();
 
@@ -136,7 +136,7 @@ contract EursToUsdAssimilator is IAssimilator {
         amount_ = ((_amount * _rate) / 1e8).divu(1e2);
     }
 
-    // views the numeraire value of the current balance of the reserve, in this case xsgd
+    // views the numeraire value of the current balance of the reserve, in this case eurs
     function viewNumeraireBalance(address _addr) public view override returns (int128 balance_) {
         uint256 _balance = eurs.balanceOf(_addr);
 
@@ -145,24 +145,7 @@ contract EursToUsdAssimilator is IAssimilator {
         balance_ = _balance.divu(1e2);
     }
 
-    // views the numeraire value of the current balance of the reserve, in this case xsgd
-    // instead of calculating with chainlink's "rate" it'll be determined by the existing
-    // token ratio
-    // Mainly to protect LP from losing
-    function viewNumeraireBalanceLPRatio(address _addr) public view override returns (int128 balance_) {
-        uint256 _eursBal = eurs.balanceOf(_addr);
-
-        if (_eursBal == 0) return ABDKMath64x64.fromUInt(0);
-
-        uint256 _usdcBal = usdc.balanceOf(_addr);
-
-        // 1e14= (1e18-1e6) (usdc decimals) + 1e2 (eurs decimals)
-        uint256 _ratio = _usdcBal.mul(1e24).div(_eursBal);
-
-        balance_ = (_eursBal.mul(_ratio)).divu(1e18);
-    }
-
-    // views the numeraire value of the current balance of the reserve, in this case xsgd
+    // views the numeraire value of the current balance of the reserve, in this case eurs
     function viewNumeraireAmountAndBalance(address _addr, uint256 _amount)
         public
         view
@@ -176,5 +159,21 @@ contract EursToUsdAssimilator is IAssimilator {
         uint256 _balance = eurs.balanceOf(_addr);
 
         balance_ = _balance.divu(1e2);
+    }
+
+    // views the numeraire value of the current balance of the reserve, in this case cadc
+    // instead of calculating with chainlink's "rate" it'll be determined by the existing
+    // token ratio. This is in here to prevent LPs from losing out on future oracle price updates
+    function viewNumeraireBalanceLPRatio(address _addr) public view override returns (int128 balance_) {
+        uint256 _eursBal = eurs.balanceOf(_addr);
+
+        if (_eursBal == 0) return ABDKMath64x64.fromUInt(0);
+
+        uint256 _usdcBal = usdc.balanceOf(_addr);
+
+        // Rate is in 1e6
+        uint256 _rate = _usdcBal.mul(1e24).div(_eursBal);
+
+        balance_ = ((_eursBal * _rate) / 1e6).divu(1e18);
     }
 }

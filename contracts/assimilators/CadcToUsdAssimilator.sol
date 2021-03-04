@@ -22,6 +22,8 @@ import "../lib/ABDKMath64x64.sol";
 import "../interfaces/IAssimilator.sol";
 import "../interfaces/IOracle.sol";
 
+import "hardhat/console.sol";
+
 contract CadcToUsdAssimilator is IAssimilator {
     using ABDKMath64x64 for int128;
     using ABDKMath64x64 for uint256;
@@ -66,7 +68,7 @@ contract CadcToUsdAssimilator is IAssimilator {
         amount_ = ((_amount * _rate) / 1e8).divu(1e18);
     }
 
-    // takes a numeraire amount, calculates the raw amount of xsgd, transfers it in and returns the corresponding raw amount
+    // takes a numeraire amount, calculates the raw amount of cadc, transfers it in and returns the corresponding raw amount
     function intakeNumeraire(int128 _amount) public override returns (uint256 amount_) {
         uint256 _rate = getRate();
 
@@ -98,7 +100,7 @@ contract CadcToUsdAssimilator is IAssimilator {
         balance_ = _balance.divu(1e18);
     }
 
-    // takes a raw amount of xsgd and transfers it out, returns numeraire value of the raw amount
+    // takes a raw amount of cadc and transfers it out, returns numeraire value of the raw amount
     function outputRaw(address _dst, uint256 _amount) public override returns (int128 amount_) {
         uint256 _rate = getRate();
 
@@ -111,7 +113,7 @@ contract CadcToUsdAssimilator is IAssimilator {
         amount_ = _cadcAmount.divu(1e18);
     }
 
-    // takes a numeraire value of xsgd, figures out the raw amount, transfers raw amount out, and returns raw amount
+    // takes a numeraire value of cadc, figures out the raw amount, transfers raw amount out, and returns raw amount
     function outputNumeraire(address _dst, int128 _amount) public override returns (uint256 amount_) {
         uint256 _rate = getRate();
 
@@ -136,7 +138,7 @@ contract CadcToUsdAssimilator is IAssimilator {
         amount_ = ((_amount * _rate) / 1e8).divu(1e18);
     }
 
-    // views the numeraire value of the current balance of the reserve, in this case xsgd
+    // views the numeraire value of the current balance of the reserve, in this case cadc
     function viewNumeraireBalance(address _addr) public view override returns (int128 balance_) {
         uint256 _rate = getRate();
 
@@ -148,23 +150,6 @@ contract CadcToUsdAssimilator is IAssimilator {
     }
 
     // views the numeraire value of the current balance of the reserve, in this case cadc
-    // instead of calculating with chainlink's "rate" it'll be determined by the existing
-    // token ratio
-    // Mainly to protect LP from losing
-    function viewNumeraireBalanceLPRatio(address _addr) public view override returns (int128 balance_) {
-        uint256 _cadcBal = cadc.balanceOf(_addr);
-
-        if (_cadcBal == 0) return ABDKMath64x64.fromUInt(0);
-
-        uint256 _usdcBal = usdc.balanceOf(_addr);
-
-        // 1e30 = (1e18-1e6) (usdc decimals) + 1e18 (cadc decimals)
-        uint256 _ratio = _usdcBal.mul(1e30).div(_cadcBal);
-
-        balance_ = (_cadcBal.mul(_ratio)).divu(1e18);
-    }
-
-    // views the numeraire value of the current balance of the reserve, in this case xsgd
     function viewNumeraireAmountAndBalance(address _addr, uint256 _amount)
         public
         view
@@ -178,5 +163,21 @@ contract CadcToUsdAssimilator is IAssimilator {
         uint256 _balance = cadc.balanceOf(_addr);
 
         balance_ = _balance.divu(1e18);
+    }
+
+    // views the numeraire value of the current balance of the reserve, in this case cadc
+    // instead of calculating with chainlink's "rate" it'll be determined by the existing
+    // token ratio. This is in here to prevent LPs from losing out on future oracle price updates
+    function viewNumeraireBalanceLPRatio(address _addr) public view override returns (int128 balance_) {
+        uint256 _cadcBal = cadc.balanceOf(_addr);
+
+        if (_cadcBal == 0) return ABDKMath64x64.fromUInt(0);
+
+        uint256 _usdcBal = usdc.balanceOf(_addr);
+
+        // Rate is in 1e6
+        uint256 _rate = _usdcBal.mul(1e18).div(_cadcBal);
+
+        balance_ = ((_cadcBal * _rate) / 1e6).divu(1e18);
     }
 }
