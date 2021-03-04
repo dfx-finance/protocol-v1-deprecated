@@ -5,12 +5,12 @@ job_python: &job_python
 step_save_cache: &step_save_cache
   save_cache:
     paths:
-      - ~/.cache/package-lock
-    key: node-modules-{{ checksum "package-lock.json" }}
+      - ~/.cache/yarn-lock
+    key: node-modules-{{ checksum "yarn.lock" }}
 step_restore_cache: &step_restore_cache
   restore_cache:
     keys:
-      - node-modules-{{ checksum "package-lock.json" }}
+      - node-modules-{{ checksum "yarn.lock" }}
 step_pull_solc_docker: &step_pull_solc_docker
   run:
     name: "Pull solc docker images"
@@ -31,8 +31,7 @@ step_setup_solc_select: &step_setup_solc_select
   run:
     name: "Setup solc-select"
     command: |
-      git clone https://github.com/crytic/solc-select.git
-      bash ./solc-select/scripts/install.sh
+      sudo pip3 install solc-select
 jobs:
   security-test:
     <<: *job_python
