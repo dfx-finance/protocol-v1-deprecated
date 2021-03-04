@@ -168,15 +168,19 @@ contract CadcToUsdAssimilator is IAssimilator {
     // views the numeraire value of the current balance of the reserve, in this case cadc
     // instead of calculating with chainlink's "rate" it'll be determined by the existing
     // token ratio. This is in here to prevent LPs from losing out on future oracle price updates
-    function viewNumeraireBalanceLPRatio(address _addr) external view override returns (int128 balance_) {
+    function viewNumeraireBalanceLPRatio(
+        uint256 _baseWeight,
+        uint256 _quoteWeight,
+        address _addr
+    ) external view override returns (int128 balance_) {
         uint256 _cadcBal = cadc.balanceOf(_addr);
 
         if (_cadcBal <= 0) return ABDKMath64x64.fromUInt(0);
 
-        uint256 _usdcBal = usdc.balanceOf(_addr);
+        uint256 _usdcBal = usdc.balanceOf(_addr).mul(1e18).div(_quoteWeight);
 
         // Rate is in 1e6
-        uint256 _rate = _usdcBal.mul(1e18).div(_cadcBal);
+        uint256 _rate = _usdcBal.mul(1e18).div(_cadcBal.mul(1e18).div(_baseWeight));
 
         balance_ = ((_cadcBal * _rate) / 1e6).divu(1e18);
     }

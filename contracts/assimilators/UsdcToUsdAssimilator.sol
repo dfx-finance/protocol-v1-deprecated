@@ -107,7 +107,11 @@ contract UsdcToUsdAssimilator is IAssimilator {
     // instead of calculating with chainlink's "rate" it'll be determined by the existing
     // token ratio
     // Mainly to protect LP from losing
-    function viewNumeraireBalanceLPRatio(address _addr) external view override returns (int128 balance_) {
+    function viewNumeraireBalanceLPRatio(
+        uint256,
+        uint256,
+        address _addr
+    ) external view override returns (int128 balance_) {
         return viewNumeraireBalance(_addr);
     }
 

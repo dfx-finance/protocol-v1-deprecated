@@ -160,9 +160,11 @@ library ProportionalLiquidity {
         uint256 _length = curve.assets.length;
 
         int128[] memory balances_ = new int128[](_length);
+        uint256 _baseWeight = curve.weights[0].mulu(1e18);
+        uint256 _quoteWeight = curve.weights[1].mulu(1e18);
 
         for (uint256 i = 0; i < _length; i++) {
-            int128 _bal = Assimilators.viewNumeraireBalanceLPRatio(curve.assets[i].addr);
+            int128 _bal = Assimilators.viewNumeraireBalanceLPRatio(_baseWeight, _quoteWeight, curve.assets[i].addr);
 
             balances_[i] = _bal;
             grossLiquidity_ += _bal;

@@ -107,8 +107,8 @@ describe("Curve", function () {
     let tx = await curveFactory.newCurve(
       cadc.address,
       usdc.address,
-      parseUnits("0.5"),
-      parseUnits("0.5"),
+      parseUnits("0.4"), // CADC 40% of pool
+      parseUnits("0.6"), // USDC 60% of pool
       cadcToUsdAssimilator.address,
       usdcToUsdAssimilator.address,
     );
@@ -155,7 +155,7 @@ describe("Curve", function () {
     tx = await curve.originSwap(
       cadc.address,
       usdc.address,
-      parseUnits("100", TOKENS.CADC.decimals),
+      parseUnits("50", TOKENS.CADC.decimals),
       0,
       await getFutureTime(),
     );
@@ -164,8 +164,8 @@ describe("Curve", function () {
     tx = await curve.targetSwap(
       usdc.address,
       cadc.address,
-      parseUnits("80", TOKENS.USDC.decimals),
-      parseUnits("100", TOKENS.CADC.decimals),
+      parseUnits("100", TOKENS.USDC.decimals),
+      parseUnits("50", TOKENS.CADC.decimals),
       await getFutureTime(),
     );
     await tx.wait();
@@ -178,8 +178,8 @@ describe("Curve", function () {
     await logTokenBalances(curveAddress);
 
     // Update oracle
-    console.log("---- Update oracle pricing 1 CAD = 0.5 USD  ----");
-    await updateOracleAnswer(ORACLES.CAD.address, parseUnits("0.5", ORACLES.CAD.decimals));
+    console.log("---- Update oracle pricing 1 CAD = 0.8 USD  ----");
+    await updateOracleAnswer(ORACLES.CAD.address, parseUnits("0.8", ORACLES.CAD.decimals));
 
     // Swap again
     console.log("---- Swapping 1 USDC -> CADC ----");
