@@ -117,8 +117,8 @@ describe("Curve", function () {
     curveFactory = await CurveFactory.deploy();
   });
 
-  describe.only("Proportional Supply and Withdraw", async function () {
-    it("50/50", async function () {
+  describe("Proportional", async function () {
+    it("50/50 supply withdraw", async function () {
       let tx = await curveFactory.newCurve(
         cadc.address,
         usdc.address,
@@ -246,7 +246,7 @@ describe("Curve", function () {
       );
     });
 
-    it("LPs don't get rekt'd on oracle update", async function () {
+    it("50/50 - LPs don't get rekt'd on oracle update", async function () {
       let tx = await curveFactory.newCurve(
         cadc.address,
         usdc.address,
@@ -286,7 +286,7 @@ describe("Curve", function () {
         .then(x => x.wait());
 
       // Update oracle
-      await updateOracleAnswer(ORACLES.CAD.address, parseUnits("0.9", ORACLES.CAD.decimals));
+      await updateOracleAnswer(ORACLES.CAD.address, parseUnits("1.2", ORACLES.CAD.decimals));
 
       await curve
         .connect(user2)
@@ -299,110 +299,213 @@ describe("Curve", function () {
 
       expectBNAproxEq(user1CurveLP, user2CurveLP, parseUnits("0.01"));
     });
+
+    it("40/60 LPs don't get rekt'd on oracle update", async function () {
+      let tx = await curveFactory.newCurve(
+        cadc.address,
+        usdc.address,
+        parseUnits("0.4"),
+        parseUnits("0.6"),
+        cadcToUsdAssimilator.address,
+        usdcToUsdAssimilator.address,
+      );
+      const txRecp = await tx.wait();
+
+      // Get curve address from logs
+      const curveAddress = getCurveAddressFromTxRecp(txRecp);
+      const curveLpToken = await ethers.getContractAt("ERC20", curveAddress);
+      const curve = await ethers.getContractAt("Curve", curveAddress);
+
+      // Set params for the curve
+      tx = await curve.setParams(ALPHA, BETA, MAX, EPSILON, LAMBDA);
+      await tx.wait();
+
+      // Mint tokens and approve
+      await mintUSDC(user1Address, parseUnits("100", TOKENS.USDC.decimals));
+      await mintCADC(user1Address, parseUnits("100", TOKENS.CADC.decimals));
+
+      await mintUSDC(user2Address, parseUnits("100", TOKENS.USDC.decimals));
+      await mintCADC(user2Address, parseUnits("100", TOKENS.CADC.decimals));
+
+      await usdc.approve(curveAddress, ethers.constants.MaxUint256);
+      await cadc.approve(curveAddress, ethers.constants.MaxUint256);
+
+      await usdc.connect(user2).approve(curveAddress, ethers.constants.MaxUint256);
+      await cadc.connect(user2).approve(curveAddress, ethers.constants.MaxUint256);
+
+      // Proportional Deposit
+      await curve
+        .connect(user1)
+        .proportionalDeposit(parseUnits("100"), await getFutureTime())
+        .then(x => x.wait());
+
+      // Update oracle
+      await updateOracleAnswer(ORACLES.CAD.address, parseUnits("1.2", ORACLES.CAD.decimals));
+
+      await curve
+        .connect(user2)
+        .proportionalDeposit(parseUnits("100"), await getFutureTime())
+        .then(x => x.wait());
+
+      // Number of curve lp tokens should be roughly the same
+      const user1CurveLP = await curveLpToken.balanceOf(user1Address);
+      const user2CurveLP = await curveLpToken.balanceOf(user1Address);
+
+      expectBNAproxEq(user1CurveLP, user2CurveLP, parseUnits("0.01"));
+    });
+
+    afterEach(async function () {
+      await updateOracleAnswer(ORACLES.CAD.address, parseUnits("0.8", ORACLES.CAD.decimals));
+    });
   });
 
-  it("LP", async function () {
-    let tx = await curveFactory.newCurve(
-      cadc.address,
-      usdc.address,
-      parseUnits("0.5"),
-      parseUnits("0.5"),
-      cadcToUsdAssimilator.address,
-      usdcToUsdAssimilator.address,
-    );
-    const txRecp = await tx.wait();
+  describe("Swaps", async function () {
+    it("50/50 - originSwap and targetSwap", async function () {
+      let tx = await curveFactory.newCurve(
+        cadc.address,
+        usdc.address,
+        parseUnits("0.5"),
+        parseUnits("0.5"),
+        cadcToUsdAssimilator.address,
+        usdcToUsdAssimilator.address,
+      );
+      const txRecp = await tx.wait();
 
-    // Get curve address from logs
-    const curveAddress = getCurveAddressFromTxRecp(txRecp);
-    const curve = await ethers.getContractAt("Curve", curveAddress);
+      // Get curve address from logs
+      const curveAddress = getCurveAddressFromTxRecp(txRecp);
+      const curve = await ethers.getContractAt("Curve", curveAddress);
 
-    // Set params
-    tx = await curve.setParams(
-      parseUnits("0.5"), // Alpha
-      parseUnits("0.35"), // Beta
-      parseUnits("0.15"), // Max
-      parseUnits("0.0004"), // Epsilon
-      parseUnits("0.3"), // Lambda
-    );
-    await tx.wait();
+      // Set params
+      tx = await curve.setParams(ALPHA, BETA, MAX, EPSILON, LAMBDA);
+      await tx.wait();
 
-    // Mint tokens and approve
-    await mintUSDC(user1Address, parseUnits("1000", TOKENS.USDC.decimals));
-    await mintCADC(user1Address, parseUnits("1000", TOKENS.CADC.decimals));
+      // Mint tokens and approve
+      await mintUSDC(user1Address, parseUnits("1000", TOKENS.USDC.decimals));
+      await mintCADC(user1Address, parseUnits("1000", TOKENS.CADC.decimals));
 
-    await mintUSDC(user2Address, parseUnits("1000", TOKENS.USDC.decimals));
-    await mintCADC(user2Address, parseUnits("1000", TOKENS.CADC.decimals));
+      await usdc.approve(curveAddress, ethers.constants.MaxUint256);
+      await cadc.approve(curveAddress, ethers.constants.MaxUint256);
 
-    await usdc.approve(curveAddress, ethers.constants.MaxUint256);
-    await cadc.approve(curveAddress, ethers.constants.MaxUint256);
+      // Proportional Supply
+      await curve.proportionalDeposit(parseUnits("200"), await getFutureTime());
 
-    await usdc.connect(user2).approve(curveAddress, ethers.constants.MaxUint256);
-    await cadc.connect(user2).approve(curveAddress, ethers.constants.MaxUint256);
+      // Swap
+      let beforeUSDC = await usdc.balanceOf(user1Address);
+      let beforeCADC = await cadc.balanceOf(user1Address);
 
-    // Proportional Supply
-    tx = await curve.proportionalDeposit(parseUnits("200"), await getFutureTime());
-    await tx.wait();
-    tx = await curve.connect(user2).proportionalDeposit(parseUnits("200"), await getFutureTime());
-    await tx.wait();
+      tx = await curve.originSwap(
+        cadc.address,
+        usdc.address,
+        parseUnits("1", TOKENS.CADC.decimals),
+        0,
+        await getFutureTime(),
+      );
+      await tx.wait();
 
-    console.log("Curve");
-    await logTokenBalances(curveAddress);
+      let afterUSDC = await usdc.balanceOf(user1Address);
+      let afterCADC = await cadc.balanceOf(user1Address);
 
-    // Swap
-    console.log("Swapping...");
-    tx = await curve.originSwap(
-      cadc.address,
-      usdc.address,
-      parseUnits("1", TOKENS.CADC.decimals),
-      0,
-      await getFutureTime(),
-    );
-    await tx.wait();
+      // Calculate expected CADC
+      const CADC_USDC_RATE8 = await getOracleAnswer(ORACLES.CAD.address);
+      const expectedUSDC6 = CADC_USDC_RATE8.div(parseUnits("100", 0));
 
-    tx = await curve.targetSwap(
-      usdc.address,
-      cadc.address,
-      parseUnits("5", TOKENS.USDC.decimals),
-      parseUnits("1", TOKENS.CADC.decimals),
-      await getFutureTime(),
-    );
-    await tx.wait();
+      // Get back roughly 1 (fees make it not exactly 1)
+      expectBNAproxEq(beforeCADC.sub(afterCADC), parseUnits("1", TOKENS.CADC.decimals), parseUnits("0.04"));
+      expectBNAproxEq(afterUSDC.sub(beforeUSDC), expectedUSDC6, parseUnits("0.04", TOKENS.USDC.decimals));
 
-    console.log("User 1");
-    await logTokenBalances(user1Address);
-    console.log("User 2");
-    await logTokenBalances(user2Address);
-    console.log("Curve");
-    await logTokenBalances(curveAddress);
+      // Target Swap
+      beforeUSDC = await usdc.balanceOf(user1Address);
+      beforeCADC = await cadc.balanceOf(user1Address);
 
-    // Update oracle
-    console.log("---- Update oracle pricing 1 CAD = 0.8 USD  ----");
-    await updateOracleAnswer(ORACLES.CAD.address, parseUnits("0.8", ORACLES.CAD.decimals));
+      tx = await curve.targetSwap(
+        usdc.address,
+        cadc.address,
+        parseUnits("5", TOKENS.USDC.decimals),
+        parseUnits("1", TOKENS.CADC.decimals).mul(parseUnits("1", 8)).div(CADC_USDC_RATE8),
+        await getFutureTime(),
+      );
+      await tx.wait();
 
-    // Swap again
-    console.log("---- Swapping 1 USDC -> CADC ----");
-    tx = await curve.originSwap(
-      usdc.address,
-      cadc.address,
-      parseUnits("1", TOKENS.USDC.decimals),
-      0,
-      await getFutureTime(),
-    );
-    await tx.wait();
-    console.log("User 1");
-    await logTokenBalances(user1Address);
+      afterUSDC = await usdc.balanceOf(user1Address);
+      afterCADC = await cadc.balanceOf(user1Address);
 
-    // Proportional withdraw
-    const curveLpToken = await ethers.getContractAt("ERC20", curveAddress);
-    console.log("---- Withdrawing ----");
-    await curve.connect(user2).proportionalWithdraw(await curveLpToken.balanceOf(user2Address), await getFutureTime());
-    await curve.connect(user1).proportionalWithdraw(await curveLpToken.balanceOf(user1Address), await getFutureTime());
+      // Target swap works as intended
+      expectBNAproxEq(afterCADC.sub(beforeCADC), parseUnits("1", TOKENS.CADC.decimals), parseUnits("0.04"));
+      expectBNAproxEq(beforeUSDC.sub(afterUSDC), expectedUSDC6, parseUnits("0.04"));
+    });
 
-    console.log("User 1");
-    await logTokenBalances(user1Address);
-    console.log("User 2");
-    await logTokenBalances(user2Address);
-    console.log("Curve");
-    await logTokenBalances(curveAddress);
+    it("40/60 - originSwap and targetSwap", async function () {
+      let tx = await curveFactory.newCurve(
+        cadc.address,
+        usdc.address,
+        parseUnits("0.4"),
+        parseUnits("0.6"),
+        cadcToUsdAssimilator.address,
+        usdcToUsdAssimilator.address,
+      );
+      const txRecp = await tx.wait();
+
+      // Get curve address from logs
+      const curveAddress = getCurveAddressFromTxRecp(txRecp);
+      const curve = await ethers.getContractAt("Curve", curveAddress);
+
+      // Set params
+      tx = await curve.setParams(ALPHA, BETA, MAX, EPSILON, LAMBDA);
+      await tx.wait();
+
+      // Mint tokens and approve
+      await mintUSDC(user1Address, parseUnits("1000", TOKENS.USDC.decimals));
+      await mintCADC(user1Address, parseUnits("1000", TOKENS.CADC.decimals));
+
+      await usdc.approve(curveAddress, ethers.constants.MaxUint256);
+      await cadc.approve(curveAddress, ethers.constants.MaxUint256);
+
+      // Proportional Supply
+      await curve.proportionalDeposit(parseUnits("200"), await getFutureTime());
+
+      // Swap
+      let beforeUSDC = await usdc.balanceOf(user1Address);
+      let beforeCADC = await cadc.balanceOf(user1Address);
+
+      tx = await curve.originSwap(
+        cadc.address,
+        usdc.address,
+        parseUnits("1", TOKENS.CADC.decimals),
+        0,
+        await getFutureTime(),
+      );
+      await tx.wait();
+
+      let afterUSDC = await usdc.balanceOf(user1Address);
+      let afterCADC = await cadc.balanceOf(user1Address);
+
+      // Calculate expected CADC
+      const CADC_USDC_RATE8 = await getOracleAnswer(ORACLES.CAD.address);
+      const expectedUSDC6 = CADC_USDC_RATE8.div(parseUnits("100", 0));
+
+      // Get back roughly 1 (fees make it not exactly 1)
+      expectBNAproxEq(beforeCADC.sub(afterCADC), parseUnits("1", TOKENS.CADC.decimals), parseUnits("0.04"));
+      expectBNAproxEq(afterUSDC.sub(beforeUSDC), expectedUSDC6, parseUnits("0.04", TOKENS.USDC.decimals));
+
+      // Target Swap
+      beforeUSDC = await usdc.balanceOf(user1Address);
+      beforeCADC = await cadc.balanceOf(user1Address);
+
+      tx = await curve.targetSwap(
+        usdc.address,
+        cadc.address,
+        parseUnits("5", TOKENS.USDC.decimals),
+        parseUnits("1", TOKENS.CADC.decimals).mul(parseUnits("1", 8)).div(CADC_USDC_RATE8),
+        await getFutureTime(),
+      );
+      await tx.wait();
+
+      afterUSDC = await usdc.balanceOf(user1Address);
+      afterCADC = await cadc.balanceOf(user1Address);
+
+      // Target swap works as intended
+      expectBNAproxEq(afterCADC.sub(beforeCADC), parseUnits("1", TOKENS.CADC.decimals), parseUnits("0.04"));
+      expectBNAproxEq(beforeUSDC.sub(afterUSDC), expectedUSDC6, parseUnits("0.04"));
+    });
   });
 });

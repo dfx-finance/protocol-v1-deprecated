@@ -83,7 +83,7 @@ export const mintEURS = async (recipient: string, amount: BigNumberish | number)
   await EURS.transfer(recipient, amount);
 };
 
-export const getOracleAnswer = async (oracleAddress: string): Promise<BigNumberish> => {
+export const getOracleAnswer = async (oracleAddress: string): Promise<BigNumber> => {
   const oracle = await ethers.getContractAt(EACAggregatorProxyABI, oracleAddress);
   return oracle.latestAnswer();
 };
