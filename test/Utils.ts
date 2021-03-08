@@ -1,11 +1,13 @@
 import { ethers } from "hardhat";
 import { TOKENS } from "./Constants";
-import { BigNumberish, ContractReceipt, Signer } from "ethers";
+import { BigNumber, BigNumberish, ContractReceipt, Signer } from "ethers";
+import { expect } from "chai";
 
 import EACAggregatorProxyABI from "./abi/EACAggregatorProxy.json";
 import EURSABI from "./abi/EURSABI.json";
 import FiatTokenV1ABI from "./abi/FiatTokenV1ABI.json";
 import FiatTokenV2ABI from "./abi/FiatTokenV2ABI.json";
+import { Result } from "ethers/lib/utils";
 
 const { provider } = ethers;
 const { parseUnits } = ethers.utils;
@@ -81,6 +83,11 @@ export const mintEURS = async (recipient: string, amount: BigNumberish | number)
   await EURS.transfer(recipient, amount);
 };
 
+export const getOracleAnswer = async (oracleAddress: string): Promise<BigNumberish> => {
+  const oracle = await ethers.getContractAt(EACAggregatorProxyABI, oracleAddress);
+  return oracle.latestAnswer();
+};
+
 export const updateOracleAnswer = async (oracleAddress: string, amount: BigNumberish | number): Promise<void> => {
   let oracle = await ethers.getContractAt(EACAggregatorProxyABI, oracleAddress);
   const owner = await unlockAccountAndGetSigner(await oracle.owner());
@@ -127,4 +134,76 @@ export const getCurveAddressFromTxRecp = (txRecp: ContractReceipt): string => {
   }
 
   return events[0]?.args[1];
+};
+
+export const BN = (a: number | string): BigNumber => {
+  return ethers.BigNumber.from(a);
+};
+
+export const expectBNAproxEq = (a: BigNumber, b: BigNumber, delta: BigNumber): void => {
+  const smallest = b.sub(delta);
+  const biggest = b.add(delta);
+
+  expect(a.gte(smallest) && a.lte(biggest)).to.be.equal(
+    true,
+    `${a.toString()} is not within ${delta.toString()} units from ${b.toString()}`,
+  );
+};
+
+export const expectBNEq = (a: BigNumber | string, b: BigNumber | string): void => {
+  if (!ethers.BigNumber.isBigNumber(a)) {
+    expect(BN(a as string).eq(b)).to.be.equal(true, `${BN(a as string).toString()} is not equal to ${b.toString()}`);
+  }
+
+  expect((a as BigNumber).eq(b)).to.be.equal(true, `${a.toString()} is not equal to ${b.toString()}`);
+};
+
+export const expectEventIn = (txRecp: ContractReceipt, eventName: string, eventArgs: Record<string, unknown>): void => {
+  const foundEvents: Result[] = [];
+
+  for (const { event, args } of txRecp.events || []) {
+    if (event === eventName && args) {
+      foundEvents.push(Object.entries(args));
+
+      let sameArgs = true;
+
+      for (const [k, v] of Object.entries(eventArgs)) {
+        if (ethers.BigNumber.isBigNumber(v)) {
+          sameArgs = (v as BigNumber).eq(args[k]) && sameArgs;
+        } else {
+          sameArgs = args[k] === v && sameArgs;
+        }
+      }
+
+      if (sameArgs) {
+        return;
+      }
+    }
+  }
+
+  expect.fail(
+    `Event ${eventName} not found with ${JSON.stringify(eventArgs)}, instead found ${JSON.stringify(foundEvents)}`,
+  );
+};
+
+export const expectRevert = async (promise: Promise<unknown>, expectedError: string): Promise<void> => {
+  // eslint-disable-next-line
+  promise.catch(() => {}); // Catch all exceptions
+
+  try {
+    await promise;
+  } catch (error) {
+    if (error.message.indexOf(expectedError) === -1) {
+      // When the exception was a revert, the resulting string will include only
+      // the revert reason, otherwise it will be the type of exception (e.g. 'invalid opcode')
+      const actualError = error.message.replace(
+        /Returned error: VM Exception while processing transaction: (revert )?/,
+        "",
+      );
+      expect(actualError).to.equal(expectedError, "Wrong kind of exception received");
+    }
+    return;
+  }
+
+  expect.fail("Expected an exception but none was received");
 };
