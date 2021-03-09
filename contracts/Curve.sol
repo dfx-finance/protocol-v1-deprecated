@@ -476,6 +476,14 @@ contract Curve is Storage {
         return ProportionalLiquidity.proportionalWithdraw(curve, _curvesToBurn);
     }
 
+    /// @notice  views the withdrawal information from the pool
+    /// @param   _curvesToBurn the full amount you want to withdraw from the pool which will be withdrawn from evenly amongst the
+    ///                        numeraire assets of the pool
+    /// @return the amonnts of numeraire assets withdrawn from the pool
+    function viewProportionalWithdraw(uint256 _curvesToBurn) external view transactable returns (uint256[] memory) {
+        return ProportionalLiquidity.viewProportionalWithdraw(curve, _curvesToBurn);
+    }
+
     function supportsInterface(bytes4 _interface) public pure returns (bool supports_) {
         supports_ =
             this.supportsInterface.selector == _interface || // erc165
