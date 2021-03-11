@@ -442,7 +442,7 @@ contract Curve is Storage {
     ///                  the numeraire assets of the pool
     /// @return (the amount of curves you receive in return for your deposit,
     ///          the amount deposited for each numeraire)
-    function proportionalDeposit(uint256 _deposit, uint256 _deadline)
+    function deposit(uint256 _deposit, uint256 _deadline)
         external
         deadline(_deadline)
         transactable
@@ -458,7 +458,7 @@ contract Curve is Storage {
     ///                 prevailing proportions of the numeraire assets of the pool
     /// @return (the amount of curves you receive in return for your deposit,
     ///          the amount deposited for each numeraire)
-    function viewProportionalDeposit(uint256 _deposit) external view transactable returns (uint256, uint256[] memory) {
+    function viewDeposit(uint256 _deposit) external view transactable returns (uint256, uint256[] memory) {
         // curvesToMint_, depositsToMake_
         return ProportionalLiquidity.viewProportionalDeposit(curve, _deposit);
     }
@@ -467,7 +467,7 @@ contract Curve is Storage {
     /// @param   _curvesToBurn the full amount you want to withdraw from the pool which will be withdrawn from evenly amongst the
     ///                        numeraire assets of the pool
     /// @return withdrawals_ the amonts of numeraire assets withdrawn from the pool
-    function proportionalWithdraw(uint256 _curvesToBurn, uint256 _deadline)
+    function withdraw(uint256 _curvesToBurn, uint256 _deadline)
         external
         deadline(_deadline)
         nonReentrant
@@ -480,7 +480,7 @@ contract Curve is Storage {
     /// @param   _curvesToBurn the full amount you want to withdraw from the pool which will be withdrawn from evenly amongst the
     ///                        numeraire assets of the pool
     /// @return the amonnts of numeraire assets withdrawn from the pool
-    function viewProportionalWithdraw(uint256 _curvesToBurn) external view transactable returns (uint256[] memory) {
+    function viewWithdraw(uint256 _curvesToBurn) external view transactable returns (uint256[] memory) {
         return ProportionalLiquidity.viewProportionalWithdraw(curve, _curvesToBurn);
     }
 

@@ -163,11 +163,11 @@ describe("Curve", function () {
       // Proportional Deposit
       await curve
         .connect(user1)
-        .proportionalDeposit(parseUnits("100"), await getFutureTime())
+        .deposit(parseUnits("100"), await getFutureTime())
         .then(x => x.wait());
       await curve
         .connect(user2)
-        .proportionalDeposit(parseUnits("100"), await getFutureTime())
+        .deposit(parseUnits("100"), await getFutureTime())
         .then(x => x.wait());
 
       // Get balances again
@@ -180,12 +180,8 @@ describe("Curve", function () {
       const duringUser2CADC = await cadc.balanceOf(user2Address);
 
       // Withdraw
-      await curve
-        .connect(user1)
-        .proportionalWithdraw(await curveLpToken.balanceOf(user1Address), await getFutureTime());
-      await curve
-        .connect(user2)
-        .proportionalWithdraw(await curveLpToken.balanceOf(user2Address), await getFutureTime());
+      await curve.connect(user1).withdraw(await curveLpToken.balanceOf(user1Address), await getFutureTime());
+      await curve.connect(user2).withdraw(await curveLpToken.balanceOf(user2Address), await getFutureTime());
 
       // Get final balances
       const finalCurveUSDC = await usdc.balanceOf(curveAddress);
@@ -282,7 +278,7 @@ describe("Curve", function () {
       // Proportional Deposit
       await curve
         .connect(user1)
-        .proportionalDeposit(parseUnits("100"), await getFutureTime())
+        .deposit(parseUnits("100"), await getFutureTime())
         .then(x => x.wait());
 
       // Update oracle
@@ -290,7 +286,7 @@ describe("Curve", function () {
 
       await curve
         .connect(user2)
-        .proportionalDeposit(parseUnits("100"), await getFutureTime())
+        .deposit(parseUnits("100"), await getFutureTime())
         .then(x => x.wait());
 
       // Number of curve lp tokens should be roughly the same
@@ -336,7 +332,7 @@ describe("Curve", function () {
       // Proportional Deposit
       await curve
         .connect(user1)
-        .proportionalDeposit(parseUnits("100"), await getFutureTime())
+        .deposit(parseUnits("100"), await getFutureTime())
         .then(x => x.wait());
 
       // Update oracle
@@ -344,7 +340,7 @@ describe("Curve", function () {
 
       await curve
         .connect(user2)
-        .proportionalDeposit(parseUnits("100"), await getFutureTime())
+        .deposit(parseUnits("100"), await getFutureTime())
         .then(x => x.wait());
 
       // Number of curve lp tokens should be roughly the same
@@ -387,7 +383,7 @@ describe("Curve", function () {
       await cadc.approve(curveAddress, ethers.constants.MaxUint256);
 
       // Proportional Supply
-      await curve.proportionalDeposit(parseUnits("200"), await getFutureTime());
+      await curve.deposit(parseUnits("200"), await getFutureTime());
 
       // Swap
       let beforeUSDC = await usdc.balanceOf(user1Address);
@@ -461,7 +457,7 @@ describe("Curve", function () {
       await cadc.approve(curveAddress, ethers.constants.MaxUint256);
 
       // Proportional Supply
-      await curve.proportionalDeposit(parseUnits("200"), await getFutureTime());
+      await curve.deposit(parseUnits("200"), await getFutureTime());
 
       // Swap
       let beforeUSDC = await usdc.balanceOf(user1Address);

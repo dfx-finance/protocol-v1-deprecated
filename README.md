@@ -7,12 +7,12 @@ A decentralized foreign exchange protocol optimized for stablecoins.
 
 ## Gas Usage
 
-| Function             | Gas Usage (Estimated) |
-| -------------------- | --------------------- |
-| proportionalDeposit  | 198907                |
-| proportionalWithdraw | 163110                |
-| originSwap           | 142143                |
-| targetSwap           | 142244                |
+| Function   | Gas Usage (Estimated) |
+| ---------- | --------------------- |
+| deposit    | 198907                |
+| withdraw   | 163110                |
+| originSwap | 142143                |
+| targetSwap | 142244                |
 
 # API
 
@@ -56,10 +56,10 @@ Views how much a origin amount is needed given for a fixed target amount.
 | \_targetAmount | uint256 | Amount of target tokens to receive          |
 | originAmount\_ | uint256 | Amount of origin tokens to needed to supply |
 
-### viewProportionalDeposit
+### viewDeposit
 
 ```javascript
-function viewProportionalDeposit(
+function viewDeposit(
     uint256 _deposit
 ) external view returns (uint256 curveTokens_, uint256[] memory amounts_)
 ```
@@ -74,12 +74,12 @@ Views how many curve lp tokens will be minted for a given deposit, as well as th
 | curveTokens\_ | uint256   | Amount of LP tokens received                           |
 | amounts\_     | uint256[] | Amount of tokens for each address required             |
 
-For example, if the CAD/USD rate was 0.8, a `proportionalDeposit` of `100e18` will require 50 USDC and 50 USDC worth of CAD, which is 50/0.8 = 62.5 CADC.
+For example, if the CAD/USD rate was 0.8, a `deposit` of `100e18` will require 50 USDC and 50 USDC worth of CAD, which is 50/0.8 = 62.5 CADC.
 
-### viewProportionalWithdraw
+### viewWithdraw
 
 ```javascript
-function viewProportionalDeposit(
+function viewWithdraw(
     uint256 _curvesToBurn
 ) external view returns (uint256[] memory amounts_)
 ```
@@ -139,10 +139,10 @@ Swaps a dynamic origin amount for a fixed target amount
 | \_targetAmount    | uint256 | Amount of target tokens that wants to be received        |
 | \_deadline        | uint256 | Epoch time of which the transaction must be completed by |
 
-### proportionalDeposit
+### deposit
 
 ```javascript
-function proportionalDeposit(
+function deposit(
     uint256 _deposit,
     uint256 _deadline
 )
@@ -159,12 +159,12 @@ On completion, a corresponding amount of curve LP tokens is given to the user.
 | \_deposit  | address | Total amount of tokens to deposit (denominated in USD)   |
 | \_deadline | address | Epoch time of which the transaction must be completed by |
 
-For example, if the CAD/USD rate was 0.8, a `proportionalDeposit` of `100e18` will require 50 USDC and 50 USDC worth of CAD, which is 50/0.8 = 62.5 CADC.
+For example, if the CAD/USD rate was 0.8, a `deposit` of `100e18` will require 50 USDC and 50 USDC worth of CAD, which is 50/0.8 = 62.5 CADC.
 
-### proportionalWithdraw
+### withdraw
 
 ```javascript
-function proportionalWithdraw(
+function withdraw(
     uint256 _curvesToBurn,
     uint256 _deadline
 )
