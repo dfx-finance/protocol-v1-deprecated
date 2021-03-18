@@ -12,7 +12,7 @@
     "strict": true,
     "target": "es5"
   },
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "typechain"],
   "include": [
     "artifacts/**/*",
     "artifacts/**/*.json",

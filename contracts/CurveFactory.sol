@@ -24,9 +24,9 @@ import "./interfaces/IFreeFromUpTo.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract CurveFactory is Ownable {
-    event NewCurve(address indexed caller, address indexed curve);
+    event NewCurve(address indexed caller, bytes32 indexed id, address indexed curve);
 
-    mapping(address => bool) public isCurve;
+    mapping(bytes32 => address) public curves;
 
     function newCurve(
         address _baseCurrency,
@@ -36,6 +36,11 @@ contract CurveFactory is Ownable {
         address _baseAssimilator,
         address _quoteAssimilator
     ) public onlyOwner returns (Curve) {
+        bytes32 curveId = keccak256(abi.encode(_baseCurrency, _quoteCurrency));
+        if (curves[curveId] != address(0)) {
+            return Curve(curves[curveId]);
+        }
+
         address[] memory _assets = new address[](10);
         uint256[] memory _assetWeights = new uint256[](2);
         address[] memory _derivativeAssimilators = new address[](2);
@@ -65,8 +70,9 @@ contract CurveFactory is Ownable {
         // New curve
         Curve curve = new Curve(_assets, _assetWeights, _derivativeAssimilators);
         curve.transferOwnership(msg.sender);
-        isCurve[address(curve)] = true;
-        emit NewCurve(msg.sender, address(curve));
+        curves[curveId] = address(curve);
+
+        emit NewCurve(msg.sender, curveId, address(curve));
 
         return curve;
     }

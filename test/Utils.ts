@@ -84,6 +84,10 @@ export const mintEURS = async (recipient: string, amount: BigNumberish | number)
 };
 
 export const getOracleAnswer = async (oracleAddress: string): Promise<BigNumber> => {
+  if (oracleAddress === TOKENS.USDC.address) {
+    return parseUnits("1", 8);
+  }
+
   const oracle = await ethers.getContractAt(EACAggregatorProxyABI, oracleAddress);
   return oracle.latestAnswer();
 };
@@ -116,7 +120,7 @@ export const getFutureTime = async (): Promise<number> => {
 };
 
 export const getCurveAddressFromTxRecp = (txRecp: ContractReceipt): string => {
-  const abi = ["event NewCurve(address indexed caller, address indexed curve)"];
+  const abi = ["event NewCurve(address indexed caller, bytes32 indexed id, address indexed curve)"];
   const iface = new ethers.utils.Interface(abi);
 
   const events = txRecp.logs
@@ -129,11 +133,11 @@ export const getCurveAddressFromTxRecp = (txRecp: ContractReceipt): string => {
     })
     .filter(x => x !== null);
 
-  if (!events[0]?.args[1]) {
+  if (!events[0]?.args.curve) {
     throw new Error("Unable to find curve address from tx recp");
   }
 
-  return events[0]?.args[1];
+  return events[0]?.args.curve;
 };
 
 export const BN = (a: number | string): BigNumber => {

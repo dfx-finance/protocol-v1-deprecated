@@ -22,7 +22,7 @@ export const TOKENS = {
 };
 
 export const ORACLES = {
-  CAD: {
+  CADC: {
     address: "0xa34317DB73e77d453b1B8d04550c44D10e981C8e",
     decimals: 8,
   },
@@ -32,6 +32,10 @@ export const ORACLES = {
   },
   XSGD: {
     address: "0xe25277fF4bbF9081C75Ab0EB13B4A13a721f3E13",
+    decimals: 8,
+  },
+  USDC: {
+    address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
     decimals: 8,
   },
 };

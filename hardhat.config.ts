@@ -1,3 +1,4 @@
+import "hardhat-typechain";
 import { HardhatUserConfig } from "hardhat/config";
 import { task } from "hardhat/config";
 import "@nomiclabs/hardhat-waffle";
