@@ -12,10 +12,14 @@ export class Orchestrator__factory extends ContractFactory {
     super(_abi, _bytecode, signer);
   }
 
-  deploy(overrides?: Overrides & { from?: string | Promise<string> }): Promise<Orchestrator> {
+  deploy(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<Orchestrator> {
     return super.deploy(overrides || {}) as Promise<Orchestrator>;
   }
-  getDeployTransaction(overrides?: Overrides & { from?: string | Promise<string> }): TransactionRequest {
+  getDeployTransaction(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): TransactionRequest {
     return super.getDeployTransaction(overrides || {});
   }
   attach(address: string): Orchestrator {
@@ -24,7 +28,10 @@ export class Orchestrator__factory extends ContractFactory {
   connect(signer: Signer): Orchestrator__factory {
     return super.connect(signer) as Orchestrator__factory;
   }
-  static connect(address: string, signerOrProvider: Signer | Provider): Orchestrator {
+  static connect(
+    address: string,
+    signerOrProvider: Signer | Provider
+  ): Orchestrator {
     return new Contract(address, _abi, signerOrProvider) as Orchestrator;
   }
 }

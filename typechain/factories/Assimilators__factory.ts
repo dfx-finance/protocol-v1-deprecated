@@ -12,10 +12,14 @@ export class Assimilators__factory extends ContractFactory {
     super(_abi, _bytecode, signer);
   }
 
-  deploy(overrides?: Overrides & { from?: string | Promise<string> }): Promise<Assimilators> {
+  deploy(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<Assimilators> {
     return super.deploy(overrides || {}) as Promise<Assimilators>;
   }
-  getDeployTransaction(overrides?: Overrides & { from?: string | Promise<string> }): TransactionRequest {
+  getDeployTransaction(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): TransactionRequest {
     return super.getDeployTransaction(overrides || {});
   }
   attach(address: string): Assimilators {
@@ -24,7 +28,10 @@ export class Assimilators__factory extends ContractFactory {
   connect(signer: Signer): Assimilators__factory {
     return super.connect(signer) as Assimilators__factory;
   }
-  static connect(address: string, signerOrProvider: Signer | Provider): Assimilators {
+  static connect(
+    address: string,
+    signerOrProvider: Signer | Provider
+  ): Assimilators {
     return new Contract(address, _abi, signerOrProvider) as Assimilators;
   }
 }

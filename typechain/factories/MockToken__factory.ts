@@ -2,7 +2,13 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Signer, BigNumberish, Contract, ContractFactory, Overrides } from "ethers";
+import {
+  Signer,
+  BigNumberish,
+  Contract,
+  ContractFactory,
+  Overrides,
+} from "ethers";
 import { Provider, TransactionRequest } from "@ethersproject/providers";
 
 import type { MockToken } from "../MockToken";
@@ -16,15 +22,20 @@ export class MockToken__factory extends ContractFactory {
     name: string,
     symbol: string,
     decimals: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<MockToken> {
-    return super.deploy(name, symbol, decimals, overrides || {}) as Promise<MockToken>;
+    return super.deploy(
+      name,
+      symbol,
+      decimals,
+      overrides || {}
+    ) as Promise<MockToken>;
   }
   getDeployTransaction(
     name: string,
     symbol: string,
     decimals: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): TransactionRequest {
     return super.getDeployTransaction(name, symbol, decimals, overrides || {});
   }
@@ -34,7 +45,10 @@ export class MockToken__factory extends ContractFactory {
   connect(signer: Signer): MockToken__factory {
     return super.connect(signer) as MockToken__factory;
   }
-  static connect(address: string, signerOrProvider: Signer | Provider): MockToken {
+  static connect(
+    address: string,
+    signerOrProvider: Signer | Provider
+  ): MockToken {
     return new Contract(address, _abi, signerOrProvider) as MockToken;
   }
 }

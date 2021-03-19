@@ -12,10 +12,14 @@ export class ProportionalLiquidity__factory extends ContractFactory {
     super(_abi, _bytecode, signer);
   }
 
-  deploy(overrides?: Overrides & { from?: string | Promise<string> }): Promise<ProportionalLiquidity> {
+  deploy(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ProportionalLiquidity> {
     return super.deploy(overrides || {}) as Promise<ProportionalLiquidity>;
   }
-  getDeployTransaction(overrides?: Overrides & { from?: string | Promise<string> }): TransactionRequest {
+  getDeployTransaction(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): TransactionRequest {
     return super.getDeployTransaction(overrides || {});
   }
   attach(address: string): ProportionalLiquidity {
@@ -24,8 +28,15 @@ export class ProportionalLiquidity__factory extends ContractFactory {
   connect(signer: Signer): ProportionalLiquidity__factory {
     return super.connect(signer) as ProportionalLiquidity__factory;
   }
-  static connect(address: string, signerOrProvider: Signer | Provider): ProportionalLiquidity {
-    return new Contract(address, _abi, signerOrProvider) as ProportionalLiquidity;
+  static connect(
+    address: string,
+    signerOrProvider: Signer | Provider
+  ): ProportionalLiquidity {
+    return new Contract(
+      address,
+      _abi,
+      signerOrProvider
+    ) as ProportionalLiquidity;
   }
 }
 

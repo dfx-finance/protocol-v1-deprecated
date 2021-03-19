@@ -12,10 +12,14 @@ export class EursToUsdAssimilator__factory extends ContractFactory {
     super(_abi, _bytecode, signer);
   }
 
-  deploy(overrides?: Overrides & { from?: string | Promise<string> }): Promise<EursToUsdAssimilator> {
+  deploy(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<EursToUsdAssimilator> {
     return super.deploy(overrides || {}) as Promise<EursToUsdAssimilator>;
   }
-  getDeployTransaction(overrides?: Overrides & { from?: string | Promise<string> }): TransactionRequest {
+  getDeployTransaction(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): TransactionRequest {
     return super.getDeployTransaction(overrides || {});
   }
   attach(address: string): EursToUsdAssimilator {
@@ -24,8 +28,15 @@ export class EursToUsdAssimilator__factory extends ContractFactory {
   connect(signer: Signer): EursToUsdAssimilator__factory {
     return super.connect(signer) as EursToUsdAssimilator__factory;
   }
-  static connect(address: string, signerOrProvider: Signer | Provider): EursToUsdAssimilator {
-    return new Contract(address, _abi, signerOrProvider) as EursToUsdAssimilator;
+  static connect(
+    address: string,
+    signerOrProvider: Signer | Provider
+  ): EursToUsdAssimilator {
+    return new Contract(
+      address,
+      _abi,
+      signerOrProvider
+    ) as EursToUsdAssimilator;
   }
 }
 

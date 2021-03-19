@@ -12,10 +12,14 @@ export class Curves__factory extends ContractFactory {
     super(_abi, _bytecode, signer);
   }
 
-  deploy(overrides?: Overrides & { from?: string | Promise<string> }): Promise<Curves> {
+  deploy(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<Curves> {
     return super.deploy(overrides || {}) as Promise<Curves>;
   }
-  getDeployTransaction(overrides?: Overrides & { from?: string | Promise<string> }): TransactionRequest {
+  getDeployTransaction(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): TransactionRequest {
     return super.getDeployTransaction(overrides || {});
   }
   attach(address: string): Curves {

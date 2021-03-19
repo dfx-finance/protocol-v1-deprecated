@@ -12,10 +12,14 @@ export class CadcToUsdAssimilator__factory extends ContractFactory {
     super(_abi, _bytecode, signer);
   }
 
-  deploy(overrides?: Overrides & { from?: string | Promise<string> }): Promise<CadcToUsdAssimilator> {
+  deploy(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<CadcToUsdAssimilator> {
     return super.deploy(overrides || {}) as Promise<CadcToUsdAssimilator>;
   }
-  getDeployTransaction(overrides?: Overrides & { from?: string | Promise<string> }): TransactionRequest {
+  getDeployTransaction(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): TransactionRequest {
     return super.getDeployTransaction(overrides || {});
   }
   attach(address: string): CadcToUsdAssimilator {
@@ -24,8 +28,15 @@ export class CadcToUsdAssimilator__factory extends ContractFactory {
   connect(signer: Signer): CadcToUsdAssimilator__factory {
     return super.connect(signer) as CadcToUsdAssimilator__factory;
   }
-  static connect(address: string, signerOrProvider: Signer | Provider): CadcToUsdAssimilator {
-    return new Contract(address, _abi, signerOrProvider) as CadcToUsdAssimilator;
+  static connect(
+    address: string,
+    signerOrProvider: Signer | Provider
+  ): CadcToUsdAssimilator {
+    return new Contract(
+      address,
+      _abi,
+      signerOrProvider
+    ) as CadcToUsdAssimilator;
   }
 }
 

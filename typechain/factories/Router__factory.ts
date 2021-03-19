@@ -12,12 +12,15 @@ export class Router__factory extends ContractFactory {
     super(_abi, _bytecode, signer);
   }
 
-  deploy(_factory: string, overrides?: Overrides & { from?: string | Promise<string> }): Promise<Router> {
+  deploy(
+    _factory: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<Router> {
     return super.deploy(_factory, overrides || {}) as Promise<Router>;
   }
   getDeployTransaction(
     _factory: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): TransactionRequest {
     return super.getDeployTransaction(_factory, overrides || {});
   }

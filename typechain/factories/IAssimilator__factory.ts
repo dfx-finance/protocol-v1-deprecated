@@ -8,7 +8,10 @@ import { Provider } from "@ethersproject/providers";
 import type { IAssimilator } from "../IAssimilator";
 
 export class IAssimilator__factory {
-  static connect(address: string, signerOrProvider: Signer | Provider): IAssimilator {
+  static connect(
+    address: string,
+    signerOrProvider: Signer | Provider
+  ): IAssimilator {
     return new Contract(address, _abi, signerOrProvider) as IAssimilator;
   }
 }

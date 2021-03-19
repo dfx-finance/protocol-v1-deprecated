@@ -8,7 +8,10 @@ import { Provider } from "@ethersproject/providers";
 import type { IFreeFromUpTo } from "../IFreeFromUpTo";
 
 export class IFreeFromUpTo__factory {
-  static connect(address: string, signerOrProvider: Signer | Provider): IFreeFromUpTo {
+  static connect(
+    address: string,
+    signerOrProvider: Signer | Provider
+  ): IFreeFromUpTo {
     return new Contract(address, _abi, signerOrProvider) as IFreeFromUpTo;
   }
 }

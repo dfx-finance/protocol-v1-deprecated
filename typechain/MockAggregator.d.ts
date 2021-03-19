@@ -25,10 +25,19 @@ interface MockAggregatorInterface extends ethers.utils.Interface {
     "setAnswer(uint256)": FunctionFragment;
   };
 
-  encodeFunctionData(functionFragment: "latestAnswer", values?: undefined): string;
-  encodeFunctionData(functionFragment: "setAnswer", values: [BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "latestAnswer",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setAnswer",
+    values: [BigNumberish]
+  ): string;
 
-  decodeFunctionResult(functionFragment: "latestAnswer", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "latestAnswer",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "setAnswer", data: BytesLike): Result;
 
   events: {};
@@ -40,26 +49,26 @@ export class MockAggregator extends Contract {
   deployed(): Promise<this>;
 
   listeners<EventArgsArray extends Array<any>, EventArgsObject>(
-    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
   ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
   off<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   on<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   once<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
-    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
   ): this;
 
   listeners(eventName?: string): Array<Listener>;
@@ -72,7 +81,7 @@ export class MockAggregator extends Contract {
   queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
     event: TypedEventFilter<EventArgsArray, EventArgsObject>,
     fromBlockOrBlockhash?: string | number | undefined,
-    toBlock?: string | number | undefined,
+    toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: MockAggregatorInterface;
@@ -84,12 +93,12 @@ export class MockAggregator extends Contract {
 
     setAnswer(
       _a: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "setAnswer(uint256)"(
       _a: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
 
@@ -99,12 +108,12 @@ export class MockAggregator extends Contract {
 
   setAnswer(
     _a: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "setAnswer(uint256)"(
     _a: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
@@ -114,7 +123,10 @@ export class MockAggregator extends Contract {
 
     setAnswer(_a: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
-    "setAnswer(uint256)"(_a: BigNumberish, overrides?: CallOverrides): Promise<void>;
+    "setAnswer(uint256)"(
+      _a: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
   };
 
   filters: {};
@@ -124,11 +136,14 @@ export class MockAggregator extends Contract {
 
     "latestAnswer()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    setAnswer(_a: BigNumberish, overrides?: Overrides & { from?: string | Promise<string> }): Promise<BigNumber>;
+    setAnswer(
+      _a: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     "setAnswer(uint256)"(
       _a: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
@@ -139,12 +154,12 @@ export class MockAggregator extends Contract {
 
     setAnswer(
       _a: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "setAnswer(uint256)"(
       _a: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }

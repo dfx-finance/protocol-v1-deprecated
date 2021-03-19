@@ -53,78 +53,171 @@ interface CurveInterface extends ethers.utils.Interface {
     "withdraw(uint256,uint256)": FunctionFragment;
   };
 
-  encodeFunctionData(functionFragment: "allowance", values: [string, string]): string;
-  encodeFunctionData(functionFragment: "approve", values: [string, BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "allowance",
+    values: [string, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "approve",
+    values: [string, BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "assimilator", values: [string]): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
   encodeFunctionData(functionFragment: "chi", values?: undefined): string;
   encodeFunctionData(functionFragment: "curve", values?: undefined): string;
-  encodeFunctionData(functionFragment: "deposit", values: [BigNumberish, BigNumberish]): string;
-  encodeFunctionData(functionFragment: "derivatives", values: [BigNumberish]): string;
-  encodeFunctionData(functionFragment: "excludeDerivative", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "deposit",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "derivatives",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "excludeDerivative",
+    values: [string]
+  ): string;
   encodeFunctionData(functionFragment: "frozen", values?: undefined): string;
   encodeFunctionData(functionFragment: "liquidity", values?: undefined): string;
-  encodeFunctionData(functionFragment: "numeraires", values: [BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "numeraires",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "originSwap",
-    values: [string, string, BigNumberish, BigNumberish, BigNumberish],
+    values: [string, string, BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "originSwapDiscountCHI",
-    values: [string, string, BigNumberish, BigNumberish, BigNumberish],
+    values: [string, string, BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
-  encodeFunctionData(functionFragment: "reserves", values: [BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "reserves",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "setFrozen", values: [boolean]): string;
   encodeFunctionData(
     functionFragment: "setParams",
-    values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish],
+    values: [
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish
+    ]
   ): string;
-  encodeFunctionData(functionFragment: "supportsInterface", values: [BytesLike]): string;
+  encodeFunctionData(
+    functionFragment: "supportsInterface",
+    values: [BytesLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "targetSwap",
-    values: [string, string, BigNumberish, BigNumberish, BigNumberish],
+    values: [string, string, BigNumberish, BigNumberish, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "totalSupply", values?: undefined): string;
-  encodeFunctionData(functionFragment: "transfer", values: [string, BigNumberish]): string;
-  encodeFunctionData(functionFragment: "transferFrom", values: [string, string, BigNumberish]): string;
-  encodeFunctionData(functionFragment: "transferOwnership", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "totalSupply",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "transfer",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "transferFrom",
+    values: [string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "transferOwnership",
+    values: [string]
+  ): string;
   encodeFunctionData(functionFragment: "viewCurve", values?: undefined): string;
-  encodeFunctionData(functionFragment: "viewDeposit", values: [BigNumberish]): string;
-  encodeFunctionData(functionFragment: "viewOriginSwap", values: [string, string, BigNumberish]): string;
-  encodeFunctionData(functionFragment: "viewTargetSwap", values: [string, string, BigNumberish]): string;
-  encodeFunctionData(functionFragment: "viewWithdraw", values: [BigNumberish]): string;
-  encodeFunctionData(functionFragment: "withdraw", values: [BigNumberish, BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "viewDeposit",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "viewOriginSwap",
+    values: [string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "viewTargetSwap",
+    values: [string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "viewWithdraw",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "withdraw",
+    values: [BigNumberish, BigNumberish]
+  ): string;
 
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "assimilator", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "assimilator",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "chi", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "curve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "deposit", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "derivatives", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "excludeDerivative", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "derivatives",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "excludeDerivative",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "frozen", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "liquidity", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "numeraires", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "originSwap", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "originSwapDiscountCHI", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "originSwapDiscountCHI",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "reserves", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setFrozen", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setParams", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "supportsInterface", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "supportsInterface",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "targetSwap", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "totalSupply", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "totalSupply",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "transfer", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "transferFrom", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "transferOwnership", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "transferFrom",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferOwnership",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "viewCurve", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "viewDeposit", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "viewOriginSwap", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "viewTargetSwap", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "viewWithdraw", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "viewDeposit",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "viewOriginSwap",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "viewTargetSwap",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "viewWithdraw",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
 
   events: {
@@ -156,26 +249,26 @@ export class Curve extends Contract {
   deployed(): Promise<this>;
 
   listeners<EventArgsArray extends Array<any>, EventArgsObject>(
-    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
   ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
   off<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   on<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   once<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
-    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
   ): this;
 
   listeners(eventName?: string): Array<Listener>;
@@ -188,7 +281,7 @@ export class Curve extends Contract {
   queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
     event: TypedEventFilter<EventArgsArray, EventArgsObject>,
     fromBlockOrBlockhash?: string | number | undefined,
-    toBlock?: string | number | undefined,
+    toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: CurveInterface;
@@ -197,44 +290,53 @@ export class Curve extends Contract {
     allowance(
       _owner: string,
       _spender: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber] & { allowance_: BigNumber }>;
 
     "allowance(address,address)"(
       _owner: string,
       _spender: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber] & { allowance_: BigNumber }>;
 
     approve(
       _spender: string,
       _amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "approve(address,uint256)"(
       _spender: string,
       _amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    assimilator(_derivative: string, overrides?: CallOverrides): Promise<[string] & { assimilator_: string }>;
+    assimilator(
+      _derivative: string,
+      overrides?: CallOverrides
+    ): Promise<[string] & { assimilator_: string }>;
 
     "assimilator(address)"(
       _derivative: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[string] & { assimilator_: string }>;
 
-    balanceOf(_account: string, overrides?: CallOverrides): Promise<[BigNumber] & { balance_: BigNumber }>;
+    balanceOf(
+      _account: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { balance_: BigNumber }>;
 
-    "balanceOf(address)"(_account: string, overrides?: CallOverrides): Promise<[BigNumber] & { balance_: BigNumber }>;
+    "balanceOf(address)"(
+      _account: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { balance_: BigNumber }>;
 
     chi(overrides?: CallOverrides): Promise<[string]>;
 
     "chi()"(overrides?: CallOverrides): Promise<[string]>;
 
     curve(
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         alpha: BigNumber;
@@ -247,7 +349,7 @@ export class Curve extends Contract {
     >;
 
     "curve()"(
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         alpha: BigNumber;
@@ -262,27 +364,33 @@ export class Curve extends Contract {
     deposit(
       _deposit: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "deposit(uint256,uint256)"(
       _deposit: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    derivatives(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
+    derivatives(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
-    "derivatives(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
+    "derivatives(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
     excludeDerivative(
       _derivative: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "excludeDerivative(address)"(
       _derivative: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     frozen(overrides?: CallOverrides): Promise<[boolean]>;
@@ -290,16 +398,26 @@ export class Curve extends Contract {
     "frozen()"(overrides?: CallOverrides): Promise<[boolean]>;
 
     liquidity(
-      overrides?: CallOverrides,
-    ): Promise<[BigNumber, BigNumber[]] & { total_: BigNumber; individual_: BigNumber[] }>;
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber[]] & { total_: BigNumber; individual_: BigNumber[] }
+    >;
 
     "liquidity()"(
-      overrides?: CallOverrides,
-    ): Promise<[BigNumber, BigNumber[]] & { total_: BigNumber; individual_: BigNumber[] }>;
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber[]] & { total_: BigNumber; individual_: BigNumber[] }
+    >;
 
-    numeraires(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
+    numeraires(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
-    "numeraires(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
+    "numeraires(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
     originSwap(
       _origin: string,
@@ -307,7 +425,7 @@ export class Curve extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "originSwap(address,address,uint256,uint256,uint256)"(
@@ -316,7 +434,7 @@ export class Curve extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     originSwapDiscountCHI(
@@ -325,7 +443,7 @@ export class Curve extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "originSwapDiscountCHI(address,address,uint256,uint256,uint256)"(
@@ -334,7 +452,7 @@ export class Curve extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
@@ -343,16 +461,19 @@ export class Curve extends Contract {
 
     reserves(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
 
-    "reserves(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
+    "reserves(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
     setFrozen(
       _toFreezeOrNotToFreeze: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "setFrozen(bool)"(
       _toFreezeOrNotToFreeze: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     setParams(
@@ -361,7 +482,7 @@ export class Curve extends Contract {
       _feeAtHalt: BigNumberish,
       _epsilon: BigNumberish,
       _lambda: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "setParams(uint256,uint256,uint256,uint256,uint256)"(
@@ -370,14 +491,17 @@ export class Curve extends Contract {
       _feeAtHalt: BigNumberish,
       _epsilon: BigNumberish,
       _lambda: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    supportsInterface(_interface: BytesLike, overrides?: CallOverrides): Promise<[boolean] & { supports_: boolean }>;
+    supportsInterface(
+      _interface: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean] & { supports_: boolean }>;
 
     "supportsInterface(bytes4)"(
       _interface: BytesLike,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[boolean] & { supports_: boolean }>;
 
     targetSwap(
@@ -386,7 +510,7 @@ export class Curve extends Contract {
       _maxOriginAmount: BigNumberish,
       _targetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "targetSwap(address,address,uint256,uint256,uint256)"(
@@ -395,51 +519,55 @@ export class Curve extends Contract {
       _maxOriginAmount: BigNumberish,
       _targetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    totalSupply(overrides?: CallOverrides): Promise<[BigNumber] & { totalSupply_: BigNumber }>;
+    totalSupply(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { totalSupply_: BigNumber }>;
 
-    "totalSupply()"(overrides?: CallOverrides): Promise<[BigNumber] & { totalSupply_: BigNumber }>;
+    "totalSupply()"(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { totalSupply_: BigNumber }>;
 
     transfer(
       _recipient: string,
       _amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "transfer(address,uint256)"(
       _recipient: string,
       _amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     transferFrom(
       _sender: string,
       _recipient: string,
       _amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "transferFrom(address,address,uint256)"(
       _sender: string,
       _recipient: string,
       _amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     transferOwnership(
       _newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "transferOwnership(address)"(
       _newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     viewCurve(
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         alpha_: BigNumber;
@@ -451,7 +579,7 @@ export class Curve extends Contract {
     >;
 
     "viewCurve()"(
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         alpha_: BigNumber;
@@ -462,85 +590,111 @@ export class Curve extends Contract {
       }
     >;
 
-    viewDeposit(_deposit: BigNumberish, overrides?: CallOverrides): Promise<[BigNumber, BigNumber[]]>;
+    viewDeposit(
+      _deposit: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber[]]>;
 
-    "viewDeposit(uint256)"(_deposit: BigNumberish, overrides?: CallOverrides): Promise<[BigNumber, BigNumber[]]>;
+    "viewDeposit(uint256)"(
+      _deposit: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber[]]>;
 
     viewOriginSwap(
       _origin: string,
       _target: string,
       _originAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber] & { targetAmount_: BigNumber }>;
 
     "viewOriginSwap(address,address,uint256)"(
       _origin: string,
       _target: string,
       _originAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber] & { targetAmount_: BigNumber }>;
 
     viewTargetSwap(
       _origin: string,
       _target: string,
       _targetAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber] & { originAmount_: BigNumber }>;
 
     "viewTargetSwap(address,address,uint256)"(
       _origin: string,
       _target: string,
       _targetAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber] & { originAmount_: BigNumber }>;
 
-    viewWithdraw(_curvesToBurn: BigNumberish, overrides?: CallOverrides): Promise<[BigNumber[]]>;
+    viewWithdraw(
+      _curvesToBurn: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber[]]>;
 
-    "viewWithdraw(uint256)"(_curvesToBurn: BigNumberish, overrides?: CallOverrides): Promise<[BigNumber[]]>;
+    "viewWithdraw(uint256)"(
+      _curvesToBurn: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber[]]>;
 
     withdraw(
       _curvesToBurn: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "withdraw(uint256,uint256)"(
       _curvesToBurn: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
 
-  allowance(_owner: string, _spender: string, overrides?: CallOverrides): Promise<BigNumber>;
+  allowance(
+    _owner: string,
+    _spender: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
-  "allowance(address,address)"(_owner: string, _spender: string, overrides?: CallOverrides): Promise<BigNumber>;
+  "allowance(address,address)"(
+    _owner: string,
+    _spender: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   approve(
     _spender: string,
     _amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "approve(address,uint256)"(
     _spender: string,
     _amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   assimilator(_derivative: string, overrides?: CallOverrides): Promise<string>;
 
-  "assimilator(address)"(_derivative: string, overrides?: CallOverrides): Promise<string>;
+  "assimilator(address)"(
+    _derivative: string,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   balanceOf(_account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-  "balanceOf(address)"(_account: string, overrides?: CallOverrides): Promise<BigNumber>;
+  "balanceOf(address)"(
+    _account: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   chi(overrides?: CallOverrides): Promise<string>;
 
   "chi()"(overrides?: CallOverrides): Promise<string>;
 
   curve(
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<
     [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
       alpha: BigNumber;
@@ -553,7 +707,7 @@ export class Curve extends Contract {
   >;
 
   "curve()"(
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<
     [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
       alpha: BigNumber;
@@ -568,27 +722,30 @@ export class Curve extends Contract {
   deposit(
     _deposit: BigNumberish,
     _deadline: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "deposit(uint256,uint256)"(
     _deposit: BigNumberish,
     _deadline: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   derivatives(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-  "derivatives(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+  "derivatives(uint256)"(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   excludeDerivative(
     _derivative: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "excludeDerivative(address)"(
     _derivative: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   frozen(overrides?: CallOverrides): Promise<boolean>;
@@ -596,16 +753,23 @@ export class Curve extends Contract {
   "frozen()"(overrides?: CallOverrides): Promise<boolean>;
 
   liquidity(
-    overrides?: CallOverrides,
-  ): Promise<[BigNumber, BigNumber[]] & { total_: BigNumber; individual_: BigNumber[] }>;
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber[]] & { total_: BigNumber; individual_: BigNumber[] }
+  >;
 
   "liquidity()"(
-    overrides?: CallOverrides,
-  ): Promise<[BigNumber, BigNumber[]] & { total_: BigNumber; individual_: BigNumber[] }>;
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber[]] & { total_: BigNumber; individual_: BigNumber[] }
+  >;
 
   numeraires(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-  "numeraires(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+  "numeraires(uint256)"(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   originSwap(
     _origin: string,
@@ -613,7 +777,7 @@ export class Curve extends Contract {
     _originAmount: BigNumberish,
     _minTargetAmount: BigNumberish,
     _deadline: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "originSwap(address,address,uint256,uint256,uint256)"(
@@ -622,7 +786,7 @@ export class Curve extends Contract {
     _originAmount: BigNumberish,
     _minTargetAmount: BigNumberish,
     _deadline: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   originSwapDiscountCHI(
@@ -631,7 +795,7 @@ export class Curve extends Contract {
     _originAmount: BigNumberish,
     _minTargetAmount: BigNumberish,
     _deadline: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "originSwapDiscountCHI(address,address,uint256,uint256,uint256)"(
@@ -640,7 +804,7 @@ export class Curve extends Contract {
     _originAmount: BigNumberish,
     _minTargetAmount: BigNumberish,
     _deadline: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   owner(overrides?: CallOverrides): Promise<string>;
@@ -649,16 +813,19 @@ export class Curve extends Contract {
 
   reserves(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-  "reserves(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+  "reserves(uint256)"(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   setFrozen(
     _toFreezeOrNotToFreeze: boolean,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "setFrozen(bool)"(
     _toFreezeOrNotToFreeze: boolean,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   setParams(
@@ -667,7 +834,7 @@ export class Curve extends Contract {
     _feeAtHalt: BigNumberish,
     _epsilon: BigNumberish,
     _lambda: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "setParams(uint256,uint256,uint256,uint256,uint256)"(
@@ -676,12 +843,18 @@ export class Curve extends Contract {
     _feeAtHalt: BigNumberish,
     _epsilon: BigNumberish,
     _lambda: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  supportsInterface(_interface: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+  supportsInterface(
+    _interface: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
 
-  "supportsInterface(bytes4)"(_interface: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+  "supportsInterface(bytes4)"(
+    _interface: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
 
   targetSwap(
     _origin: string,
@@ -689,7 +862,7 @@ export class Curve extends Contract {
     _maxOriginAmount: BigNumberish,
     _targetAmount: BigNumberish,
     _deadline: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "targetSwap(address,address,uint256,uint256,uint256)"(
@@ -698,7 +871,7 @@ export class Curve extends Contract {
     _maxOriginAmount: BigNumberish,
     _targetAmount: BigNumberish,
     _deadline: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
@@ -708,41 +881,41 @@ export class Curve extends Contract {
   transfer(
     _recipient: string,
     _amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "transfer(address,uint256)"(
     _recipient: string,
     _amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   transferFrom(
     _sender: string,
     _recipient: string,
     _amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "transferFrom(address,address,uint256)"(
     _sender: string,
     _recipient: string,
     _amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   transferOwnership(
     _newOwner: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "transferOwnership(address)"(
     _newOwner: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   viewCurve(
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<
     [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
       alpha_: BigNumber;
@@ -754,7 +927,7 @@ export class Curve extends Contract {
   >;
 
   "viewCurve()"(
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<
     [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
       alpha_: BigNumber;
@@ -765,77 +938,114 @@ export class Curve extends Contract {
     }
   >;
 
-  viewDeposit(_deposit: BigNumberish, overrides?: CallOverrides): Promise<[BigNumber, BigNumber[]]>;
+  viewDeposit(
+    _deposit: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<[BigNumber, BigNumber[]]>;
 
-  "viewDeposit(uint256)"(_deposit: BigNumberish, overrides?: CallOverrides): Promise<[BigNumber, BigNumber[]]>;
+  "viewDeposit(uint256)"(
+    _deposit: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<[BigNumber, BigNumber[]]>;
 
   viewOriginSwap(
     _origin: string,
     _target: string,
     _originAmount: BigNumberish,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<BigNumber>;
 
   "viewOriginSwap(address,address,uint256)"(
     _origin: string,
     _target: string,
     _originAmount: BigNumberish,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<BigNumber>;
 
   viewTargetSwap(
     _origin: string,
     _target: string,
     _targetAmount: BigNumberish,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<BigNumber>;
 
   "viewTargetSwap(address,address,uint256)"(
     _origin: string,
     _target: string,
     _targetAmount: BigNumberish,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  viewWithdraw(_curvesToBurn: BigNumberish, overrides?: CallOverrides): Promise<BigNumber[]>;
+  viewWithdraw(
+    _curvesToBurn: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber[]>;
 
-  "viewWithdraw(uint256)"(_curvesToBurn: BigNumberish, overrides?: CallOverrides): Promise<BigNumber[]>;
+  "viewWithdraw(uint256)"(
+    _curvesToBurn: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber[]>;
 
   withdraw(
     _curvesToBurn: BigNumberish,
     _deadline: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "withdraw(uint256,uint256)"(
     _curvesToBurn: BigNumberish,
     _deadline: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    allowance(_owner: string, _spender: string, overrides?: CallOverrides): Promise<BigNumber>;
+    allowance(
+      _owner: string,
+      _spender: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "allowance(address,address)"(_owner: string, _spender: string, overrides?: CallOverrides): Promise<BigNumber>;
+    "allowance(address,address)"(
+      _owner: string,
+      _spender: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    approve(_spender: string, _amount: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
+    approve(
+      _spender: string,
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
-    "approve(address,uint256)"(_spender: string, _amount: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
+    "approve(address,uint256)"(
+      _spender: string,
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
-    assimilator(_derivative: string, overrides?: CallOverrides): Promise<string>;
+    assimilator(
+      _derivative: string,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
-    "assimilator(address)"(_derivative: string, overrides?: CallOverrides): Promise<string>;
+    "assimilator(address)"(
+      _derivative: string,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     balanceOf(_account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "balanceOf(address)"(_account: string, overrides?: CallOverrides): Promise<BigNumber>;
+    "balanceOf(address)"(
+      _account: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     chi(overrides?: CallOverrides): Promise<string>;
 
     "chi()"(overrides?: CallOverrides): Promise<string>;
 
     curve(
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         alpha: BigNumber;
@@ -848,7 +1058,7 @@ export class Curve extends Contract {
     >;
 
     "curve()"(
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         alpha: BigNumber;
@@ -863,38 +1073,54 @@ export class Curve extends Contract {
     deposit(
       _deposit: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber[]]>;
 
     "deposit(uint256,uint256)"(
       _deposit: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber[]]>;
 
     derivatives(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-    "derivatives(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+    "derivatives(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
-    excludeDerivative(_derivative: string, overrides?: CallOverrides): Promise<void>;
+    excludeDerivative(
+      _derivative: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
-    "excludeDerivative(address)"(_derivative: string, overrides?: CallOverrides): Promise<void>;
+    "excludeDerivative(address)"(
+      _derivative: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     frozen(overrides?: CallOverrides): Promise<boolean>;
 
     "frozen()"(overrides?: CallOverrides): Promise<boolean>;
 
     liquidity(
-      overrides?: CallOverrides,
-    ): Promise<[BigNumber, BigNumber[]] & { total_: BigNumber; individual_: BigNumber[] }>;
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber[]] & { total_: BigNumber; individual_: BigNumber[] }
+    >;
 
     "liquidity()"(
-      overrides?: CallOverrides,
-    ): Promise<[BigNumber, BigNumber[]] & { total_: BigNumber; individual_: BigNumber[] }>;
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber[]] & { total_: BigNumber; individual_: BigNumber[] }
+    >;
 
     numeraires(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-    "numeraires(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+    "numeraires(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     originSwap(
       _origin: string,
@@ -902,7 +1128,7 @@ export class Curve extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     "originSwap(address,address,uint256,uint256,uint256)"(
@@ -911,7 +1137,7 @@ export class Curve extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     originSwapDiscountCHI(
@@ -920,7 +1146,7 @@ export class Curve extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     "originSwapDiscountCHI(address,address,uint256,uint256,uint256)"(
@@ -929,7 +1155,7 @@ export class Curve extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<string>;
@@ -938,11 +1164,20 @@ export class Curve extends Contract {
 
     reserves(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-    "reserves(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+    "reserves(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
-    setFrozen(_toFreezeOrNotToFreeze: boolean, overrides?: CallOverrides): Promise<void>;
+    setFrozen(
+      _toFreezeOrNotToFreeze: boolean,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
-    "setFrozen(bool)"(_toFreezeOrNotToFreeze: boolean, overrides?: CallOverrides): Promise<void>;
+    "setFrozen(bool)"(
+      _toFreezeOrNotToFreeze: boolean,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     setParams(
       _alpha: BigNumberish,
@@ -950,7 +1185,7 @@ export class Curve extends Contract {
       _feeAtHalt: BigNumberish,
       _epsilon: BigNumberish,
       _lambda: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<void>;
 
     "setParams(uint256,uint256,uint256,uint256,uint256)"(
@@ -959,12 +1194,18 @@ export class Curve extends Contract {
       _feeAtHalt: BigNumberish,
       _epsilon: BigNumberish,
       _lambda: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<void>;
 
-    supportsInterface(_interface: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+    supportsInterface(
+      _interface: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
-    "supportsInterface(bytes4)"(_interface: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+    "supportsInterface(bytes4)"(
+      _interface: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     targetSwap(
       _origin: string,
@@ -972,7 +1213,7 @@ export class Curve extends Contract {
       _maxOriginAmount: BigNumberish,
       _targetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     "targetSwap(address,address,uint256,uint256,uint256)"(
@@ -981,37 +1222,51 @@ export class Curve extends Contract {
       _maxOriginAmount: BigNumberish,
       _targetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     "totalSupply()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    transfer(_recipient: string, _amount: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
+    transfer(
+      _recipient: string,
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
-    "transfer(address,uint256)"(_recipient: string, _amount: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
+    "transfer(address,uint256)"(
+      _recipient: string,
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     transferFrom(
       _sender: string,
       _recipient: string,
       _amount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<boolean>;
 
     "transferFrom(address,address,uint256)"(
       _sender: string,
       _recipient: string,
       _amount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<boolean>;
 
-    transferOwnership(_newOwner: string, overrides?: CallOverrides): Promise<void>;
+    transferOwnership(
+      _newOwner: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
-    "transferOwnership(address)"(_newOwner: string, overrides?: CallOverrides): Promise<void>;
+    "transferOwnership(address)"(
+      _newOwner: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     viewCurve(
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         alpha_: BigNumber;
@@ -1023,7 +1278,7 @@ export class Curve extends Contract {
     >;
 
     "viewCurve()"(
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         alpha_: BigNumber;
@@ -1034,48 +1289,64 @@ export class Curve extends Contract {
       }
     >;
 
-    viewDeposit(_deposit: BigNumberish, overrides?: CallOverrides): Promise<[BigNumber, BigNumber[]]>;
+    viewDeposit(
+      _deposit: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber[]]>;
 
-    "viewDeposit(uint256)"(_deposit: BigNumberish, overrides?: CallOverrides): Promise<[BigNumber, BigNumber[]]>;
+    "viewDeposit(uint256)"(
+      _deposit: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber[]]>;
 
     viewOriginSwap(
       _origin: string,
       _target: string,
       _originAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     "viewOriginSwap(address,address,uint256)"(
       _origin: string,
       _target: string,
       _originAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     viewTargetSwap(
       _origin: string,
       _target: string,
       _targetAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     "viewTargetSwap(address,address,uint256)"(
       _origin: string,
       _target: string,
       _targetAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    viewWithdraw(_curvesToBurn: BigNumberish, overrides?: CallOverrides): Promise<BigNumber[]>;
+    viewWithdraw(
+      _curvesToBurn: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber[]>;
 
-    "viewWithdraw(uint256)"(_curvesToBurn: BigNumberish, overrides?: CallOverrides): Promise<BigNumber[]>;
+    "viewWithdraw(uint256)"(
+      _curvesToBurn: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber[]>;
 
-    withdraw(_curvesToBurn: BigNumberish, _deadline: BigNumberish, overrides?: CallOverrides): Promise<BigNumber[]>;
+    withdraw(
+      _curvesToBurn: BigNumberish,
+      _deadline: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber[]>;
 
     "withdraw(uint256,uint256)"(
       _curvesToBurn: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber[]>;
   };
 
@@ -1083,20 +1354,26 @@ export class Curve extends Contract {
     Approval(
       _owner: string | null,
       spender: string | null,
-      value: null,
-    ): TypedEventFilter<[string, string, BigNumber], { _owner: string; spender: string; value: BigNumber }>;
+      value: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { _owner: string; spender: string; value: BigNumber }
+    >;
 
     AssetIncluded(
       numeraire: string | null,
       reserve: string | null,
-      weight: null,
-    ): TypedEventFilter<[string, string, BigNumber], { numeraire: string; reserve: string; weight: BigNumber }>;
+      weight: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { numeraire: string; reserve: string; weight: BigNumber }
+    >;
 
     AssimilatorIncluded(
       derivative: string | null,
       numeraire: string | null,
       reserve: string | null,
-      assimilator: null,
+      assimilator: null
     ): TypedEventFilter<
       [string, string, string, string],
       {
@@ -1107,19 +1384,24 @@ export class Curve extends Contract {
       }
     >;
 
-    FrozenSet(isFrozen: null): TypedEventFilter<[boolean], { isFrozen: boolean }>;
+    FrozenSet(
+      isFrozen: null
+    ): TypedEventFilter<[boolean], { isFrozen: boolean }>;
 
     OwnershipTransfered(
       previousOwner: string | null,
-      newOwner: string | null,
-    ): TypedEventFilter<[string, string], { previousOwner: string; newOwner: string }>;
+      newOwner: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
 
     ParametersSet(
       alpha: null,
       beta: null,
       delta: null,
       epsilon: null,
-      lambda: null,
+      lambda: null
     ): TypedEventFilter<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber],
       {
@@ -1134,15 +1416,18 @@ export class Curve extends Contract {
     PartitionRedeemed(
       token: string | null,
       redeemer: string | null,
-      value: null,
-    ): TypedEventFilter<[string, string, BigNumber], { token: string; redeemer: string; value: BigNumber }>;
+      value: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { token: string; redeemer: string; value: BigNumber }
+    >;
 
     Trade(
       trader: string | null,
       origin: string | null,
       target: string | null,
       originAmount: null,
-      targetAmount: null,
+      targetAmount: null
     ): TypedEventFilter<
       [string, string, string, BigNumber, BigNumber],
       {
@@ -1157,34 +1442,54 @@ export class Curve extends Contract {
     Transfer(
       from: string | null,
       to: string | null,
-      value: null,
-    ): TypedEventFilter<[string, string, BigNumber], { from: string; to: string; value: BigNumber }>;
+      value: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { from: string; to: string; value: BigNumber }
+    >;
   };
 
   estimateGas: {
-    allowance(_owner: string, _spender: string, overrides?: CallOverrides): Promise<BigNumber>;
+    allowance(
+      _owner: string,
+      _spender: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "allowance(address,address)"(_owner: string, _spender: string, overrides?: CallOverrides): Promise<BigNumber>;
+    "allowance(address,address)"(
+      _owner: string,
+      _spender: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     approve(
       _spender: string,
       _amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "approve(address,uint256)"(
       _spender: string,
       _amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    assimilator(_derivative: string, overrides?: CallOverrides): Promise<BigNumber>;
+    assimilator(
+      _derivative: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "assimilator(address)"(_derivative: string, overrides?: CallOverrides): Promise<BigNumber>;
+    "assimilator(address)"(
+      _derivative: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     balanceOf(_account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "balanceOf(address)"(_account: string, overrides?: CallOverrides): Promise<BigNumber>;
+    "balanceOf(address)"(
+      _account: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     chi(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1197,27 +1502,33 @@ export class Curve extends Contract {
     deposit(
       _deposit: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "deposit(uint256,uint256)"(
       _deposit: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    derivatives(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    derivatives(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "derivatives(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "derivatives(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     excludeDerivative(
       _derivative: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "excludeDerivative(address)"(
       _derivative: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     frozen(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1228,9 +1539,15 @@ export class Curve extends Contract {
 
     "liquidity()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    numeraires(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    numeraires(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "numeraires(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "numeraires(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     originSwap(
       _origin: string,
@@ -1238,7 +1555,7 @@ export class Curve extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "originSwap(address,address,uint256,uint256,uint256)"(
@@ -1247,7 +1564,7 @@ export class Curve extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     originSwapDiscountCHI(
@@ -1256,7 +1573,7 @@ export class Curve extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "originSwapDiscountCHI(address,address,uint256,uint256,uint256)"(
@@ -1265,7 +1582,7 @@ export class Curve extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1274,16 +1591,19 @@ export class Curve extends Contract {
 
     reserves(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "reserves(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "reserves(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     setFrozen(
       _toFreezeOrNotToFreeze: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "setFrozen(bool)"(
       _toFreezeOrNotToFreeze: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     setParams(
@@ -1292,7 +1612,7 @@ export class Curve extends Contract {
       _feeAtHalt: BigNumberish,
       _epsilon: BigNumberish,
       _lambda: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "setParams(uint256,uint256,uint256,uint256,uint256)"(
@@ -1301,12 +1621,18 @@ export class Curve extends Contract {
       _feeAtHalt: BigNumberish,
       _epsilon: BigNumberish,
       _lambda: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    supportsInterface(_interface: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+    supportsInterface(
+      _interface: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "supportsInterface(bytes4)"(_interface: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+    "supportsInterface(bytes4)"(
+      _interface: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     targetSwap(
       _origin: string,
@@ -1314,7 +1640,7 @@ export class Curve extends Contract {
       _maxOriginAmount: BigNumberish,
       _targetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "targetSwap(address,address,uint256,uint256,uint256)"(
@@ -1323,7 +1649,7 @@ export class Curve extends Contract {
       _maxOriginAmount: BigNumberish,
       _targetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1333,120 +1659,148 @@ export class Curve extends Contract {
     transfer(
       _recipient: string,
       _amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "transfer(address,uint256)"(
       _recipient: string,
       _amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     transferFrom(
       _sender: string,
       _recipient: string,
       _amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "transferFrom(address,address,uint256)"(
       _sender: string,
       _recipient: string,
       _amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     transferOwnership(
       _newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "transferOwnership(address)"(
       _newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     viewCurve(overrides?: CallOverrides): Promise<BigNumber>;
 
     "viewCurve()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    viewDeposit(_deposit: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    viewDeposit(
+      _deposit: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "viewDeposit(uint256)"(_deposit: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "viewDeposit(uint256)"(
+      _deposit: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     viewOriginSwap(
       _origin: string,
       _target: string,
       _originAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     "viewOriginSwap(address,address,uint256)"(
       _origin: string,
       _target: string,
       _originAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     viewTargetSwap(
       _origin: string,
       _target: string,
       _targetAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     "viewTargetSwap(address,address,uint256)"(
       _origin: string,
       _target: string,
       _targetAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    viewWithdraw(_curvesToBurn: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    viewWithdraw(
+      _curvesToBurn: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "viewWithdraw(uint256)"(_curvesToBurn: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "viewWithdraw(uint256)"(
+      _curvesToBurn: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     withdraw(
       _curvesToBurn: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "withdraw(uint256,uint256)"(
       _curvesToBurn: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    allowance(_owner: string, _spender: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    allowance(
+      _owner: string,
+      _spender: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     "allowance(address,address)"(
       _owner: string,
       _spender: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     approve(
       _spender: string,
       _amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "approve(address,uint256)"(
       _spender: string,
       _amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    assimilator(_derivative: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    assimilator(
+      _derivative: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "assimilator(address)"(_derivative: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "assimilator(address)"(
+      _derivative: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    balanceOf(_account: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    balanceOf(
+      _account: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "balanceOf(address)"(_account: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "balanceOf(address)"(
+      _account: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     chi(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -1459,27 +1813,33 @@ export class Curve extends Contract {
     deposit(
       _deposit: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "deposit(uint256,uint256)"(
       _deposit: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    derivatives(arg0: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    derivatives(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "derivatives(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "derivatives(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     excludeDerivative(
       _derivative: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "excludeDerivative(address)"(
       _derivative: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     frozen(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -1490,9 +1850,15 @@ export class Curve extends Contract {
 
     "liquidity()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    numeraires(arg0: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    numeraires(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "numeraires(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "numeraires(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     originSwap(
       _origin: string,
@@ -1500,7 +1866,7 @@ export class Curve extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "originSwap(address,address,uint256,uint256,uint256)"(
@@ -1509,7 +1875,7 @@ export class Curve extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     originSwapDiscountCHI(
@@ -1518,7 +1884,7 @@ export class Curve extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "originSwapDiscountCHI(address,address,uint256,uint256,uint256)"(
@@ -1527,25 +1893,31 @@ export class Curve extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "owner()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    reserves(arg0: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    reserves(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "reserves(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "reserves(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     setFrozen(
       _toFreezeOrNotToFreeze: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "setFrozen(bool)"(
       _toFreezeOrNotToFreeze: boolean,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     setParams(
@@ -1554,7 +1926,7 @@ export class Curve extends Contract {
       _feeAtHalt: BigNumberish,
       _epsilon: BigNumberish,
       _lambda: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "setParams(uint256,uint256,uint256,uint256,uint256)"(
@@ -1563,12 +1935,18 @@ export class Curve extends Contract {
       _feeAtHalt: BigNumberish,
       _epsilon: BigNumberish,
       _lambda: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    supportsInterface(_interface: BytesLike, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    supportsInterface(
+      _interface: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "supportsInterface(bytes4)"(_interface: BytesLike, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "supportsInterface(bytes4)"(
+      _interface: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     targetSwap(
       _origin: string,
@@ -1576,7 +1954,7 @@ export class Curve extends Contract {
       _maxOriginAmount: BigNumberish,
       _targetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "targetSwap(address,address,uint256,uint256,uint256)"(
@@ -1585,7 +1963,7 @@ export class Curve extends Contract {
       _maxOriginAmount: BigNumberish,
       _targetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -1595,89 +1973,101 @@ export class Curve extends Contract {
     transfer(
       _recipient: string,
       _amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "transfer(address,uint256)"(
       _recipient: string,
       _amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     transferFrom(
       _sender: string,
       _recipient: string,
       _amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "transferFrom(address,address,uint256)"(
       _sender: string,
       _recipient: string,
       _amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     transferOwnership(
       _newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "transferOwnership(address)"(
       _newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     viewCurve(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "viewCurve()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    viewDeposit(_deposit: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    viewDeposit(
+      _deposit: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "viewDeposit(uint256)"(_deposit: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "viewDeposit(uint256)"(
+      _deposit: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     viewOriginSwap(
       _origin: string,
       _target: string,
       _originAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     "viewOriginSwap(address,address,uint256)"(
       _origin: string,
       _target: string,
       _originAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     viewTargetSwap(
       _origin: string,
       _target: string,
       _targetAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     "viewTargetSwap(address,address,uint256)"(
       _origin: string,
       _target: string,
       _targetAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    viewWithdraw(_curvesToBurn: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    viewWithdraw(
+      _curvesToBurn: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "viewWithdraw(uint256)"(_curvesToBurn: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "viewWithdraw(uint256)"(
+      _curvesToBurn: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     withdraw(
       _curvesToBurn: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "withdraw(uint256,uint256)"(
       _curvesToBurn: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }

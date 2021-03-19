@@ -12,10 +12,14 @@ export class MockAggregator__factory extends ContractFactory {
     super(_abi, _bytecode, signer);
   }
 
-  deploy(overrides?: Overrides & { from?: string | Promise<string> }): Promise<MockAggregator> {
+  deploy(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<MockAggregator> {
     return super.deploy(overrides || {}) as Promise<MockAggregator>;
   }
-  getDeployTransaction(overrides?: Overrides & { from?: string | Promise<string> }): TransactionRequest {
+  getDeployTransaction(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): TransactionRequest {
     return super.getDeployTransaction(overrides || {});
   }
   attach(address: string): MockAggregator {
@@ -24,7 +28,10 @@ export class MockAggregator__factory extends ContractFactory {
   connect(signer: Signer): MockAggregator__factory {
     return super.connect(signer) as MockAggregator__factory;
   }
-  static connect(address: string, signerOrProvider: Signer | Provider): MockAggregator {
+  static connect(
+    address: string,
+    signerOrProvider: Signer | Provider
+  ): MockAggregator {
     return new Contract(address, _abi, signerOrProvider) as MockAggregator;
   }
 }

@@ -12,10 +12,14 @@ export class XsgdToUsdAssimilator__factory extends ContractFactory {
     super(_abi, _bytecode, signer);
   }
 
-  deploy(overrides?: Overrides & { from?: string | Promise<string> }): Promise<XsgdToUsdAssimilator> {
+  deploy(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<XsgdToUsdAssimilator> {
     return super.deploy(overrides || {}) as Promise<XsgdToUsdAssimilator>;
   }
-  getDeployTransaction(overrides?: Overrides & { from?: string | Promise<string> }): TransactionRequest {
+  getDeployTransaction(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): TransactionRequest {
     return super.getDeployTransaction(overrides || {});
   }
   attach(address: string): XsgdToUsdAssimilator {
@@ -24,8 +28,15 @@ export class XsgdToUsdAssimilator__factory extends ContractFactory {
   connect(signer: Signer): XsgdToUsdAssimilator__factory {
     return super.connect(signer) as XsgdToUsdAssimilator__factory;
   }
-  static connect(address: string, signerOrProvider: Signer | Provider): XsgdToUsdAssimilator {
-    return new Contract(address, _abi, signerOrProvider) as XsgdToUsdAssimilator;
+  static connect(
+    address: string,
+    signerOrProvider: Signer | Provider
+  ): XsgdToUsdAssimilator {
+    return new Contract(
+      address,
+      _abi,
+      signerOrProvider
+    ) as XsgdToUsdAssimilator;
   }
 }
 

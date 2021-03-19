@@ -12,10 +12,14 @@ export class Storage__factory extends ContractFactory {
     super(_abi, _bytecode, signer);
   }
 
-  deploy(overrides?: Overrides & { from?: string | Promise<string> }): Promise<Storage> {
+  deploy(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<Storage> {
     return super.deploy(overrides || {}) as Promise<Storage>;
   }
-  getDeployTransaction(overrides?: Overrides & { from?: string | Promise<string> }): TransactionRequest {
+  getDeployTransaction(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): TransactionRequest {
     return super.getDeployTransaction(overrides || {});
   }
   attach(address: string): Storage {
@@ -24,7 +28,10 @@ export class Storage__factory extends ContractFactory {
   connect(signer: Signer): Storage__factory {
     return super.connect(signer) as Storage__factory;
   }
-  static connect(address: string, signerOrProvider: Signer | Provider): Storage {
+  static connect(
+    address: string,
+    signerOrProvider: Signer | Provider
+  ): Storage {
     return new Contract(address, _abi, signerOrProvider) as Storage;
   }
 }

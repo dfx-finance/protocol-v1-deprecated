@@ -34,32 +34,89 @@ interface IAssimilatorInterface extends ethers.utils.Interface {
     "viewRawAmount(int128)": FunctionFragment;
   };
 
-  encodeFunctionData(functionFragment: "intakeNumeraire", values: [BigNumberish]): string;
-  encodeFunctionData(functionFragment: "intakeRaw", values: [BigNumberish]): string;
-  encodeFunctionData(functionFragment: "intakeRawAndGetBalance", values: [BigNumberish]): string;
-  encodeFunctionData(functionFragment: "outputNumeraire", values: [string, BigNumberish]): string;
-  encodeFunctionData(functionFragment: "outputRaw", values: [string, BigNumberish]): string;
-  encodeFunctionData(functionFragment: "outputRawAndGetBalance", values: [string, BigNumberish]): string;
-  encodeFunctionData(functionFragment: "viewNumeraireAmount", values: [BigNumberish]): string;
-  encodeFunctionData(functionFragment: "viewNumeraireAmountAndBalance", values: [string, BigNumberish]): string;
-  encodeFunctionData(functionFragment: "viewNumeraireBalance", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "intakeNumeraire",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "intakeRaw",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "intakeRawAndGetBalance",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "outputNumeraire",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "outputRaw",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "outputRawAndGetBalance",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "viewNumeraireAmount",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "viewNumeraireAmountAndBalance",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "viewNumeraireBalance",
+    values: [string]
+  ): string;
   encodeFunctionData(
     functionFragment: "viewNumeraireBalanceLPRatio",
-    values: [BigNumberish, BigNumberish, string],
+    values: [BigNumberish, BigNumberish, string]
   ): string;
-  encodeFunctionData(functionFragment: "viewRawAmount", values: [BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "viewRawAmount",
+    values: [BigNumberish]
+  ): string;
 
-  decodeFunctionResult(functionFragment: "intakeNumeraire", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "intakeNumeraire",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "intakeRaw", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "intakeRawAndGetBalance", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "outputNumeraire", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "intakeRawAndGetBalance",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "outputNumeraire",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "outputRaw", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "outputRawAndGetBalance", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "viewNumeraireAmount", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "viewNumeraireAmountAndBalance", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "viewNumeraireBalance", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "viewNumeraireBalanceLPRatio", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "viewRawAmount", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "outputRawAndGetBalance",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "viewNumeraireAmount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "viewNumeraireAmountAndBalance",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "viewNumeraireBalance",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "viewNumeraireBalanceLPRatio",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "viewRawAmount",
+    data: BytesLike
+  ): Result;
 
   events: {};
 }
@@ -70,26 +127,26 @@ export class IAssimilator extends Contract {
   deployed(): Promise<this>;
 
   listeners<EventArgsArray extends Array<any>, EventArgsObject>(
-    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
   ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
   off<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   on<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   once<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
-    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
   ): this;
 
   listeners(eventName?: string): Array<Listener>;
@@ -102,7 +159,7 @@ export class IAssimilator extends Contract {
   queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
     event: TypedEventFilter<EventArgsArray, EventArgsObject>,
     fromBlockOrBlockhash?: string | number | undefined,
-    toBlock?: string | number | undefined,
+    toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: IAssimilatorInterface;
@@ -110,283 +167,371 @@ export class IAssimilator extends Contract {
   functions: {
     intakeNumeraire(
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "intakeNumeraire(int128)"(
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     intakeRaw(
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "intakeRaw(uint256)"(
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     intakeRawAndGetBalance(
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "intakeRawAndGetBalance(uint256)"(
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     outputNumeraire(
       dst: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "outputNumeraire(address,int128)"(
       dst: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     outputRaw(
       dst: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "outputRaw(address,uint256)"(
       dst: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     outputRawAndGetBalance(
       dst: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "outputRawAndGetBalance(address,uint256)"(
       dst: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    viewNumeraireAmount(arg0: BigNumberish, overrides?: CallOverrides): Promise<[BigNumber]>;
+    viewNumeraireAmount(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
-    "viewNumeraireAmount(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<[BigNumber]>;
+    "viewNumeraireAmount(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     viewNumeraireAmountAndBalance(
       arg0: string,
       arg1: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber]>;
 
     "viewNumeraireAmountAndBalance(address,uint256)"(
       arg0: string,
       arg1: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber]>;
 
-    viewNumeraireBalance(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+    viewNumeraireBalance(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
-    "viewNumeraireBalance(address)"(arg0: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+    "viewNumeraireBalance(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     viewNumeraireBalanceLPRatio(
       arg0: BigNumberish,
       arg1: BigNumberish,
       arg2: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
     "viewNumeraireBalanceLPRatio(uint256,uint256,address)"(
       arg0: BigNumberish,
       arg1: BigNumberish,
       arg2: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
-    viewRawAmount(arg0: BigNumberish, overrides?: CallOverrides): Promise<[BigNumber]>;
+    viewRawAmount(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
-    "viewRawAmount(int128)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<[BigNumber]>;
+    "viewRawAmount(int128)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
   };
 
   intakeNumeraire(
     amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "intakeNumeraire(int128)"(
     amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   intakeRaw(
     amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "intakeRaw(uint256)"(
     amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   intakeRawAndGetBalance(
     amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "intakeRawAndGetBalance(uint256)"(
     amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   outputNumeraire(
     dst: string,
     amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "outputNumeraire(address,int128)"(
     dst: string,
     amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   outputRaw(
     dst: string,
     amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "outputRaw(address,uint256)"(
     dst: string,
     amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   outputRawAndGetBalance(
     dst: string,
     amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "outputRawAndGetBalance(address,uint256)"(
     dst: string,
     amount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  viewNumeraireAmount(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+  viewNumeraireAmount(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
-  "viewNumeraireAmount(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+  "viewNumeraireAmount(uint256)"(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   viewNumeraireAmountAndBalance(
     arg0: string,
     arg1: BigNumberish,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<[BigNumber, BigNumber]>;
 
   "viewNumeraireAmountAndBalance(address,uint256)"(
     arg0: string,
     arg1: BigNumberish,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<[BigNumber, BigNumber]>;
 
-  viewNumeraireBalance(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+  viewNumeraireBalance(
+    arg0: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
-  "viewNumeraireBalance(address)"(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+  "viewNumeraireBalance(address)"(
+    arg0: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   viewNumeraireBalanceLPRatio(
     arg0: BigNumberish,
     arg1: BigNumberish,
     arg2: string,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<BigNumber>;
 
   "viewNumeraireBalanceLPRatio(uint256,uint256,address)"(
     arg0: BigNumberish,
     arg1: BigNumberish,
     arg2: string,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  viewRawAmount(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+  viewRawAmount(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
-  "viewRawAmount(int128)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+  "viewRawAmount(int128)"(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   callStatic: {
-    intakeNumeraire(amount: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    intakeNumeraire(
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "intakeNumeraire(int128)"(amount: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "intakeNumeraire(int128)"(
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    intakeRaw(amount: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    intakeRaw(
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "intakeRaw(uint256)"(amount: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "intakeRaw(uint256)"(
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    intakeRawAndGetBalance(amount: BigNumberish, overrides?: CallOverrides): Promise<[BigNumber, BigNumber]>;
+    intakeRawAndGetBalance(
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber]>;
 
-    "intakeRawAndGetBalance(uint256)"(amount: BigNumberish, overrides?: CallOverrides): Promise<[BigNumber, BigNumber]>;
+    "intakeRawAndGetBalance(uint256)"(
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber]>;
 
-    outputNumeraire(dst: string, amount: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    outputNumeraire(
+      dst: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "outputNumeraire(address,int128)"(dst: string, amount: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "outputNumeraire(address,int128)"(
+      dst: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    outputRaw(dst: string, amount: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    outputRaw(
+      dst: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "outputRaw(address,uint256)"(dst: string, amount: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "outputRaw(address,uint256)"(
+      dst: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     outputRawAndGetBalance(
       dst: string,
       amount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber]>;
 
     "outputRawAndGetBalance(address,uint256)"(
       dst: string,
       amount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber]>;
 
-    viewNumeraireAmount(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    viewNumeraireAmount(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "viewNumeraireAmount(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "viewNumeraireAmount(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     viewNumeraireAmountAndBalance(
       arg0: string,
       arg1: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber]>;
 
     "viewNumeraireAmountAndBalance(address,uint256)"(
       arg0: string,
       arg1: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber]>;
 
-    viewNumeraireBalance(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+    viewNumeraireBalance(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "viewNumeraireBalance(address)"(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+    "viewNumeraireBalance(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     viewNumeraireBalanceLPRatio(
       arg0: BigNumberish,
       arg1: BigNumberish,
       arg2: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     "viewNumeraireBalanceLPRatio(uint256,uint256,address)"(
       arg0: BigNumberish,
       arg1: BigNumberish,
       arg2: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    viewRawAmount(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    viewRawAmount(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "viewRawAmount(int128)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "viewRawAmount(int128)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
   };
 
   filters: {};
@@ -394,205 +539,248 @@ export class IAssimilator extends Contract {
   estimateGas: {
     intakeNumeraire(
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "intakeNumeraire(int128)"(
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    intakeRaw(amount: BigNumberish, overrides?: Overrides & { from?: string | Promise<string> }): Promise<BigNumber>;
+    intakeRaw(
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     "intakeRaw(uint256)"(
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     intakeRawAndGetBalance(
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "intakeRawAndGetBalance(uint256)"(
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     outputNumeraire(
       dst: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "outputNumeraire(address,int128)"(
       dst: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     outputRaw(
       dst: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "outputRaw(address,uint256)"(
       dst: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     outputRawAndGetBalance(
       dst: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "outputRawAndGetBalance(address,uint256)"(
       dst: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    viewNumeraireAmount(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    viewNumeraireAmount(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "viewNumeraireAmount(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "viewNumeraireAmount(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    viewNumeraireAmountAndBalance(arg0: string, arg1: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    viewNumeraireAmountAndBalance(
+      arg0: string,
+      arg1: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     "viewNumeraireAmountAndBalance(address,uint256)"(
       arg0: string,
       arg1: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    viewNumeraireBalance(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+    viewNumeraireBalance(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "viewNumeraireBalance(address)"(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+    "viewNumeraireBalance(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     viewNumeraireBalanceLPRatio(
       arg0: BigNumberish,
       arg1: BigNumberish,
       arg2: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     "viewNumeraireBalanceLPRatio(uint256,uint256,address)"(
       arg0: BigNumberish,
       arg1: BigNumberish,
       arg2: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    viewRawAmount(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    viewRawAmount(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "viewRawAmount(int128)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "viewRawAmount(int128)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     intakeNumeraire(
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "intakeNumeraire(int128)"(
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     intakeRaw(
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "intakeRaw(uint256)"(
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     intakeRawAndGetBalance(
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "intakeRawAndGetBalance(uint256)"(
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     outputNumeraire(
       dst: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "outputNumeraire(address,int128)"(
       dst: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     outputRaw(
       dst: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "outputRaw(address,uint256)"(
       dst: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     outputRawAndGetBalance(
       dst: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "outputRawAndGetBalance(address,uint256)"(
       dst: string,
       amount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    viewNumeraireAmount(arg0: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    viewNumeraireAmount(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "viewNumeraireAmount(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "viewNumeraireAmount(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     viewNumeraireAmountAndBalance(
       arg0: string,
       arg1: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     "viewNumeraireAmountAndBalance(address,uint256)"(
       arg0: string,
       arg1: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    viewNumeraireBalance(arg0: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    viewNumeraireBalance(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "viewNumeraireBalance(address)"(arg0: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "viewNumeraireBalance(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     viewNumeraireBalanceLPRatio(
       arg0: BigNumberish,
       arg1: BigNumberish,
       arg2: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     "viewNumeraireBalanceLPRatio(uint256,uint256,address)"(
       arg0: BigNumberish,
       arg1: BigNumberish,
       arg2: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    viewRawAmount(arg0: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    viewRawAmount(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "viewRawAmount(int128)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "viewRawAmount(int128)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
   };
 }

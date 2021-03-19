@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "hh:run": "hardhat run",
+    "hh:node": "hardhat node",
     "compile": "hardhat compile",
     "clean": "hardhat clean",
     "test": "hardhat test",
@@ -25,6 +27,7 @@
   },
   "homepage": "https://github.com/dfx-finance/protocols#readme",
   "dependencies": {
+    "@ethersproject/abstract-provider": "^5.0.10",
     "@nomiclabs/hardhat-ethers": "^2.0.1",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@openzeppelin/contracts": "^3.3.0",
@@ -43,6 +46,7 @@
     "hardhat": "^2.0.8",
     "hardhat-typechain": "^0.3.5",
     "husky": "^5.0.8",
+    "ora": "^5.4.0",
     "pinst": "^2.1.4",
     "prettier": "^2.2.1",
     "prettier-plugin-solidity": "^1.0.0-beta.3",

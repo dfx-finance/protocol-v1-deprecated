@@ -31,17 +31,29 @@ interface CurveFactoryInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "curves", values: [BytesLike]): string;
   encodeFunctionData(
     functionFragment: "newCurve",
-    values: [string, string, BigNumberish, BigNumberish, string, string],
+    values: [string, string, BigNumberish, BigNumberish, string, string]
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
-  encodeFunctionData(functionFragment: "renounceOwnership", values?: undefined): string;
-  encodeFunctionData(functionFragment: "transferOwnership", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "renounceOwnership",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "transferOwnership",
+    values: [string]
+  ): string;
 
   decodeFunctionResult(functionFragment: "curves", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "newCurve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "renounceOwnership", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "transferOwnership", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "renounceOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferOwnership",
+    data: BytesLike
+  ): Result;
 
   events: {
     "NewCurve(address,bytes32,address)": EventFragment;
@@ -58,26 +70,26 @@ export class CurveFactory extends Contract {
   deployed(): Promise<this>;
 
   listeners<EventArgsArray extends Array<any>, EventArgsObject>(
-    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
   ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
   off<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   on<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   once<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
-    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
   ): this;
 
   listeners(eventName?: string): Array<Listener>;
@@ -90,7 +102,7 @@ export class CurveFactory extends Contract {
   queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
     event: TypedEventFilter<EventArgsArray, EventArgsObject>,
     fromBlockOrBlockhash?: string | number | undefined,
-    toBlock?: string | number | undefined,
+    toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: CurveFactoryInterface;
@@ -98,7 +110,10 @@ export class CurveFactory extends Contract {
   functions: {
     curves(arg0: BytesLike, overrides?: CallOverrides): Promise<[string]>;
 
-    "curves(bytes32)"(arg0: BytesLike, overrides?: CallOverrides): Promise<[string]>;
+    "curves(bytes32)"(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
     newCurve(
       _baseCurrency: string,
@@ -107,7 +122,7 @@ export class CurveFactory extends Contract {
       _quoteWeight: BigNumberish,
       _baseAssimilator: string,
       _quoteAssimilator: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "newCurve(address,address,uint256,uint256,address,address)"(
@@ -117,31 +132,38 @@ export class CurveFactory extends Contract {
       _quoteWeight: BigNumberish,
       _baseAssimilator: string,
       _quoteAssimilator: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
     "owner()"(overrides?: CallOverrides): Promise<[string]>;
 
-    renounceOwnership(overrides?: Overrides & { from?: string | Promise<string> }): Promise<ContractTransaction>;
+    renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
-    "renounceOwnership()"(overrides?: Overrides & { from?: string | Promise<string> }): Promise<ContractTransaction>;
+    "renounceOwnership()"(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     transferOwnership(
       newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "transferOwnership(address)"(
       newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
 
   curves(arg0: BytesLike, overrides?: CallOverrides): Promise<string>;
 
-  "curves(bytes32)"(arg0: BytesLike, overrides?: CallOverrides): Promise<string>;
+  "curves(bytes32)"(
+    arg0: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   newCurve(
     _baseCurrency: string,
@@ -150,7 +172,7 @@ export class CurveFactory extends Contract {
     _quoteWeight: BigNumberish,
     _baseAssimilator: string,
     _quoteAssimilator: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "newCurve(address,address,uint256,uint256,address,address)"(
@@ -160,31 +182,38 @@ export class CurveFactory extends Contract {
     _quoteWeight: BigNumberish,
     _baseAssimilator: string,
     _quoteAssimilator: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   owner(overrides?: CallOverrides): Promise<string>;
 
   "owner()"(overrides?: CallOverrides): Promise<string>;
 
-  renounceOwnership(overrides?: Overrides & { from?: string | Promise<string> }): Promise<ContractTransaction>;
+  renounceOwnership(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
-  "renounceOwnership()"(overrides?: Overrides & { from?: string | Promise<string> }): Promise<ContractTransaction>;
+  "renounceOwnership()"(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   transferOwnership(
     newOwner: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "transferOwnership(address)"(
     newOwner: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
     curves(arg0: BytesLike, overrides?: CallOverrides): Promise<string>;
 
-    "curves(bytes32)"(arg0: BytesLike, overrides?: CallOverrides): Promise<string>;
+    "curves(bytes32)"(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     newCurve(
       _baseCurrency: string,
@@ -193,7 +222,7 @@ export class CurveFactory extends Contract {
       _quoteWeight: BigNumberish,
       _baseAssimilator: string,
       _quoteAssimilator: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<string>;
 
     "newCurve(address,address,uint256,uint256,address,address)"(
@@ -203,7 +232,7 @@ export class CurveFactory extends Contract {
       _quoteWeight: BigNumberish,
       _baseAssimilator: string,
       _quoteAssimilator: string,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<string>;
 
     owner(overrides?: CallOverrides): Promise<string>;
@@ -214,28 +243,43 @@ export class CurveFactory extends Contract {
 
     "renounceOwnership()"(overrides?: CallOverrides): Promise<void>;
 
-    transferOwnership(newOwner: string, overrides?: CallOverrides): Promise<void>;
+    transferOwnership(
+      newOwner: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
-    "transferOwnership(address)"(newOwner: string, overrides?: CallOverrides): Promise<void>;
+    "transferOwnership(address)"(
+      newOwner: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
   };
 
   filters: {
     NewCurve(
       caller: string | null,
       id: BytesLike | null,
-      curve: string | null,
-    ): TypedEventFilter<[string, string, string], { caller: string; id: string; curve: string }>;
+      curve: string | null
+    ): TypedEventFilter<
+      [string, string, string],
+      { caller: string; id: string; curve: string }
+    >;
 
     OwnershipTransferred(
       previousOwner: string | null,
-      newOwner: string | null,
-    ): TypedEventFilter<[string, string], { previousOwner: string; newOwner: string }>;
+      newOwner: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
   };
 
   estimateGas: {
     curves(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "curves(bytes32)"(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+    "curves(bytes32)"(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     newCurve(
       _baseCurrency: string,
@@ -244,7 +288,7 @@ export class CurveFactory extends Contract {
       _quoteWeight: BigNumberish,
       _baseAssimilator: string,
       _quoteAssimilator: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "newCurve(address,address,uint256,uint256,address,address)"(
@@ -254,32 +298,42 @@ export class CurveFactory extends Contract {
       _quoteWeight: BigNumberish,
       _baseAssimilator: string,
       _quoteAssimilator: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     "owner()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    renounceOwnership(overrides?: Overrides & { from?: string | Promise<string> }): Promise<BigNumber>;
+    renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
-    "renounceOwnership()"(overrides?: Overrides & { from?: string | Promise<string> }): Promise<BigNumber>;
+    "renounceOwnership()"(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     transferOwnership(
       newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "transferOwnership(address)"(
       newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    curves(arg0: BytesLike, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    curves(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "curves(bytes32)"(arg0: BytesLike, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "curves(bytes32)"(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     newCurve(
       _baseCurrency: string,
@@ -288,7 +342,7 @@ export class CurveFactory extends Contract {
       _quoteWeight: BigNumberish,
       _baseAssimilator: string,
       _quoteAssimilator: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "newCurve(address,address,uint256,uint256,address,address)"(
@@ -298,25 +352,29 @@ export class CurveFactory extends Contract {
       _quoteWeight: BigNumberish,
       _baseAssimilator: string,
       _quoteAssimilator: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "owner()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    renounceOwnership(overrides?: Overrides & { from?: string | Promise<string> }): Promise<PopulatedTransaction>;
+    renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
-    "renounceOwnership()"(overrides?: Overrides & { from?: string | Promise<string> }): Promise<PopulatedTransaction>;
+    "renounceOwnership()"(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     transferOwnership(
       newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "transferOwnership(address)"(
       newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }

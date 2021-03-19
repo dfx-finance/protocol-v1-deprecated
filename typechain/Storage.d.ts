@@ -29,14 +29,26 @@ interface StorageInterface extends ethers.utils.Interface {
   };
 
   encodeFunctionData(functionFragment: "curve", values?: undefined): string;
-  encodeFunctionData(functionFragment: "derivatives", values: [BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "derivatives",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "frozen", values?: undefined): string;
-  encodeFunctionData(functionFragment: "numeraires", values: [BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "numeraires",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
-  encodeFunctionData(functionFragment: "reserves", values: [BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "reserves",
+    values: [BigNumberish]
+  ): string;
 
   decodeFunctionResult(functionFragment: "curve", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "derivatives", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "derivatives",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "frozen", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "numeraires", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
@@ -51,26 +63,26 @@ export class Storage extends Contract {
   deployed(): Promise<this>;
 
   listeners<EventArgsArray extends Array<any>, EventArgsObject>(
-    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
   ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
   off<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   on<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   once<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
-    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
   ): this;
 
   listeners(eventName?: string): Array<Listener>;
@@ -83,14 +95,14 @@ export class Storage extends Contract {
   queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
     event: TypedEventFilter<EventArgsArray, EventArgsObject>,
     fromBlockOrBlockhash?: string | number | undefined,
-    toBlock?: string | number | undefined,
+    toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: StorageInterface;
 
   functions: {
     curve(
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         alpha: BigNumber;
@@ -103,7 +115,7 @@ export class Storage extends Contract {
     >;
 
     "curve()"(
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         alpha: BigNumber;
@@ -115,17 +127,29 @@ export class Storage extends Contract {
       }
     >;
 
-    derivatives(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
+    derivatives(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
-    "derivatives(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
+    "derivatives(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
     frozen(overrides?: CallOverrides): Promise<[boolean]>;
 
     "frozen()"(overrides?: CallOverrides): Promise<[boolean]>;
 
-    numeraires(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
+    numeraires(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
-    "numeraires(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
+    "numeraires(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
@@ -133,11 +157,14 @@ export class Storage extends Contract {
 
     reserves(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
 
-    "reserves(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
+    "reserves(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
   };
 
   curve(
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<
     [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
       alpha: BigNumber;
@@ -150,7 +177,7 @@ export class Storage extends Contract {
   >;
 
   "curve()"(
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<
     [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
       alpha: BigNumber;
@@ -164,7 +191,10 @@ export class Storage extends Contract {
 
   derivatives(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-  "derivatives(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+  "derivatives(uint256)"(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   frozen(overrides?: CallOverrides): Promise<boolean>;
 
@@ -172,7 +202,10 @@ export class Storage extends Contract {
 
   numeraires(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-  "numeraires(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+  "numeraires(uint256)"(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   owner(overrides?: CallOverrides): Promise<string>;
 
@@ -180,11 +213,14 @@ export class Storage extends Contract {
 
   reserves(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-  "reserves(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+  "reserves(uint256)"(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   callStatic: {
     curve(
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         alpha: BigNumber;
@@ -197,7 +233,7 @@ export class Storage extends Contract {
     >;
 
     "curve()"(
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         alpha: BigNumber;
@@ -211,7 +247,10 @@ export class Storage extends Contract {
 
     derivatives(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-    "derivatives(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+    "derivatives(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     frozen(overrides?: CallOverrides): Promise<boolean>;
 
@@ -219,7 +258,10 @@ export class Storage extends Contract {
 
     numeraires(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-    "numeraires(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+    "numeraires(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
@@ -227,7 +269,10 @@ export class Storage extends Contract {
 
     reserves(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-    "reserves(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+    "reserves(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
   };
 
   filters: {};
@@ -237,17 +282,29 @@ export class Storage extends Contract {
 
     "curve()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    derivatives(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    derivatives(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "derivatives(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "derivatives(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     frozen(overrides?: CallOverrides): Promise<BigNumber>;
 
     "frozen()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    numeraires(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    numeraires(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "numeraires(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "numeraires(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -255,7 +312,10 @@ export class Storage extends Contract {
 
     reserves(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "reserves(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "reserves(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -263,24 +323,42 @@ export class Storage extends Contract {
 
     "curve()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    derivatives(arg0: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    derivatives(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "derivatives(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "derivatives(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     frozen(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "frozen()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    numeraires(arg0: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    numeraires(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "numeraires(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "numeraires(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "owner()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    reserves(arg0: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    reserves(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "reserves(uint256)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "reserves(uint256)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
   };
 }

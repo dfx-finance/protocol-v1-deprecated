@@ -8,7 +8,10 @@ import { Provider } from "@ethersproject/providers";
 import type { IOracle } from "../IOracle";
 
 export class IOracle__factory {
-  static connect(address: string, signerOrProvider: Signer | Provider): IOracle {
+  static connect(
+    address: string,
+    signerOrProvider: Signer | Provider
+  ): IOracle {
     return new Contract(address, _abi, signerOrProvider) as IOracle;
   }
 }

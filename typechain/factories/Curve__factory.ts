@@ -2,7 +2,13 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Signer, BigNumberish, Contract, ContractFactory, Overrides } from "ethers";
+import {
+  Signer,
+  BigNumberish,
+  Contract,
+  ContractFactory,
+  Overrides,
+} from "ethers";
 import { Provider, TransactionRequest } from "@ethersproject/providers";
 
 import type { Curve } from "../Curve";
@@ -17,27 +23,37 @@ export class Curve__factory extends ContractFactory {
 
     linkedBytecode = linkedBytecode.replace(
       new RegExp("__\\$2f7438dc39b7f2d6be9376ce9a8c4f470d\\$__", "g"),
-      linkLibraryAddresses["__$2f7438dc39b7f2d6be9376ce9a8c4f470d$__"].replace(/^0x/, "").toLowerCase(),
+      linkLibraryAddresses["__$2f7438dc39b7f2d6be9376ce9a8c4f470d$__"]
+        .replace(/^0x/, "")
+        .toLowerCase()
     );
 
     linkedBytecode = linkedBytecode.replace(
       new RegExp("__\\$34cf32b9db53687d22f2a2f9e17f53853c\\$__", "g"),
-      linkLibraryAddresses["__$34cf32b9db53687d22f2a2f9e17f53853c$__"].replace(/^0x/, "").toLowerCase(),
+      linkLibraryAddresses["__$34cf32b9db53687d22f2a2f9e17f53853c$__"]
+        .replace(/^0x/, "")
+        .toLowerCase()
     );
 
     linkedBytecode = linkedBytecode.replace(
       new RegExp("__\\$236b305bcf01cc5c721d601c49811743dd\\$__", "g"),
-      linkLibraryAddresses["__$236b305bcf01cc5c721d601c49811743dd$__"].replace(/^0x/, "").toLowerCase(),
+      linkLibraryAddresses["__$236b305bcf01cc5c721d601c49811743dd$__"]
+        .replace(/^0x/, "")
+        .toLowerCase()
     );
 
     linkedBytecode = linkedBytecode.replace(
       new RegExp("__\\$2e2ff97a4698be457767132b6e1932642e\\$__", "g"),
-      linkLibraryAddresses["__$2e2ff97a4698be457767132b6e1932642e$__"].replace(/^0x/, "").toLowerCase(),
+      linkLibraryAddresses["__$2e2ff97a4698be457767132b6e1932642e$__"]
+        .replace(/^0x/, "")
+        .toLowerCase()
     );
 
     linkedBytecode = linkedBytecode.replace(
       new RegExp("__\\$4458a9a3a4e0c80d6e9ff5326b59c444c4\\$__", "g"),
-      linkLibraryAddresses["__$4458a9a3a4e0c80d6e9ff5326b59c444c4$__"].replace(/^0x/, "").toLowerCase(),
+      linkLibraryAddresses["__$4458a9a3a4e0c80d6e9ff5326b59c444c4$__"]
+        .replace(/^0x/, "")
+        .toLowerCase()
     );
 
     return linkedBytecode;
@@ -47,17 +63,27 @@ export class Curve__factory extends ContractFactory {
     _assets: string[],
     _assetWeights: BigNumberish[],
     _derivativeAssimilators: string[],
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<Curve> {
-    return super.deploy(_assets, _assetWeights, _derivativeAssimilators, overrides || {}) as Promise<Curve>;
+    return super.deploy(
+      _assets,
+      _assetWeights,
+      _derivativeAssimilators,
+      overrides || {}
+    ) as Promise<Curve>;
   }
   getDeployTransaction(
     _assets: string[],
     _assetWeights: BigNumberish[],
     _derivativeAssimilators: string[],
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): TransactionRequest {
-    return super.getDeployTransaction(_assets, _assetWeights, _derivativeAssimilators, overrides || {});
+    return super.getDeployTransaction(
+      _assets,
+      _assetWeights,
+      _derivativeAssimilators,
+      overrides || {}
+    );
   }
   attach(address: string): Curve {
     return super.attach(address) as Curve;

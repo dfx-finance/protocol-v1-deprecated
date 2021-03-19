@@ -46,52 +46,160 @@ interface IOracleInterface extends ethers.utils.Interface {
     "version()": FunctionFragment;
   };
 
-  encodeFunctionData(functionFragment: "acceptOwnership", values?: undefined): string;
-  encodeFunctionData(functionFragment: "accessController", values?: undefined): string;
-  encodeFunctionData(functionFragment: "aggregator", values?: undefined): string;
-  encodeFunctionData(functionFragment: "confirmAggregator", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "acceptOwnership",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "accessController",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "aggregator",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "confirmAggregator",
+    values: [string]
+  ): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
-  encodeFunctionData(functionFragment: "description", values?: undefined): string;
-  encodeFunctionData(functionFragment: "getAnswer", values: [BigNumberish]): string;
-  encodeFunctionData(functionFragment: "getRoundData", values: [BigNumberish]): string;
-  encodeFunctionData(functionFragment: "getTimestamp", values: [BigNumberish]): string;
-  encodeFunctionData(functionFragment: "latestAnswer", values?: undefined): string;
-  encodeFunctionData(functionFragment: "latestRound", values?: undefined): string;
-  encodeFunctionData(functionFragment: "latestRoundData", values?: undefined): string;
-  encodeFunctionData(functionFragment: "latestTimestamp", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "description",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getAnswer",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getRoundData",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getTimestamp",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "latestAnswer",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "latestRound",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "latestRoundData",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "latestTimestamp",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
-  encodeFunctionData(functionFragment: "phaseAggregators", values: [BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "phaseAggregators",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "phaseId", values?: undefined): string;
-  encodeFunctionData(functionFragment: "proposeAggregator", values: [string]): string;
-  encodeFunctionData(functionFragment: "proposedAggregator", values?: undefined): string;
-  encodeFunctionData(functionFragment: "proposedGetRoundData", values: [BigNumberish]): string;
-  encodeFunctionData(functionFragment: "proposedLatestRoundData", values?: undefined): string;
-  encodeFunctionData(functionFragment: "setController", values: [string]): string;
-  encodeFunctionData(functionFragment: "transferOwnership", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "proposeAggregator",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "proposedAggregator",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "proposedGetRoundData",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "proposedLatestRoundData",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setController",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "transferOwnership",
+    values: [string]
+  ): string;
   encodeFunctionData(functionFragment: "version", values?: undefined): string;
 
-  decodeFunctionResult(functionFragment: "acceptOwnership", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "accessController", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "acceptOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "accessController",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "aggregator", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "confirmAggregator", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "confirmAggregator",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "description", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "description",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "getAnswer", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "getRoundData", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "getTimestamp", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "latestAnswer", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "latestRound", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "latestRoundData", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "latestTimestamp", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getRoundData",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getTimestamp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "latestAnswer",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "latestRound",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "latestRoundData",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "latestTimestamp",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "phaseAggregators", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "phaseAggregators",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "phaseId", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "proposeAggregator", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "proposedAggregator", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "proposedGetRoundData", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "proposedLatestRoundData", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "setController", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "transferOwnership", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "proposeAggregator",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "proposedAggregator",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "proposedGetRoundData",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "proposedLatestRoundData",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setController",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferOwnership",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "version", data: BytesLike): Result;
 
   events: {};
@@ -103,26 +211,26 @@ export class IOracle extends Contract {
   deployed(): Promise<this>;
 
   listeners<EventArgsArray extends Array<any>, EventArgsObject>(
-    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
   ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
   off<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   on<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   once<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
-    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
   ): this;
 
   listeners(eventName?: string): Array<Listener>;
@@ -135,15 +243,19 @@ export class IOracle extends Contract {
   queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
     event: TypedEventFilter<EventArgsArray, EventArgsObject>,
     fromBlockOrBlockhash?: string | number | undefined,
-    toBlock?: string | number | undefined,
+    toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: IOracleInterface;
 
   functions: {
-    acceptOwnership(overrides?: Overrides & { from?: string | Promise<string> }): Promise<ContractTransaction>;
+    acceptOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
-    "acceptOwnership()"(overrides?: Overrides & { from?: string | Promise<string> }): Promise<ContractTransaction>;
+    "acceptOwnership()"(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     accessController(overrides?: CallOverrides): Promise<[string]>;
 
@@ -155,12 +267,12 @@ export class IOracle extends Contract {
 
     confirmAggregator(
       _aggregator: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "confirmAggregator(address)"(
       _aggregator: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     decimals(overrides?: CallOverrides): Promise<[number]>;
@@ -171,13 +283,19 @@ export class IOracle extends Contract {
 
     "description()"(overrides?: CallOverrides): Promise<[string]>;
 
-    getAnswer(_roundId: BigNumberish, overrides?: CallOverrides): Promise<[BigNumber]>;
+    getAnswer(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
-    "getAnswer(uint256)"(_roundId: BigNumberish, overrides?: CallOverrides): Promise<[BigNumber]>;
+    "getAnswer(uint256)"(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     getRoundData(
       _roundId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         roundId: BigNumber;
@@ -190,7 +308,7 @@ export class IOracle extends Contract {
 
     "getRoundData(uint80)"(
       _roundId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         roundId: BigNumber;
@@ -201,9 +319,15 @@ export class IOracle extends Contract {
       }
     >;
 
-    getTimestamp(_roundId: BigNumberish, overrides?: CallOverrides): Promise<[BigNumber]>;
+    getTimestamp(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
-    "getTimestamp(uint256)"(_roundId: BigNumberish, overrides?: CallOverrides): Promise<[BigNumber]>;
+    "getTimestamp(uint256)"(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     latestAnswer(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -214,7 +338,7 @@ export class IOracle extends Contract {
     "latestRound()"(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     latestRoundData(
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         roundId: BigNumber;
@@ -226,7 +350,7 @@ export class IOracle extends Contract {
     >;
 
     "latestRoundData()"(
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         roundId: BigNumber;
@@ -245,9 +369,15 @@ export class IOracle extends Contract {
 
     "owner()"(overrides?: CallOverrides): Promise<[string]>;
 
-    phaseAggregators(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
+    phaseAggregators(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
-    "phaseAggregators(uint16)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
+    "phaseAggregators(uint16)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
     phaseId(overrides?: CallOverrides): Promise<[number]>;
 
@@ -255,12 +385,12 @@ export class IOracle extends Contract {
 
     proposeAggregator(
       _aggregator: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "proposeAggregator(address)"(
       _aggregator: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     proposedAggregator(overrides?: CallOverrides): Promise<[string]>;
@@ -269,7 +399,7 @@ export class IOracle extends Contract {
 
     proposedGetRoundData(
       _roundId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         roundId: BigNumber;
@@ -282,7 +412,7 @@ export class IOracle extends Contract {
 
     "proposedGetRoundData(uint80)"(
       _roundId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         roundId: BigNumber;
@@ -294,7 +424,7 @@ export class IOracle extends Contract {
     >;
 
     proposedLatestRoundData(
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         roundId: BigNumber;
@@ -306,7 +436,7 @@ export class IOracle extends Contract {
     >;
 
     "proposedLatestRoundData()"(
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         roundId: BigNumber;
@@ -319,22 +449,22 @@ export class IOracle extends Contract {
 
     setController(
       _accessController: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "setController(address)"(
       _accessController: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     transferOwnership(
       _to: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "transferOwnership(address)"(
       _to: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     version(overrides?: CallOverrides): Promise<[BigNumber]>;
@@ -342,9 +472,13 @@ export class IOracle extends Contract {
     "version()"(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
 
-  acceptOwnership(overrides?: Overrides & { from?: string | Promise<string> }): Promise<ContractTransaction>;
+  acceptOwnership(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
-  "acceptOwnership()"(overrides?: Overrides & { from?: string | Promise<string> }): Promise<ContractTransaction>;
+  "acceptOwnership()"(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   accessController(overrides?: CallOverrides): Promise<string>;
 
@@ -356,12 +490,12 @@ export class IOracle extends Contract {
 
   confirmAggregator(
     _aggregator: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "confirmAggregator(address)"(
     _aggregator: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   decimals(overrides?: CallOverrides): Promise<number>;
@@ -372,13 +506,19 @@ export class IOracle extends Contract {
 
   "description()"(overrides?: CallOverrides): Promise<string>;
 
-  getAnswer(_roundId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+  getAnswer(
+    _roundId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
-  "getAnswer(uint256)"(_roundId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+  "getAnswer(uint256)"(
+    _roundId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   getRoundData(
     _roundId: BigNumberish,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<
     [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
       roundId: BigNumber;
@@ -391,7 +531,7 @@ export class IOracle extends Contract {
 
   "getRoundData(uint80)"(
     _roundId: BigNumberish,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<
     [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
       roundId: BigNumber;
@@ -402,9 +542,15 @@ export class IOracle extends Contract {
     }
   >;
 
-  getTimestamp(_roundId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+  getTimestamp(
+    _roundId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
-  "getTimestamp(uint256)"(_roundId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+  "getTimestamp(uint256)"(
+    _roundId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   latestAnswer(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -415,7 +561,7 @@ export class IOracle extends Contract {
   "latestRound()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   latestRoundData(
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<
     [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
       roundId: BigNumber;
@@ -427,7 +573,7 @@ export class IOracle extends Contract {
   >;
 
   "latestRoundData()"(
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<
     [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
       roundId: BigNumber;
@@ -446,9 +592,15 @@ export class IOracle extends Contract {
 
   "owner()"(overrides?: CallOverrides): Promise<string>;
 
-  phaseAggregators(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+  phaseAggregators(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
-  "phaseAggregators(uint16)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+  "phaseAggregators(uint16)"(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   phaseId(overrides?: CallOverrides): Promise<number>;
 
@@ -456,12 +608,12 @@ export class IOracle extends Contract {
 
   proposeAggregator(
     _aggregator: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "proposeAggregator(address)"(
     _aggregator: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   proposedAggregator(overrides?: CallOverrides): Promise<string>;
@@ -470,7 +622,7 @@ export class IOracle extends Contract {
 
   proposedGetRoundData(
     _roundId: BigNumberish,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<
     [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
       roundId: BigNumber;
@@ -483,7 +635,7 @@ export class IOracle extends Contract {
 
   "proposedGetRoundData(uint80)"(
     _roundId: BigNumberish,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<
     [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
       roundId: BigNumber;
@@ -495,7 +647,7 @@ export class IOracle extends Contract {
   >;
 
   proposedLatestRoundData(
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<
     [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
       roundId: BigNumber;
@@ -507,7 +659,7 @@ export class IOracle extends Contract {
   >;
 
   "proposedLatestRoundData()"(
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<
     [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
       roundId: BigNumber;
@@ -520,22 +672,22 @@ export class IOracle extends Contract {
 
   setController(
     _accessController: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "setController(address)"(
     _accessController: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   transferOwnership(
     _to: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "transferOwnership(address)"(
     _to: string,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   version(overrides?: CallOverrides): Promise<BigNumber>;
@@ -555,9 +707,15 @@ export class IOracle extends Contract {
 
     "aggregator()"(overrides?: CallOverrides): Promise<string>;
 
-    confirmAggregator(_aggregator: string, overrides?: CallOverrides): Promise<void>;
+    confirmAggregator(
+      _aggregator: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
-    "confirmAggregator(address)"(_aggregator: string, overrides?: CallOverrides): Promise<void>;
+    "confirmAggregator(address)"(
+      _aggregator: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     decimals(overrides?: CallOverrides): Promise<number>;
 
@@ -567,13 +725,19 @@ export class IOracle extends Contract {
 
     "description()"(overrides?: CallOverrides): Promise<string>;
 
-    getAnswer(_roundId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    getAnswer(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "getAnswer(uint256)"(_roundId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "getAnswer(uint256)"(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     getRoundData(
       _roundId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         roundId: BigNumber;
@@ -586,7 +750,7 @@ export class IOracle extends Contract {
 
     "getRoundData(uint80)"(
       _roundId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         roundId: BigNumber;
@@ -597,9 +761,15 @@ export class IOracle extends Contract {
       }
     >;
 
-    getTimestamp(_roundId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    getTimestamp(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "getTimestamp(uint256)"(_roundId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "getTimestamp(uint256)"(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     latestAnswer(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -610,7 +780,7 @@ export class IOracle extends Contract {
     "latestRound()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     latestRoundData(
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         roundId: BigNumber;
@@ -622,7 +792,7 @@ export class IOracle extends Contract {
     >;
 
     "latestRoundData()"(
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         roundId: BigNumber;
@@ -641,17 +811,29 @@ export class IOracle extends Contract {
 
     "owner()"(overrides?: CallOverrides): Promise<string>;
 
-    phaseAggregators(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+    phaseAggregators(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
-    "phaseAggregators(uint16)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+    "phaseAggregators(uint16)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     phaseId(overrides?: CallOverrides): Promise<number>;
 
     "phaseId()"(overrides?: CallOverrides): Promise<number>;
 
-    proposeAggregator(_aggregator: string, overrides?: CallOverrides): Promise<void>;
+    proposeAggregator(
+      _aggregator: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
-    "proposeAggregator(address)"(_aggregator: string, overrides?: CallOverrides): Promise<void>;
+    "proposeAggregator(address)"(
+      _aggregator: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     proposedAggregator(overrides?: CallOverrides): Promise<string>;
 
@@ -659,7 +841,7 @@ export class IOracle extends Contract {
 
     proposedGetRoundData(
       _roundId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         roundId: BigNumber;
@@ -672,7 +854,7 @@ export class IOracle extends Contract {
 
     "proposedGetRoundData(uint80)"(
       _roundId: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         roundId: BigNumber;
@@ -684,7 +866,7 @@ export class IOracle extends Contract {
     >;
 
     proposedLatestRoundData(
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         roundId: BigNumber;
@@ -696,7 +878,7 @@ export class IOracle extends Contract {
     >;
 
     "proposedLatestRoundData()"(
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
         roundId: BigNumber;
@@ -707,13 +889,22 @@ export class IOracle extends Contract {
       }
     >;
 
-    setController(_accessController: string, overrides?: CallOverrides): Promise<void>;
+    setController(
+      _accessController: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
-    "setController(address)"(_accessController: string, overrides?: CallOverrides): Promise<void>;
+    "setController(address)"(
+      _accessController: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     transferOwnership(_to: string, overrides?: CallOverrides): Promise<void>;
 
-    "transferOwnership(address)"(_to: string, overrides?: CallOverrides): Promise<void>;
+    "transferOwnership(address)"(
+      _to: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     version(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -723,9 +914,13 @@ export class IOracle extends Contract {
   filters: {};
 
   estimateGas: {
-    acceptOwnership(overrides?: Overrides & { from?: string | Promise<string> }): Promise<BigNumber>;
+    acceptOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
-    "acceptOwnership()"(overrides?: Overrides & { from?: string | Promise<string> }): Promise<BigNumber>;
+    "acceptOwnership()"(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     accessController(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -737,12 +932,12 @@ export class IOracle extends Contract {
 
     confirmAggregator(
       _aggregator: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "confirmAggregator(address)"(
       _aggregator: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     decimals(overrides?: CallOverrides): Promise<BigNumber>;
@@ -753,17 +948,35 @@ export class IOracle extends Contract {
 
     "description()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getAnswer(_roundId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    getAnswer(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "getAnswer(uint256)"(_roundId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "getAnswer(uint256)"(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    getRoundData(_roundId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    getRoundData(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "getRoundData(uint80)"(_roundId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "getRoundData(uint80)"(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    getTimestamp(_roundId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    getTimestamp(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "getTimestamp(uint256)"(_roundId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "getTimestamp(uint256)"(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     latestAnswer(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -785,9 +998,15 @@ export class IOracle extends Contract {
 
     "owner()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    phaseAggregators(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    phaseAggregators(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "phaseAggregators(uint16)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "phaseAggregators(uint16)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     phaseId(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -795,21 +1014,27 @@ export class IOracle extends Contract {
 
     proposeAggregator(
       _aggregator: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "proposeAggregator(address)"(
       _aggregator: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     proposedAggregator(overrides?: CallOverrides): Promise<BigNumber>;
 
     "proposedAggregator()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    proposedGetRoundData(_roundId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    proposedGetRoundData(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "proposedGetRoundData(uint80)"(_roundId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    "proposedGetRoundData(uint80)"(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     proposedLatestRoundData(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -817,19 +1042,22 @@ export class IOracle extends Contract {
 
     setController(
       _accessController: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "setController(address)"(
       _accessController: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    transferOwnership(_to: string, overrides?: Overrides & { from?: string | Promise<string> }): Promise<BigNumber>;
+    transferOwnership(
+      _to: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     "transferOwnership(address)"(
       _to: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     version(overrides?: CallOverrides): Promise<BigNumber>;
@@ -838,13 +1066,19 @@ export class IOracle extends Contract {
   };
 
   populateTransaction: {
-    acceptOwnership(overrides?: Overrides & { from?: string | Promise<string> }): Promise<PopulatedTransaction>;
+    acceptOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
-    "acceptOwnership()"(overrides?: Overrides & { from?: string | Promise<string> }): Promise<PopulatedTransaction>;
+    "acceptOwnership()"(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     accessController(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "accessController()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "accessController()"(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     aggregator(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -852,12 +1086,12 @@ export class IOracle extends Contract {
 
     confirmAggregator(
       _aggregator: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "confirmAggregator(address)"(
       _aggregator: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -868,17 +1102,35 @@ export class IOracle extends Contract {
 
     "description()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    getAnswer(_roundId: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    getAnswer(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "getAnswer(uint256)"(_roundId: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "getAnswer(uint256)"(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    getRoundData(_roundId: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    getRoundData(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "getRoundData(uint80)"(_roundId: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "getRoundData(uint80)"(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    getTimestamp(_roundId: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    getTimestamp(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "getTimestamp(uint256)"(_roundId: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "getTimestamp(uint256)"(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     latestAnswer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -890,19 +1142,29 @@ export class IOracle extends Contract {
 
     latestRoundData(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "latestRoundData()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "latestRoundData()"(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     latestTimestamp(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "latestTimestamp()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "latestTimestamp()"(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "owner()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    phaseAggregators(arg0: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    phaseAggregators(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "phaseAggregators(uint16)"(arg0: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "phaseAggregators(uint16)"(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     phaseId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -910,44 +1172,58 @@ export class IOracle extends Contract {
 
     proposeAggregator(
       _aggregator: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "proposeAggregator(address)"(
       _aggregator: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    proposedAggregator(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    proposedAggregator(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "proposedAggregator()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "proposedAggregator()"(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    proposedGetRoundData(_roundId: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    proposedGetRoundData(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "proposedGetRoundData(uint80)"(_roundId: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "proposedGetRoundData(uint80)"(
+      _roundId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    proposedLatestRoundData(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    proposedLatestRoundData(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "proposedLatestRoundData()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "proposedLatestRoundData()"(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     setController(
       _accessController: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "setController(address)"(
       _accessController: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     transferOwnership(
       _to: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "transferOwnership(address)"(
       _to: string,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     version(overrides?: CallOverrides): Promise<PopulatedTransaction>;

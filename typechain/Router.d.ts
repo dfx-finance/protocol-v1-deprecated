@@ -30,15 +30,27 @@ interface RouterInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "factory", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "originSwap",
-    values: [string, string, string, BigNumberish, BigNumberish, BigNumberish],
+    values: [string, string, string, BigNumberish, BigNumberish, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "viewOriginSwap", values: [string, string, string, BigNumberish]): string;
-  encodeFunctionData(functionFragment: "viewTargetSwap", values: [string, string, string, BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "viewOriginSwap",
+    values: [string, string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "viewTargetSwap",
+    values: [string, string, string, BigNumberish]
+  ): string;
 
   decodeFunctionResult(functionFragment: "factory", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "originSwap", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "viewOriginSwap", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "viewTargetSwap", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "viewOriginSwap",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "viewTargetSwap",
+    data: BytesLike
+  ): Result;
 
   events: {};
 }
@@ -49,26 +61,26 @@ export class Router extends Contract {
   deployed(): Promise<this>;
 
   listeners<EventArgsArray extends Array<any>, EventArgsObject>(
-    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
   ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
   off<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   on<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   once<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
     eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
-    listener: TypedListener<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
   ): this;
   removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
-    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
   ): this;
 
   listeners(eventName?: string): Array<Listener>;
@@ -81,7 +93,7 @@ export class Router extends Contract {
   queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
     event: TypedEventFilter<EventArgsArray, EventArgsObject>,
     fromBlockOrBlockhash?: string | number | undefined,
-    toBlock?: string | number | undefined,
+    toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: RouterInterface;
@@ -98,7 +110,7 @@ export class Router extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "originSwap(address,address,address,uint256,uint256,uint256)"(
@@ -108,7 +120,7 @@ export class Router extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     viewOriginSwap(
@@ -116,7 +128,7 @@ export class Router extends Contract {
       _origin: string,
       _target: string,
       _originAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber] & { targetAmount_: BigNumber }>;
 
     "viewOriginSwap(address,address,address,uint256)"(
@@ -124,7 +136,7 @@ export class Router extends Contract {
       _origin: string,
       _target: string,
       _originAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber] & { targetAmount_: BigNumber }>;
 
     viewTargetSwap(
@@ -132,7 +144,7 @@ export class Router extends Contract {
       _origin: string,
       _target: string,
       _targetAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber] & { originAmount_: BigNumber }>;
 
     "viewTargetSwap(address,address,address,uint256)"(
@@ -140,7 +152,7 @@ export class Router extends Contract {
       _origin: string,
       _target: string,
       _targetAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<[BigNumber] & { originAmount_: BigNumber }>;
   };
 
@@ -155,7 +167,7 @@ export class Router extends Contract {
     _originAmount: BigNumberish,
     _minTargetAmount: BigNumberish,
     _deadline: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "originSwap(address,address,address,uint256,uint256,uint256)"(
@@ -165,7 +177,7 @@ export class Router extends Contract {
     _originAmount: BigNumberish,
     _minTargetAmount: BigNumberish,
     _deadline: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> },
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   viewOriginSwap(
@@ -173,7 +185,7 @@ export class Router extends Contract {
     _origin: string,
     _target: string,
     _originAmount: BigNumberish,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<BigNumber>;
 
   "viewOriginSwap(address,address,address,uint256)"(
@@ -181,7 +193,7 @@ export class Router extends Contract {
     _origin: string,
     _target: string,
     _originAmount: BigNumberish,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<BigNumber>;
 
   viewTargetSwap(
@@ -189,7 +201,7 @@ export class Router extends Contract {
     _origin: string,
     _target: string,
     _targetAmount: BigNumberish,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<BigNumber>;
 
   "viewTargetSwap(address,address,address,uint256)"(
@@ -197,7 +209,7 @@ export class Router extends Contract {
     _origin: string,
     _target: string,
     _targetAmount: BigNumberish,
-    overrides?: CallOverrides,
+    overrides?: CallOverrides
   ): Promise<BigNumber>;
 
   callStatic: {
@@ -212,7 +224,7 @@ export class Router extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     "originSwap(address,address,address,uint256,uint256,uint256)"(
@@ -222,7 +234,7 @@ export class Router extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     viewOriginSwap(
@@ -230,7 +242,7 @@ export class Router extends Contract {
       _origin: string,
       _target: string,
       _originAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     "viewOriginSwap(address,address,address,uint256)"(
@@ -238,7 +250,7 @@ export class Router extends Contract {
       _origin: string,
       _target: string,
       _originAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     viewTargetSwap(
@@ -246,7 +258,7 @@ export class Router extends Contract {
       _origin: string,
       _target: string,
       _targetAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     "viewTargetSwap(address,address,address,uint256)"(
@@ -254,7 +266,7 @@ export class Router extends Contract {
       _origin: string,
       _target: string,
       _targetAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
 
@@ -272,7 +284,7 @@ export class Router extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "originSwap(address,address,address,uint256,uint256,uint256)"(
@@ -282,7 +294,7 @@ export class Router extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     viewOriginSwap(
@@ -290,7 +302,7 @@ export class Router extends Contract {
       _origin: string,
       _target: string,
       _originAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     "viewOriginSwap(address,address,address,uint256)"(
@@ -298,7 +310,7 @@ export class Router extends Contract {
       _origin: string,
       _target: string,
       _originAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     viewTargetSwap(
@@ -306,7 +318,7 @@ export class Router extends Contract {
       _origin: string,
       _target: string,
       _targetAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     "viewTargetSwap(address,address,address,uint256)"(
@@ -314,7 +326,7 @@ export class Router extends Contract {
       _origin: string,
       _target: string,
       _targetAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
 
@@ -330,7 +342,7 @@ export class Router extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "originSwap(address,address,address,uint256,uint256,uint256)"(
@@ -340,7 +352,7 @@ export class Router extends Contract {
       _originAmount: BigNumberish,
       _minTargetAmount: BigNumberish,
       _deadline: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     viewOriginSwap(
@@ -348,7 +360,7 @@ export class Router extends Contract {
       _origin: string,
       _target: string,
       _originAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     "viewOriginSwap(address,address,address,uint256)"(
@@ -356,7 +368,7 @@ export class Router extends Contract {
       _origin: string,
       _target: string,
       _originAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     viewTargetSwap(
@@ -364,7 +376,7 @@ export class Router extends Contract {
       _origin: string,
       _target: string,
       _targetAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     "viewTargetSwap(address,address,address,uint256)"(
@@ -372,7 +384,7 @@ export class Router extends Contract {
       _origin: string,
       _target: string,
       _targetAmount: BigNumberish,
-      overrides?: CallOverrides,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
 }
