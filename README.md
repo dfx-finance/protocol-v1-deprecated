@@ -22,13 +22,19 @@ A decentralized foreign exchange protocol optimized for stablecoins.
    ALCHEMY_API_KEY=<insert API key here>
    ```
 
-2. Run the scaffolding script:
+2. Start the local testnet:
+
+   ```
+   yarn hh:node
+   ```
+
+3. In another terminal, run the scaffolding script:
 
    ```
    yarn hh:run scripts/testnet/scaffold.ts --network hardhat
    ```
 
-3. Observe console output and proceed to frontend testing setup (if required).
+4. Observe console output and proceed to frontend testing setup (if required).
 
 # Router API
 
