@@ -31,7 +31,7 @@ A decentralized foreign exchange protocol optimized for stablecoins.
 3. In another terminal, run the scaffolding script:
 
    ```
-   yarn hh:run scripts/testnet/scaffold.ts --network hardhat
+   yarn hh:run scripts/testnet/scaffold.ts --network localhost
    ```
 
 4. Observe console output and proceed to frontend testing setup (if required).
