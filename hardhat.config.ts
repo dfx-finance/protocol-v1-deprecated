@@ -1,3 +1,4 @@
+require("dotenv").config(); // eslint-disable-line
 import "hardhat-typechain";
 import { HardhatUserConfig } from "hardhat/config";
 import { task } from "hardhat/config";
@@ -24,7 +25,9 @@ const config: HardhatUserConfig = {
     hardhat: {
       forking: {
         enabled: true,
-        url: "http://127.0.0.1:8545",
+        url: process.env.ALCHEMY_API_KEY
+          ? `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`
+          : "http://127.0.0.1:8545",
       },
       blockGasLimit: 20000000,
     },
