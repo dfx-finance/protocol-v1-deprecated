@@ -1,4 +1,4 @@
-# DFX Protocol V1
+# DFX Protocol V0.5
 
 A decentralized foreign exchange protocol optimized for stablecoins.
 
@@ -14,7 +14,79 @@ A decentralized foreign exchange protocol optimized for stablecoins.
 | originSwap | 142143                |
 | targetSwap | 142244                |
 
-# API
+# Router API
+
+## Views
+
+### viewOriginSwap
+
+```javascript
+function viewOriginSwap(
+    address _quoteCurrency,
+    address _origin,
+    address _target,
+    uint256 _originAmount
+) external view returns (uint256 targetAmount_)
+```
+
+Views how much a target amount is returned given a fixed origin amount.
+
+| Name            | Type    |                                             |
+| --------------- | ------- | ------------------------------------------- |
+| \_quoteCurrency | address | Address of the intermediate currency (USDC) |
+| \_origin        | address | Address of the origin token                 |
+| \_target        | address | Address of the target                       |
+| \_originAmount  | uint256 | Amount of origin tokens to swap             |
+| targetAmount\_  | uint256 | Amount of target tokens to received         |
+
+### viewTargetSwap
+
+```javascript
+function viewTargetSwap(
+    address _quoteCurrency,
+    address _origin,
+    address _target,
+    uint256 _targetAmount
+) external view returns (uint256 originAmount_)
+```
+
+Views how much a origin amount is required given a wanted target amount.
+
+| Name            | Type    |                                             |
+| --------------- | ------- | ------------------------------------------- |
+| \_quoteCurrency | address | Address of the intermediate currency (USDC) |
+| \_origin        | address | Address of the origin token                 |
+| \_target        | address | Address of the target                       |
+| \_targetAmount  | uint256 | Amount of target tokens wanted              |
+| originAmount\_  | uint256 | Amount of origin tokens required            |
+
+## State Changing
+
+### originSwap
+
+```javascript
+function originSwap(
+    address _quoteCurrency,
+    address _origin,
+    address _target,
+    uint256 _originAmount,
+    uint256 _targetAmount,
+    uint256 _deadline
+)
+```
+
+Swaps a fixed origin amount for a dynamic target amount.
+
+| Name              | Type    |                                                          |
+| ----------------- | ------- | -------------------------------------------------------- |
+| \_quoteCurrency   | address | Address of the intermediate currency (USDC)              |
+| \_origin          | address | Address of the origin token                              |
+| \_target          | address | Address of the target                                    |
+| \_originAmount    | uint256 | Amount of origin tokens to swap                          |
+| \_minTargetAmount | uint256 | Minimum amount of target tokens to receive               |
+| \_deadline        | uint256 | Epoch time of which the transaction must be completed by |
+
+# Curve API
 
 ## Views
 
