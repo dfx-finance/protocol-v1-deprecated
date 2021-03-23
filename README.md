@@ -92,7 +92,7 @@ function originSwap(
     address _origin,
     address _target,
     uint256 _originAmount,
-    uint256 _targetAmount,
+    uint256 _minTargetAmount,
     uint256 _deadline
 )
 ```
