@@ -14,6 +14,28 @@ A decentralized foreign exchange protocol optimized for stablecoins.
 | originSwap | 142143                |
 | targetSwap | 142244                |
 
+# Deploy Locally
+
+1. Create a `.env` file at project root with the following contents:
+
+   ```
+   ALCHEMY_API_KEY=<insert API key here>
+   ```
+
+2. Start the local testnet:
+
+   ```
+   yarn hh:node
+   ```
+
+3. In another terminal, run the scaffolding script:
+
+   ```
+   yarn hh:run scripts/testnet/scaffold.ts --network localhost
+   ```
+
+4. Observe console output and proceed to frontend testing setup (if required).
+
 # Router API
 
 ## Views
@@ -70,7 +92,7 @@ function originSwap(
     address _origin,
     address _target,
     uint256 _originAmount,
-    uint256 _targetAmount,
+    uint256 _minTargetAmount,
     uint256 _deadline
 )
 ```
