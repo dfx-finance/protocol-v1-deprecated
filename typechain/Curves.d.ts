@@ -11,6 +11,7 @@ import {
   PopulatedTransaction,
   Contract,
   ContractTransaction,
+  CallOverrides,
 } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
@@ -18,7 +19,13 @@ import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface CurvesInterface extends ethers.utils.Interface {
-  functions: {};
+  functions: {
+    "decimals()": FunctionFragment;
+  };
+
+  encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
+
+  decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
 
   events: {
     "Approval(address,address,uint256)": EventFragment;
@@ -72,9 +79,21 @@ export class Curves extends Contract {
 
   interface: CurvesInterface;
 
-  functions: {};
+  functions: {
+    decimals(overrides?: CallOverrides): Promise<[number]>;
 
-  callStatic: {};
+    "decimals()"(overrides?: CallOverrides): Promise<[number]>;
+  };
+
+  decimals(overrides?: CallOverrides): Promise<number>;
+
+  "decimals()"(overrides?: CallOverrides): Promise<number>;
+
+  callStatic: {
+    decimals(overrides?: CallOverrides): Promise<number>;
+
+    "decimals()"(overrides?: CallOverrides): Promise<number>;
+  };
 
   filters: {
     Approval(
@@ -96,7 +115,15 @@ export class Curves extends Contract {
     >;
   };
 
-  estimateGas: {};
+  estimateGas: {
+    decimals(overrides?: CallOverrides): Promise<BigNumber>;
 
-  populateTransaction: {};
+    "decimals()"(overrides?: CallOverrides): Promise<BigNumber>;
+  };
+
+  populateTransaction: {
+    decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "decimals()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+  };
 }

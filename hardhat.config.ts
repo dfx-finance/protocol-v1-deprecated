@@ -24,7 +24,7 @@ const config: HardhatUserConfig = {
     hardhat: {
       forking: {
         enabled: true,
-        url: "http://127.0.0.1:8545",
+        url: "http://192.168.1.108:8544",
       },
       blockGasLimit: 20000000,
     },
