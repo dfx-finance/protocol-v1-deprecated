@@ -19,7 +19,7 @@ A decentralized foreign exchange protocol optimized for stablecoins.
 1. Create a `.env` file at project root with the following contents:
 
    ```
-   ALCHEMY_API_KEY=<insert API key here>
+   RPC_URL=<insert Alchemy API URL here>
    ```
 
 2. Start the local testnet:

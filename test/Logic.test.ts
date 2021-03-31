@@ -430,6 +430,131 @@ describe("Curve", function () {
       });
     });
 
+    describe("viewDeposit", function () {
+      it("CADC <> USDC", async function () {
+        const { curve, curveLpToken } = await createCurveAndSetParams({
+          base: cadc.address,
+          quote: usdc.address,
+          baseWeight: parseUnits("0.5"),
+          quoteWeight: parseUnits("0.5"),
+          baseAssimilator: cadcToUsdAssimilator.address,
+          quoteAssimilator: usdcToUsdAssimilator.address,
+          params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+        });
+
+        // Mint tokens and approve
+        await multiMintAndApprove([
+          [TOKENS.CADC.address, user1, parseUnits("100", TOKENS.CADC.decimals), curve.address],
+          [TOKENS.USDC.address, user1, parseUnits("100", TOKENS.USDC.decimals), curve.address],
+        ]);
+
+        const beforeUser1USDC = await usdc.balanceOf(user1Address);
+        const beforeUser1CADC = await cadc.balanceOf(user1Address);
+
+        // Proportional Deposit
+        await curve
+          .connect(user1)
+          .deposit(parseUnits("100"), await getFutureTime())
+          .then(x => x.wait());
+
+        const afterUser1USDC = await usdc.balanceOf(user1Address);
+        const afterUser1CADC = await cadc.balanceOf(user1Address);
+
+        // Balance of LP Tokens
+        const deltaLP = await curveLpToken.balanceOf(user1Address);
+        const deltaUSDC = beforeUser1USDC.sub(afterUser1USDC);
+        const deltaCADC = beforeUser1CADC.sub(afterUser1CADC);
+
+        const deposits = await curve.viewDeposit(parseUnits("100"));
+
+        expectBNAproxEq(deltaLP, deposits[0], parseUnits("1", 15));
+        expectBNAproxEq(deltaUSDC, deposits[1][1], parseUnits("1", 2));
+        expectBNAproxEq(deltaCADC, deposits[1][0], parseUnits("1", 15));
+      });
+
+      it("XSGD <> USDC", async function () {
+        const { curve, curveLpToken } = await createCurveAndSetParams({
+          base: xsgd.address,
+          quote: usdc.address,
+          baseWeight: parseUnits("0.5"),
+          quoteWeight: parseUnits("0.5"),
+          baseAssimilator: xsgdToUsdAssimilator.address,
+          quoteAssimilator: usdcToUsdAssimilator.address,
+          params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+        });
+
+        // Mint tokens and approve
+        await multiMintAndApprove([
+          [TOKENS.XSGD.address, user1, parseUnits("100", TOKENS.XSGD.decimals), curve.address],
+          [TOKENS.USDC.address, user1, parseUnits("100", TOKENS.USDC.decimals), curve.address],
+        ]);
+
+        const beforeUser1USDC = await usdc.balanceOf(user1Address);
+        const beforeUser1XSGD = await xsgd.balanceOf(user1Address);
+
+        // Proportional Deposit
+        await curve
+          .connect(user1)
+          .deposit(parseUnits("100"), await getFutureTime())
+          .then(x => x.wait());
+
+        const afterUser1USDC = await usdc.balanceOf(user1Address);
+        const afterUser1XSGD = await xsgd.balanceOf(user1Address);
+
+        // Balance of LP Tokens
+        const deltaLP = await curveLpToken.balanceOf(user1Address);
+        const deltaUSDC = beforeUser1USDC.sub(afterUser1USDC);
+        const deltaXSGD = beforeUser1XSGD.sub(afterUser1XSGD);
+
+        const deposits = await curve.viewDeposit(parseUnits("100"));
+
+        expectBNAproxEq(deltaLP, deposits[0], parseUnits("1", 2));
+        expectBNAproxEq(deltaUSDC, deposits[1][1], parseUnits("1", 2));
+        expectBNAproxEq(deltaXSGD, deposits[1][0], parseUnits("1", 2));
+      });
+
+      it("EURS <> USDC", async function () {
+        const { curve, curveLpToken } = await createCurveAndSetParams({
+          base: eurs.address,
+          quote: usdc.address,
+          baseWeight: parseUnits("0.5"),
+          quoteWeight: parseUnits("0.5"),
+          baseAssimilator: eursToUsdAssimilator.address,
+          quoteAssimilator: usdcToUsdAssimilator.address,
+          params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+        });
+
+        // Mint tokens and approve
+        await multiMintAndApprove([
+          [TOKENS.EURS.address, user1, parseUnits("100", TOKENS.EURS.decimals), curve.address],
+          [TOKENS.USDC.address, user1, parseUnits("100", TOKENS.USDC.decimals), curve.address],
+        ]);
+
+        const beforeUser1USDC = await usdc.balanceOf(user1Address);
+        const beforeUser1EURS = await eurs.balanceOf(user1Address);
+
+        // Proportional Deposit
+        await curve
+          .connect(user1)
+          .deposit(parseUnits("100"), await getFutureTime())
+          .then(x => x.wait());
+
+        const afterUser1USDC = await usdc.balanceOf(user1Address);
+        const afterUser1EURS = await eurs.balanceOf(user1Address);
+
+        // Balance of LP Tokens
+        const deltaLP = await curveLpToken.balanceOf(user1Address);
+        const deltaUSDC = beforeUser1USDC.sub(afterUser1USDC);
+        const deltaEURS = beforeUser1EURS.sub(afterUser1EURS);
+
+        const deposits = await curve.viewDeposit(parseUnits("100"));
+
+        expectBNAproxEq(deltaLP, deposits[0], parseUnits("1", 2));
+        expectBNAproxEq(deltaUSDC, deposits[1][1], parseUnits("1", 0));
+        expectBNAproxEq(deltaEURS, deposits[1][0], parseUnits("1", 0));
+      });
+    });
+
     describe("Swaps", async function () {
       it("50/50 - originSwap and targetSwap", async function () {
         const { curve } = await createCurveAndSetParams({

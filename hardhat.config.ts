@@ -25,9 +25,7 @@ const config: HardhatUserConfig = {
     hardhat: {
       forking: {
         enabled: true,
-        url: process.env.ALCHEMY_API_KEY
-          ? `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`
-          : "http://127.0.0.1:8545",
+        url: process.env.RPC_URL ? process.env.RPC_URL : "http://127.0.0.1:8545",
       },
       blockGasLimit: 20000000,
     },

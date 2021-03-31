@@ -176,7 +176,7 @@ contract EursToUsdAssimilator is IAssimilator {
         uint256 _usdcBal = usdc.balanceOf(_addr).mul(1e18).div(_quoteWeight);
 
         // Rate is in 1e6
-        uint256 _rate = _usdcBal.mul(1e24).div(_eursBal.mul(1e18).div(_baseWeight));
+        uint256 _rate = _usdcBal.mul(1e18).div(_eursBal.mul(1e18).div(_baseWeight));
 
         balance_ = ((_eursBal * _rate) / 1e6).divu(1e18);
     }

@@ -22,8 +22,6 @@ import "../lib/ABDKMath64x64.sol";
 import "../interfaces/IAssimilator.sol";
 import "../interfaces/IOracle.sol";
 
-import "hardhat/console.sol";
-
 contract CadcToUsdAssimilator is IAssimilator {
     using ABDKMath64x64 for int128;
     using ABDKMath64x64 for uint256;

@@ -9,8 +9,6 @@ import "./Storage.sol";
 import "./lib/UnsafeMath64x64.sol";
 import "./lib/ABDKMath64x64.sol";
 
-import "hardhat/console.sol";
-
 import "./CurveMath.sol";
 
 library ProportionalLiquidity {
