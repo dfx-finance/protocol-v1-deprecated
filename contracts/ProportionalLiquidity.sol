@@ -40,8 +40,17 @@ library ProportionalLiquidity {
         } else {
             int128 _multiplier = __deposit.div(_oGLiq);
 
+            uint256 _baseWeight = curve.weights[0].mulu(1e18);
+            uint256 _quoteWeight = curve.weights[1].mulu(1e18);
+
+            // Deposits into the pool is determined by existing LP ratio
             for (uint256 i = 0; i < _length; i++) {
-                deposits_[i] = Assimilators.intakeNumeraire(curve.assets[i].addr, _oBals[i].mul(_multiplier));
+                deposits_[i] = Assimilators.intakeNumeraireLPRatio(
+                    curve.assets[i].addr,
+                    _baseWeight,
+                    _quoteWeight,
+                    _oBals[i].mul(_multiplier)
+                );
             }
         }
 
@@ -81,8 +90,17 @@ library ProportionalLiquidity {
         } else {
             int128 _multiplier = __deposit.div(_oGLiq);
 
+            uint256 _baseWeight = curve.weights[0].mulu(1e18);
+            uint256 _quoteWeight = curve.weights[1].mulu(1e18);
+
+            // Deposits into the pool is determined by existing LP ratio
             for (uint256 i = 0; i < _length; i++) {
-                deposits_[i] = Assimilators.viewRawAmount(curve.assets[i].addr, _oBals[i].mul(_multiplier));
+                deposits_[i] = Assimilators.viewRawAmountLPRatio(
+                    curve.assets[i].addr,
+                    _baseWeight,
+                    _quoteWeight,
+                    _oBals[i].mul(_multiplier)
+                );
             }
         }
 

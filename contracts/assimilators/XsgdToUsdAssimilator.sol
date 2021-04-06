@@ -22,6 +22,8 @@ import "../lib/ABDKMath64x64.sol";
 import "../interfaces/IAssimilator.sol";
 import "../interfaces/IOracle.sol";
 
+import "hardhat/console.sol";
+
 contract XsgdToUsdAssimilator is IAssimilator {
     using ABDKMath64x64 for int128;
     using ABDKMath64x64 for uint256;
@@ -81,6 +83,33 @@ contract XsgdToUsdAssimilator is IAssimilator {
         require(_transferSuccess, "Curve/XSGD-transfer-from-failed");
     }
 
+    // takes a numeraire amount, calculates the raw amount of xsgd, transfers it in and returns the corresponding raw amount
+    function intakeNumeraireLPRatio(
+        uint256 _baseWeight,
+        uint256 _quoteWeight,
+        address _addr,
+        int128 _amount
+    ) external override returns (uint256 amount_) {
+        uint256 _xsgdBal = xsgd.balanceOf(_addr);
+
+        if (_xsgdBal <= 0) return 0;
+
+        // 1e6
+        _xsgdBal = _xsgdBal.mul(1e18).div(_baseWeight);
+
+        // 1e6
+        uint256 _usdcBal = usdc.balanceOf(_addr).mul(1e18).div(_quoteWeight);
+
+        // Rate is in 1e6
+        uint256 _rate = _usdcBal.mul(1e6).div(_xsgdBal);
+
+        amount_ = (_amount.mulu(1e6) * 1e6) / _rate;
+
+        bool _transferSuccess = xsgd.transferFrom(msg.sender, address(this), amount_);
+
+        require(_transferSuccess, "Curve/XSGD-transfer-failed");
+    }
+
     // takes a raw amount of xsgd and transfers it out, returns numeraire value of the raw amount
     function outputRawAndGetBalance(address _dst, uint256 _amount)
         external
@@ -131,6 +160,28 @@ contract XsgdToUsdAssimilator is IAssimilator {
         uint256 _rate = getRate();
 
         amount_ = (_amount.mulu(1e6) * 1e8) / _rate;
+    }
+
+    function viewRawAmountLPRatio(
+        uint256 _baseWeight,
+        uint256 _quoteWeight,
+        address _addr,
+        int128 _amount
+    ) external view override returns (uint256 amount_) {
+        uint256 _xsgdBal = xsgd.balanceOf(_addr);
+
+        if (_xsgdBal <= 0) return 0;
+
+        // 1e6
+        _xsgdBal = _xsgdBal.mul(1e18).div(_baseWeight);
+
+        // 1e6
+        uint256 _usdcBal = usdc.balanceOf(_addr).mul(1e18).div(_quoteWeight);
+
+        // Rate is in 1e6
+        uint256 _rate = _usdcBal.mul(1e6).div(_xsgdBal);
+
+        amount_ = (_amount.mulu(1e6) * 1e6) / _rate;
     }
 
     // takes a raw amount and returns the numeraire amount

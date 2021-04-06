@@ -41,6 +41,15 @@ library Assimilators {
         amount_ = IAssimilator(_assim).viewRawAmount(_amt);
     }
 
+    function viewRawAmountLPRatio(
+        address _assim,
+        uint256 _baseWeight,
+        uint256 _quoteWeight,
+        int128 _amount
+    ) internal view returns (uint256 amount_) {
+        amount_ = IAssimilator(_assim).viewRawAmountLPRatio(_baseWeight, _quoteWeight, address(this), _amount);
+    }
+
     function viewNumeraireAmount(address _assim, uint256 _amt) internal view returns (int128 amt_) {
         amt_ = IAssimilator(_assim).viewNumeraireAmount(_amt);
     }
@@ -79,6 +88,24 @@ library Assimilators {
 
     function intakeNumeraire(address _assim, int128 _amt) internal returns (uint256 amt_) {
         bytes memory data = abi.encodeWithSelector(iAsmltr.intakeNumeraire.selector, _amt);
+
+        amt_ = abi.decode(delegate(_assim, data), (uint256));
+    }
+
+    function intakeNumeraireLPRatio(
+        address _assim,
+        uint256 _baseWeight,
+        uint256 _quoteWeight,
+        int128 _amount
+    ) internal returns (uint256 amt_) {
+        bytes memory data =
+            abi.encodeWithSelector(
+                iAsmltr.intakeNumeraireLPRatio.selector,
+                _baseWeight,
+                _quoteWeight,
+                address(this),
+                _amount
+            );
 
         amt_ = abi.decode(delegate(_assim, data), (uint256));
     }

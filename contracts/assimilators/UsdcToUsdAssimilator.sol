@@ -57,6 +57,22 @@ contract UsdcToUsdAssimilator is IAssimilator {
         require(_success, "Curve/USDC-transfer-from-failed");
     }
 
+    function intakeNumeraireLPRatio(
+        // solhint-disable-next-line
+        uint256 _baseWeight,
+        // solhint-disable-next-line
+        uint256 _quoteWeight,
+        // solhint-disable-next-line
+        address _addr,
+        int128 _amount
+    ) external override returns (uint256 amount_) {
+        amount_ = _amount.mulu(1e6);
+
+        bool _success = usdc.transferFrom(msg.sender, address(this), amount_);
+
+        require(_success, "Curve/USDC-transfer-from-failed");
+    }
+
     function outputRawAndGetBalance(address _dst, uint256 _amount)
         external
         override
@@ -90,6 +106,18 @@ contract UsdcToUsdAssimilator is IAssimilator {
     }
 
     function viewRawAmount(int128 _amount) external pure override returns (uint256 amount_) {
+        amount_ = _amount.mulu(1e6);
+    }
+
+    function viewRawAmountLPRatio(
+        // solhint-disable-next-line
+        uint256 _baseWeight,
+        // solhint-disable-next-line
+        uint256 _quoteWeight,
+        // solhint-disable-next-line
+        address _addr,
+        int128 _amount
+    ) external pure override returns (uint256 amount_) {
         amount_ = _amount.mulu(1e6);
     }
 

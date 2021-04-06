@@ -22,6 +22,7 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface EursToUsdAssimilatorInterface extends ethers.utils.Interface {
   functions: {
     "intakeNumeraire(int128)": FunctionFragment;
+    "intakeNumeraireLPRatio(uint256,uint256,address,int128)": FunctionFragment;
     "intakeRaw(uint256)": FunctionFragment;
     "intakeRawAndGetBalance(uint256)": FunctionFragment;
     "outputNumeraire(address,int128)": FunctionFragment;
@@ -32,11 +33,16 @@ interface EursToUsdAssimilatorInterface extends ethers.utils.Interface {
     "viewNumeraireBalance(address)": FunctionFragment;
     "viewNumeraireBalanceLPRatio(uint256,uint256,address)": FunctionFragment;
     "viewRawAmount(int128)": FunctionFragment;
+    "viewRawAmountLPRatio(uint256,uint256,address,int128)": FunctionFragment;
   };
 
   encodeFunctionData(
     functionFragment: "intakeNumeraire",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "intakeNumeraireLPRatio",
+    values: [BigNumberish, BigNumberish, string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "intakeRaw",
@@ -78,9 +84,17 @@ interface EursToUsdAssimilatorInterface extends ethers.utils.Interface {
     functionFragment: "viewRawAmount",
     values: [BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "viewRawAmountLPRatio",
+    values: [BigNumberish, BigNumberish, string, BigNumberish]
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "intakeNumeraire",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "intakeNumeraireLPRatio",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "intakeRaw", data: BytesLike): Result;
@@ -115,6 +129,10 @@ interface EursToUsdAssimilatorInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "viewRawAmount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "viewRawAmountLPRatio",
     data: BytesLike
   ): Result;
 
@@ -171,6 +189,22 @@ export class EursToUsdAssimilator extends Contract {
     ): Promise<ContractTransaction>;
 
     "intakeNumeraire(int128)"(
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    intakeNumeraireLPRatio(
+      _baseWeight: BigNumberish,
+      _quoteWeight: BigNumberish,
+      _addr: string,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "intakeNumeraireLPRatio(uint256,uint256,address,int128)"(
+      _baseWeight: BigNumberish,
+      _quoteWeight: BigNumberish,
+      _addr: string,
       _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -290,6 +324,22 @@ export class EursToUsdAssimilator extends Contract {
       _amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { amount_: BigNumber }>;
+
+    viewRawAmountLPRatio(
+      _baseWeight: BigNumberish,
+      _quoteWeight: BigNumberish,
+      _addr: string,
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { amount_: BigNumber }>;
+
+    "viewRawAmountLPRatio(uint256,uint256,address,int128)"(
+      _baseWeight: BigNumberish,
+      _quoteWeight: BigNumberish,
+      _addr: string,
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { amount_: BigNumber }>;
   };
 
   intakeNumeraire(
@@ -298,6 +348,22 @@ export class EursToUsdAssimilator extends Contract {
   ): Promise<ContractTransaction>;
 
   "intakeNumeraire(int128)"(
+    _amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  intakeNumeraireLPRatio(
+    _baseWeight: BigNumberish,
+    _quoteWeight: BigNumberish,
+    _addr: string,
+    _amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "intakeNumeraireLPRatio(uint256,uint256,address,int128)"(
+    _baseWeight: BigNumberish,
+    _quoteWeight: BigNumberish,
+    _addr: string,
     _amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -418,6 +484,22 @@ export class EursToUsdAssimilator extends Contract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  viewRawAmountLPRatio(
+    _baseWeight: BigNumberish,
+    _quoteWeight: BigNumberish,
+    _addr: string,
+    _amount: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  "viewRawAmountLPRatio(uint256,uint256,address,int128)"(
+    _baseWeight: BigNumberish,
+    _quoteWeight: BigNumberish,
+    _addr: string,
+    _amount: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   callStatic: {
     intakeNumeraire(
       _amount: BigNumberish,
@@ -425,6 +507,22 @@ export class EursToUsdAssimilator extends Contract {
     ): Promise<BigNumber>;
 
     "intakeNumeraire(int128)"(
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    intakeNumeraireLPRatio(
+      _baseWeight: BigNumberish,
+      _quoteWeight: BigNumberish,
+      _addr: string,
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "intakeNumeraireLPRatio(uint256,uint256,address,int128)"(
+      _baseWeight: BigNumberish,
+      _quoteWeight: BigNumberish,
+      _addr: string,
       _amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -549,6 +647,22 @@ export class EursToUsdAssimilator extends Contract {
     ): Promise<BigNumber>;
 
     "viewRawAmount(int128)"(
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    viewRawAmountLPRatio(
+      _baseWeight: BigNumberish,
+      _quoteWeight: BigNumberish,
+      _addr: string,
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "viewRawAmountLPRatio(uint256,uint256,address,int128)"(
+      _baseWeight: BigNumberish,
+      _quoteWeight: BigNumberish,
+      _addr: string,
       _amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -567,6 +681,22 @@ export class EursToUsdAssimilator extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    intakeNumeraireLPRatio(
+      _baseWeight: BigNumberish,
+      _quoteWeight: BigNumberish,
+      _addr: string,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "intakeNumeraireLPRatio(uint256,uint256,address,int128)"(
+      _baseWeight: BigNumberish,
+      _quoteWeight: BigNumberish,
+      _addr: string,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     intakeRaw(
       _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -675,6 +805,22 @@ export class EursToUsdAssimilator extends Contract {
     ): Promise<BigNumber>;
 
     "viewRawAmount(int128)"(
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    viewRawAmountLPRatio(
+      _baseWeight: BigNumberish,
+      _quoteWeight: BigNumberish,
+      _addr: string,
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "viewRawAmountLPRatio(uint256,uint256,address,int128)"(
+      _baseWeight: BigNumberish,
+      _quoteWeight: BigNumberish,
+      _addr: string,
       _amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -691,6 +837,22 @@ export class EursToUsdAssimilator extends Contract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    intakeNumeraireLPRatio(
+      _baseWeight: BigNumberish,
+      _quoteWeight: BigNumberish,
+      _addr: string,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "intakeNumeraireLPRatio(uint256,uint256,address,int128)"(
+      _baseWeight: BigNumberish,
+      _quoteWeight: BigNumberish,
+      _addr: string,
+      _amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     intakeRaw(
       _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -799,6 +961,22 @@ export class EursToUsdAssimilator extends Contract {
     ): Promise<PopulatedTransaction>;
 
     "viewRawAmount(int128)"(
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    viewRawAmountLPRatio(
+      _baseWeight: BigNumberish,
+      _quoteWeight: BigNumberish,
+      _addr: string,
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "viewRawAmountLPRatio(uint256,uint256,address,int128)"(
+      _baseWeight: BigNumberish,
+      _quoteWeight: BigNumberish,
+      _addr: string,
       _amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

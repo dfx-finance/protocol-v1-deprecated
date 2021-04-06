@@ -77,6 +77,33 @@ contract EursToUsdAssimilator is IAssimilator {
         require(_transferSuccess, "Curve/EURS-transfer-from-failed");
     }
 
+    // takes a numeraire amount, calculates the raw amount of eurs, transfers it in and returns the corresponding raw amount
+    function intakeNumeraireLPRatio(
+        uint256 _baseWeight,
+        uint256 _quoteWeight,
+        address _addr,
+        int128 _amount
+    ) external override returns (uint256 amount_) {
+        uint256 _eursBal = eurs.balanceOf(_addr);
+
+        if (_eursBal <= 0) return 0;
+
+        // 1e2
+        _eursBal = _eursBal.mul(1e18).div(_baseWeight);
+
+        // 1e6
+        uint256 _usdcBal = usdc.balanceOf(_addr).mul(1e18).div(_quoteWeight);
+
+        // Rate is in 1e6
+        uint256 _rate = _usdcBal.mul(1e2).div(_eursBal);
+
+        amount_ = (_amount.mulu(1e2) * 1e6) / _rate;
+
+        bool _transferSuccess = eurs.transferFrom(msg.sender, address(this), amount_);
+
+        require(_transferSuccess, "Curve/EURS-transfer-from-failed");
+    }
+
     // takes a raw amount of eurs and transfers it out, returns numeraire value of the raw amount
     function outputRawAndGetBalance(address _dst, uint256 _amount)
         external
@@ -129,6 +156,28 @@ contract EursToUsdAssimilator is IAssimilator {
         amount_ = (_amount.mulu(1e2) * 1e8) / _rate;
     }
 
+    function viewRawAmountLPRatio(
+        uint256 _baseWeight,
+        uint256 _quoteWeight,
+        address _addr,
+        int128 _amount
+    ) external view override returns (uint256 amount_) {
+        uint256 _eursBal = eurs.balanceOf(_addr);
+
+        if (_eursBal <= 0) return 0;
+
+        // 1e2
+        _eursBal = _eursBal.mul(1e18).div(_baseWeight);
+
+        // 1e6
+        uint256 _usdcBal = usdc.balanceOf(_addr).mul(1e18).div(_quoteWeight);
+
+        // Rate is in 1e6
+        uint256 _rate = _usdcBal.mul(1e2).div(_eursBal);
+
+        amount_ = (_amount.mulu(1e2) * 1e6) / _rate;
+    }
+
     // takes a raw amount and returns the numeraire amount
     function viewNumeraireAmount(uint256 _amount) external view override returns (int128 amount_) {
         uint256 _rate = getRate();
@@ -163,7 +212,7 @@ contract EursToUsdAssimilator is IAssimilator {
         balance_ = _balance.divu(1e2);
     }
 
-    // views the numeraire value of the current balance of the reserve, in this case cadc
+    // views the numeraire value of the current balance of the reserve, in this case eurs
     // instead of calculating with chainlink's "rate" it'll be determined by the existing
     // token ratio. This is in here to prevent LPs from losing out on future oracle price updates
     function viewNumeraireBalanceLPRatio(

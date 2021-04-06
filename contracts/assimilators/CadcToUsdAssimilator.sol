@@ -77,6 +77,29 @@ contract CadcToUsdAssimilator is IAssimilator {
         require(_transferSuccess, "Curve/CADC-transfer-from-failed");
     }
 
+    // takes a numeraire account, calculates the raw amount of cadc, transfers it in and returns the corresponding raw amount
+    function intakeNumeraireLPRatio(
+        uint256 _baseWeight,
+        uint256 _quoteWeight,
+        address _addr,
+        int128 _amount
+    ) external override returns (uint256 amount_) {
+        uint256 _cadcBal = cadc.balanceOf(_addr);
+
+        if (_cadcBal <= 0) return 0;
+
+        uint256 _usdcBal = usdc.balanceOf(_addr).mul(1e18).div(_quoteWeight);
+
+        // Rate is in 1e6
+        uint256 _rate = _usdcBal.mul(1e18).div(_cadcBal.mul(1e18).div(_baseWeight));
+
+        amount_ = (_amount.mulu(1e18) * 1e6) / _rate;
+
+        bool _transferSuccess = cadc.transferFrom(msg.sender, address(this), amount_);
+
+        require(_transferSuccess, "Curve/CADC-transfer-from-failed");
+    }
+
     // takes a raw amount of cadc and transfers it out, returns numeraire value of the raw amount
     function outputRawAndGetBalance(address _dst, uint256 _amount)
         external
@@ -127,6 +150,25 @@ contract CadcToUsdAssimilator is IAssimilator {
         uint256 _rate = getRate();
 
         amount_ = (_amount.mulu(1e18) * 1e8) / _rate;
+    }
+
+    // takes a numeraire amount and returns the raw amount without the rate
+    function viewRawAmountLPRatio(
+        uint256 _baseWeight,
+        uint256 _quoteWeight,
+        address _addr,
+        int128 _amount
+    ) external view override returns (uint256 amount_) {
+        uint256 _cadcBal = cadc.balanceOf(_addr);
+
+        if (_cadcBal <= 0) return 0;
+
+        uint256 _usdcBal = usdc.balanceOf(_addr).mul(1e18).div(_quoteWeight);
+
+        // Rate is in 1e6
+        uint256 _rate = _usdcBal.mul(1e18).div(_cadcBal.mul(1e18).div(_baseWeight));
+
+        amount_ = (_amount.mulu(1e18) * 1e6) / _rate;
     }
 
     // takes a raw amount and returns the numeraire amount
