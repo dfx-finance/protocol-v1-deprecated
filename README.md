@@ -11,12 +11,15 @@ DFX v0.5 is a fork of [shellprotocol@48dac1c](https://github.com/cowri/shell-sol
 
 We've change the term `Shell` from the original implementation to `Curve`. (i.e. `Shell.sol` has been **renamed** to `Curve.sol`, `ShellFactory.sol` to `CurveFactory.sol`, etc).
 
-In the original implementation, the implicit assumption was that all the assets in the protocol were like-minded pairs. However that is not the case in the DFX fork as we're swapping between FX pairs. We're achieving this by having custom assimilators that normalize the foreign currencies to their USD counterparts. We're sourcing our FX price feed from chainlink oracles.
+In the original implementation, the implicit assumption was that all the assets in the protocol were like-minded pairs. However that is not the case in the DFX fork as we're swapping between FX **pairs** (not baskets). We're achieving this by having custom assimilators that normalizes the foreign currencies to their USD counterparts. We're sourcing our FX price feed from chainlink oracles.
+
+Withdrawing and depositing related operations will respect the existing LP ratio. As long as the pool ratio hasn't changed since the deposit, amount in ~= amount out (minus fees), even if the reported price on the oracle changes. The oracle is only here to assist with efficient swaps.
 
 The main changes between our implementation and the original can be found in the following files:
 
 - All the assimilators
-- CurveFactory.sol (formerly `ShellFactory.sol`)
+- `Curve.sol`
+- `CurveFactory.sol` (formerly `ShellFactory.sol`)
 - `Router.sol`
 - `ProportionalLiquidity.sol`
 
@@ -25,6 +28,21 @@ The main changes between our implementation and the original can be found in the
 - [Openzeppelin contracts (v3.3.0)](https://github.com/OpenZeppelin/openzeppelin-contracts/releases/tag/v3.3.0)
 - [ABDKMath (v2.4)](https://github.com/abdk-consulting/abdk-libraries-solidity/releases/tag/v2.4)
 - [Shell Protocol@48dac1c](https://github.com/cowri/shell-solidity-v1/tree/48dac1c1a18e2da292b0468577b9e6cbdb3786a4)
+
+## Curve Parameter Terminology
+
+High level overview.
+
+| Name      | Description                                                                                               |
+| --------- | --------------------------------------------------------------------------------------------------------- |
+| Weights   | Weighting of the pair (e.g. 50/50, 40/60, 30/70...)                                                       |
+| Alpha     | The maximum and minimum allocation for each reserve                                                       |
+| Beta      | Liquidity depth of the exchange; The higher the value, the flatter the curve at the reported oracle price |
+| Delta/Max | Slippage when exchange is not at the reported oracle price                                                |
+| Epsilon   | Fixed fee                                                                                                 |
+| Lambda    | Dynamic fee captured when slippage occurs                                                                 |
+
+For a more in-depth discussion, refer to [section 3 of the shellprotocol whitepaper](https://github.com/cowri/shell-solidity-v1/blob/master/Shell_White_Paper_v1.0.pdf)
 
 ## Testing
 
