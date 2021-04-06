@@ -26,16 +26,14 @@ The main changes between our implementation and the original can be found in the
 - [ABDKMath (v2.4)](https://github.com/abdk-consulting/abdk-libraries-solidity/releases/tag/v2.4)
 - [Shell Protocol@48dac1c](https://github.com/cowri/shell-solidity-v1/tree/48dac1c1a18e2da292b0468577b9e6cbdb3786a4)
 
-## Gas Usage
+## Testing
 
-| Function   | Gas Usage (Estimated) |
-| ---------- | --------------------- |
-| deposit    | 198907                |
-| withdraw   | 163110                |
-| originSwap | 142143                |
-| targetSwap | 142244                |
+```
+yarn
+RPC_URL=<MAINNET NODE> yarn test
+```
 
-# Deploy Locally
+## Deploy Locally
 
 1. Create a `.env` file at project root with the following contents:
 

@@ -40,11 +40,15 @@ contract XsgdToUsdAssimilator is IAssimilator {
         return uint256(oracle.latestAnswer());
     }
 
+    function xsgdAmountTo18(uint256 _amount) internal pure returns (uint256) {
+        return _amount.mul(1e12);
+    }
+
     // takes raw xsgd amount, transfers it in, calculates corresponding numeraire amount and returns it
     function intakeRawAndGetBalance(uint256 _amount) external override returns (int128 amount_, int128 balance_) {
         bool _transferSuccess = xsgd.transferFrom(msg.sender, address(this), _amount);
 
-        require(_transferSuccess, "Curve/EURS-transfer-from-failed");
+        require(_transferSuccess, "Curve/XSGD-transfer-from-failed");
 
         uint256 _balance = xsgd.balanceOf(address(this));
 
@@ -59,7 +63,7 @@ contract XsgdToUsdAssimilator is IAssimilator {
     function intakeRaw(uint256 _amount) external override returns (int128 amount_) {
         bool _transferSuccess = xsgd.transferFrom(msg.sender, address(this), _amount);
 
-        require(_transferSuccess, "Curve/xsgd-transfer-from-failed");
+        require(_transferSuccess, "Curve/XSGD-transfer-from-failed");
 
         uint256 _rate = getRate();
 
@@ -74,7 +78,7 @@ contract XsgdToUsdAssimilator is IAssimilator {
 
         bool _transferSuccess = xsgd.transferFrom(msg.sender, address(this), amount_);
 
-        require(_transferSuccess, "Curve/EURS-transfer-from-failed");
+        require(_transferSuccess, "Curve/XSGD-transfer-from-failed");
     }
 
     // takes a raw amount of xsgd and transfers it out, returns numeraire value of the raw amount
@@ -89,7 +93,7 @@ contract XsgdToUsdAssimilator is IAssimilator {
 
         bool _transferSuccess = xsgd.transfer(_dst, _xsgdAmount);
 
-        require(_transferSuccess, "Curve/EURS-transfer-failed");
+        require(_transferSuccess, "Curve/XSGD-transfer-failed");
 
         uint256 _balance = xsgd.balanceOf(address(this));
 
@@ -106,7 +110,7 @@ contract XsgdToUsdAssimilator is IAssimilator {
 
         bool _transferSuccess = xsgd.transfer(_dst, _xsgdAmount);
 
-        require(_transferSuccess, "Curve/EURS-transfer-failed");
+        require(_transferSuccess, "Curve/XSGD-transfer-failed");
 
         amount_ = _xsgdAmount.divu(1e6);
     }
@@ -119,7 +123,7 @@ contract XsgdToUsdAssimilator is IAssimilator {
 
         bool _transferSuccess = xsgd.transfer(_dst, amount_);
 
-        require(_transferSuccess, "Curve/EURS-transfer-failed");
+        require(_transferSuccess, "Curve/XSGD-transfer-failed");
     }
 
     // takes a numeraire amount and returns the raw amount
@@ -138,11 +142,13 @@ contract XsgdToUsdAssimilator is IAssimilator {
 
     // views the numeraire value of the current balance of the reserve, in this case xsgd
     function viewNumeraireBalance(address _addr) external view override returns (int128 balance_) {
+        uint256 _rate = getRate();
+
         uint256 _balance = xsgd.balanceOf(_addr);
 
         if (_balance <= 0) return ABDKMath64x64.fromUInt(0);
 
-        balance_ = _balance.divu(1e6);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e6);
     }
 
     // views the numeraire value of the current balance of the reserve, in this case xsgd

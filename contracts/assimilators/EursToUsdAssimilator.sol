@@ -138,11 +138,13 @@ contract EursToUsdAssimilator is IAssimilator {
 
     // views the numeraire value of the current balance of the reserve, in this case eurs
     function viewNumeraireBalance(address _addr) external view override returns (int128 balance_) {
+        uint256 _rate = getRate();
+
         uint256 _balance = eurs.balanceOf(_addr);
 
         if (_balance <= 0) return ABDKMath64x64.fromUInt(0);
 
-        balance_ = _balance.divu(1e2);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e2);
     }
 
     // views the numeraire value of the current balance of the reserve, in this case eurs

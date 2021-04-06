@@ -16,13 +16,21 @@ const MAX = parseUnits("0.15");
 const EPSILON = parseUnits("0.0004");
 const LAMBDA = parseUnits("0.3");
 
-export const getDeployer = async (): Promise<Signer> => {
-  const [deployer] = await ethers.getSigners();
-  return deployer;
+export const getDeployer = async (): Promise<{
+  deployer: Signer;
+  user1: Signer;
+  user2: Signer;
+}> => {
+  const [deployer, user1, user2] = await ethers.getSigners();
+  return {
+    deployer,
+    user1,
+    user2,
+  };
 };
 
 async function main() {
-  const deployer = await getDeployer();
+  const { deployer } = await getDeployer();
 
   console.log(`Setting up scaffolding at network ${ethers.provider.connection.url}`);
   console.log(`Deployer account: ${await deployer.getAddress()}`);
