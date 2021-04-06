@@ -258,6 +258,8 @@ contract Curve is Storage {
 
     event FrozenSet(bool isFrozen);
 
+    event EmergencyAlarm(bool isEmergency);
+
     event Trade(
         address indexed trader,
         address indexed origin,
@@ -291,6 +293,11 @@ contract Curve is Storage {
 
     modifier transactable() {
         require(!frozen, "Curve/frozen-only-allowing-proportional-withdraw");
+        _;
+    }
+
+    modifier isEmergency() {
+        require(emergency, "Curve/emergency-only-allowing-emergency-proportional-withdraw");
         _;
     }
 
@@ -364,6 +371,12 @@ contract Curve is Storage {
         )
     {
         return Orchestrator.viewCurve(curve);
+    }
+
+    function setEmergency(bool _emergency) external onlyOwner {
+        emit EmergencyAlarm(_emergency);
+
+        emergency = _emergency;
     }
 
     function setFrozen(bool _toFreezeOrNotToFreeze) external onlyOwner {
@@ -478,6 +491,21 @@ contract Curve is Storage {
     function viewDeposit(uint256 _deposit) external view transactable returns (uint256, uint256[] memory) {
         // curvesToMint_, depositsToMake_
         return ProportionalLiquidity.viewProportionalDeposit(curve, _deposit);
+    }
+
+    /// @notice  Emergency withdraw tokens in the event that the oracle somehow bugs out
+    ///          and no one is able to withdraw due to the invariant check
+    /// @param   _curvesToBurn the full amount you want to withdraw from the pool which will be withdrawn from evenly amongst the
+    ///                        numeraire assets of the pool
+    /// @return withdrawals_ the amonts of numeraire assets withdrawn from the pool
+    function emergencyWithdraw(uint256 _curvesToBurn, uint256 _deadline)
+        external
+        isEmergency
+        deadline(_deadline)
+        nonReentrant
+        returns (uint256[] memory withdrawals_)
+    {
+        return ProportionalLiquidity.emergencyProportionalWithdraw(curve, _curvesToBurn);
     }
 
     /// @notice  withdrawas amount of curve tokens from the the pool equally from the numeraire assets of the pool with no slippage

@@ -33,17 +33,19 @@ library ProportionalLiquidity {
 
         (int128 _oGLiq, int128[] memory _oBals) = getGrossLiquidityAndBalancesForDeposit(curve);
 
+        // No liquidity, oracle sets the ratio
         if (_oGLiq == 0) {
             for (uint256 i = 0; i < _length; i++) {
                 deposits_[i] = Assimilators.intakeNumeraire(curve.assets[i].addr, __deposit.mul(curve.weights[i]));
             }
         } else {
+            // We already have an existing pool ratio
+            // which must be respected
             int128 _multiplier = __deposit.div(_oGLiq);
 
             uint256 _baseWeight = curve.weights[0].mulu(1e18);
             uint256 _quoteWeight = curve.weights[1].mulu(1e18);
 
-            // Deposits into the pool is determined by existing LP ratio
             for (uint256 i = 0; i < _length; i++) {
                 deposits_[i] = Assimilators.intakeNumeraireLPRatio(
                     curve.assets[i].addr,
@@ -83,11 +85,15 @@ library ProportionalLiquidity {
 
         uint256[] memory deposits_ = new uint256[](_length);
 
+        // No liquidity
         if (_oGLiq == 0) {
             for (uint256 i = 0; i < _length; i++) {
                 deposits_[i] = Assimilators.viewRawAmount(curve.assets[i].addr, __deposit.mul(curve.weights[i]));
             }
         } else {
+            // We already have an existing pool ratio
+            // this must be respected
+
             int128 _multiplier = __deposit.div(_oGLiq);
 
             uint256 _baseWeight = curve.weights[0].mulu(1e18);
@@ -116,6 +122,34 @@ library ProportionalLiquidity {
         curves_ = _newShells.mulu(1e18);
 
         return (curves_, deposits_);
+    }
+
+    function emergencyProportionalWithdraw(Storage.Curve storage curve, uint256 _withdrawal)
+        external
+        returns (uint256[] memory)
+    {
+        uint256 _length = curve.assets.length;
+
+        (, int128[] memory _oBals) = getGrossLiquidityAndBalances(curve);
+
+        uint256[] memory withdrawals_ = new uint256[](_length);
+
+        int128 _totalShells = curve.totalSupply.divu(1e18);
+        int128 __withdrawal = _withdrawal.divu(1e18);
+
+        int128 _multiplier = __withdrawal.mul(ONE - curve.epsilon).div(_totalShells);
+
+        for (uint256 i = 0; i < _length; i++) {
+            withdrawals_[i] = Assimilators.outputNumeraire(
+                curve.assets[i].addr,
+                msg.sender,
+                _oBals[i].mul(_multiplier)
+            );
+        }
+
+        burn(curve, msg.sender, _withdrawal);
+
+        return withdrawals_;
     }
 
     function proportionalWithdraw(Storage.Curve storage curve, uint256 _withdrawal)

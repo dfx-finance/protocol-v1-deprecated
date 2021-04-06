@@ -22,6 +22,7 @@ interface StorageInterface extends ethers.utils.Interface {
   functions: {
     "curve()": FunctionFragment;
     "derivatives(uint256)": FunctionFragment;
+    "emergency()": FunctionFragment;
     "frozen()": FunctionFragment;
     "numeraires(uint256)": FunctionFragment;
     "owner()": FunctionFragment;
@@ -33,6 +34,7 @@ interface StorageInterface extends ethers.utils.Interface {
     functionFragment: "derivatives",
     values: [BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "emergency", values?: undefined): string;
   encodeFunctionData(functionFragment: "frozen", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "numeraires",
@@ -49,6 +51,7 @@ interface StorageInterface extends ethers.utils.Interface {
     functionFragment: "derivatives",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "emergency", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "frozen", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "numeraires", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
@@ -137,6 +140,10 @@ export class Storage extends Contract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    emergency(overrides?: CallOverrides): Promise<[boolean]>;
+
+    "emergency()"(overrides?: CallOverrides): Promise<[boolean]>;
+
     frozen(overrides?: CallOverrides): Promise<[boolean]>;
 
     "frozen()"(overrides?: CallOverrides): Promise<[boolean]>;
@@ -196,6 +203,10 @@ export class Storage extends Contract {
     overrides?: CallOverrides
   ): Promise<string>;
 
+  emergency(overrides?: CallOverrides): Promise<boolean>;
+
+  "emergency()"(overrides?: CallOverrides): Promise<boolean>;
+
   frozen(overrides?: CallOverrides): Promise<boolean>;
 
   "frozen()"(overrides?: CallOverrides): Promise<boolean>;
@@ -252,6 +263,10 @@ export class Storage extends Contract {
       overrides?: CallOverrides
     ): Promise<string>;
 
+    emergency(overrides?: CallOverrides): Promise<boolean>;
+
+    "emergency()"(overrides?: CallOverrides): Promise<boolean>;
+
     frozen(overrides?: CallOverrides): Promise<boolean>;
 
     "frozen()"(overrides?: CallOverrides): Promise<boolean>;
@@ -291,6 +306,10 @@ export class Storage extends Contract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    emergency(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "emergency()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     frozen(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -332,6 +351,10 @@ export class Storage extends Contract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    emergency(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "emergency()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     frozen(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

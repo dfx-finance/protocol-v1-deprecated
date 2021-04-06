@@ -29,6 +29,8 @@ interface CurveInterface extends ethers.utils.Interface {
     "curve()": FunctionFragment;
     "deposit(uint256,uint256)": FunctionFragment;
     "derivatives(uint256)": FunctionFragment;
+    "emergency()": FunctionFragment;
+    "emergencyWithdraw(uint256,uint256)": FunctionFragment;
     "excludeDerivative(address)": FunctionFragment;
     "frozen()": FunctionFragment;
     "liquidity()": FunctionFragment;
@@ -37,6 +39,7 @@ interface CurveInterface extends ethers.utils.Interface {
     "originSwapDiscountCHI(address,address,uint256,uint256,uint256)": FunctionFragment;
     "owner()": FunctionFragment;
     "reserves(uint256)": FunctionFragment;
+    "setEmergency(bool)": FunctionFragment;
     "setFrozen(bool)": FunctionFragment;
     "setParams(uint256,uint256,uint256,uint256,uint256)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
@@ -73,6 +76,11 @@ interface CurveInterface extends ethers.utils.Interface {
     functionFragment: "derivatives",
     values: [BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "emergency", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "emergencyWithdraw",
+    values: [BigNumberish, BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "excludeDerivative",
     values: [string]
@@ -95,6 +103,10 @@ interface CurveInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "reserves",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setEmergency",
+    values: [boolean]
   ): string;
   encodeFunctionData(functionFragment: "setFrozen", values: [boolean]): string;
   encodeFunctionData(
@@ -167,6 +179,11 @@ interface CurveInterface extends ethers.utils.Interface {
     functionFragment: "derivatives",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "emergency", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "emergencyWithdraw",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "excludeDerivative",
     data: BytesLike
@@ -181,6 +198,10 @@ interface CurveInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "reserves", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setEmergency",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "setFrozen", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setParams", data: BytesLike): Result;
   decodeFunctionResult(
@@ -224,6 +245,7 @@ interface CurveInterface extends ethers.utils.Interface {
     "Approval(address,address,uint256)": EventFragment;
     "AssetIncluded(address,address,uint256)": EventFragment;
     "AssimilatorIncluded(address,address,address,address)": EventFragment;
+    "EmergencyAlarm(bool)": EventFragment;
     "FrozenSet(bool)": EventFragment;
     "OwnershipTransfered(address,address)": EventFragment;
     "ParametersSet(uint256,uint256,uint256,uint256,uint256)": EventFragment;
@@ -235,6 +257,7 @@ interface CurveInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "AssetIncluded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "AssimilatorIncluded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "EmergencyAlarm"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "FrozenSet"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransfered"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ParametersSet"): EventFragment;
@@ -383,6 +406,22 @@ export class Curve extends Contract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    emergency(overrides?: CallOverrides): Promise<[boolean]>;
+
+    "emergency()"(overrides?: CallOverrides): Promise<[boolean]>;
+
+    emergencyWithdraw(
+      _curvesToBurn: BigNumberish,
+      _deadline: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "emergencyWithdraw(uint256,uint256)"(
+      _curvesToBurn: BigNumberish,
+      _deadline: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     excludeDerivative(
       _derivative: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -465,6 +504,16 @@ export class Curve extends Contract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[string]>;
+
+    setEmergency(
+      _emergency: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    "setEmergency(bool)"(
+      _emergency: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     setFrozen(
       _toFreezeOrNotToFreeze: boolean,
@@ -738,6 +787,22 @@ export class Curve extends Contract {
     overrides?: CallOverrides
   ): Promise<string>;
 
+  emergency(overrides?: CallOverrides): Promise<boolean>;
+
+  "emergency()"(overrides?: CallOverrides): Promise<boolean>;
+
+  emergencyWithdraw(
+    _curvesToBurn: BigNumberish,
+    _deadline: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "emergencyWithdraw(uint256,uint256)"(
+    _curvesToBurn: BigNumberish,
+    _deadline: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   excludeDerivative(
     _derivative: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -817,6 +882,16 @@ export class Curve extends Contract {
     arg0: BigNumberish,
     overrides?: CallOverrides
   ): Promise<string>;
+
+  setEmergency(
+    _emergency: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  "setEmergency(bool)"(
+    _emergency: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   setFrozen(
     _toFreezeOrNotToFreeze: boolean,
@@ -1089,6 +1164,22 @@ export class Curve extends Contract {
       overrides?: CallOverrides
     ): Promise<string>;
 
+    emergency(overrides?: CallOverrides): Promise<boolean>;
+
+    "emergency()"(overrides?: CallOverrides): Promise<boolean>;
+
+    emergencyWithdraw(
+      _curvesToBurn: BigNumberish,
+      _deadline: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber[]>;
+
+    "emergencyWithdraw(uint256,uint256)"(
+      _curvesToBurn: BigNumberish,
+      _deadline: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber[]>;
+
     excludeDerivative(
       _derivative: string,
       overrides?: CallOverrides
@@ -1168,6 +1259,13 @@ export class Curve extends Contract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    setEmergency(_emergency: boolean, overrides?: CallOverrides): Promise<void>;
+
+    "setEmergency(bool)"(
+      _emergency: boolean,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     setFrozen(
       _toFreezeOrNotToFreeze: boolean,
@@ -1384,6 +1482,10 @@ export class Curve extends Contract {
       }
     >;
 
+    EmergencyAlarm(
+      isEmergency: null
+    ): TypedEventFilter<[boolean], { isEmergency: boolean }>;
+
     FrozenSet(
       isFrozen: null
     ): TypedEventFilter<[boolean], { isFrozen: boolean }>;
@@ -1521,6 +1623,22 @@ export class Curve extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    emergency(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "emergency()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    emergencyWithdraw(
+      _curvesToBurn: BigNumberish,
+      _deadline: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "emergencyWithdraw(uint256,uint256)"(
+      _curvesToBurn: BigNumberish,
+      _deadline: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     excludeDerivative(
       _derivative: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1594,6 +1712,16 @@ export class Curve extends Contract {
     "reserves(uint256)"(
       arg0: BigNumberish,
       overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    setEmergency(
+      _emergency: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    "setEmergency(bool)"(
+      _emergency: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     setFrozen(
@@ -1832,6 +1960,22 @@ export class Curve extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    emergency(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "emergency()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    emergencyWithdraw(
+      _curvesToBurn: BigNumberish,
+      _deadline: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "emergencyWithdraw(uint256,uint256)"(
+      _curvesToBurn: BigNumberish,
+      _deadline: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     excludeDerivative(
       _derivative: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1908,6 +2052,16 @@ export class Curve extends Contract {
     "reserves(uint256)"(
       arg0: BigNumberish,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    setEmergency(
+      _emergency: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "setEmergency(bool)"(
+      _emergency: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     setFrozen(
