@@ -5,6 +5,27 @@ A decentralized foreign exchange protocol optimized for stablecoins.
 [![Discord](https://img.shields.io/discord/786747729376051211.svg?color=768AD4&label=discord&logo=https%3A%2F%2Fdiscordapp.com%2Fassets%2F8c9701b98ad4372b58f13fd9f65f966e.svg)](https://discordapp.com/channels/786747729376051211/)
 [![Twitter Follow](https://img.shields.io/twitter/follow/DFXFinance.svg?label=DFXFinance&style=social)](https://twitter.com/DFXFinance)
 
+## Overview
+
+DFX v0.5 is a fork of [shellprotocol@48dac1c](https://github.com/cowri/shell-solidity-v1/tree/48dac1c1a18e2da292b0468577b9e6cbdb3786a4), an AMM for baskets of like-minded pairs. A audit was previously done by [consensys diligence](https://consensys.net/diligence/audits/2020/06/shell-protocol/shell-protocol-audit-2020-06.pdf).
+
+We've change the term `Shell` from the original implementation to `Curve`. (i.e. `Shell.sol` has been **renamed** to `Curve.sol`, `ShellFactory.sol` to `CurveFactory.sol`, etc).
+
+In the original implementation, the implicit assumption was that all the assets in the protocol were like-minded pairs. However that is not the case in the DFX fork as we're swapping between FX pairs. We're achieving this by having custom assimilators that normalize the foreign currencies to their USD counterparts. We're sourcing our FX price feed from chainlink oracles.
+
+The main changes between our implementation and the original can be found in the following files:
+
+- All the assimilators
+- CurveFactory.sol (formerly `ShellFactory.sol`)
+- `Router.sol`
+- `ProportionalLiquidity.sol`
+
+## Third Party Libraries
+
+- [Openzeppelin contracts (v3.3.0)](https://github.com/OpenZeppelin/openzeppelin-contracts/releases/tag/v3.3.0)
+- [ABDKMath (v2.4)](https://github.com/abdk-consulting/abdk-libraries-solidity/releases/tag/v2.4)
+- [Shell Protocol@48dac1c](https://github.com/cowri/shell-solidity-v1/tree/48dac1c1a18e2da292b0468577b9e6cbdb3786a4)
+
 ## Gas Usage
 
 | Function   | Gas Usage (Estimated) |
