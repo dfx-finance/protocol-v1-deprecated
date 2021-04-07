@@ -2,27 +2,35 @@
 
 A decentralized foreign exchange protocol optimized for stablecoins.
 
-[![Discord](https://img.shields.io/discord/786747729376051211.svg?color=768AD4&label=discord&logo=https%3A%2F%2Fdiscordapp.com%2Fassets%2F8c9701b98ad4372b58f13fd9f65f966e.svg)](https://discordapp.com/channels/786747729376051211/)
+[![Discord](https://img.shields.io/discord/786747729376051211.svg?color=768AD4&label=discord&logo=https%3A%2F%2Fdiscordapp.com%2Fassets%2F8c9701b98ad4372b58f13fd9f65f966e.svg)](http://discord.dfx.finance/)
 [![Twitter Follow](https://img.shields.io/twitter/follow/DFXFinance.svg?label=DFXFinance&style=social)](https://twitter.com/DFXFinance)
 
 ## Overview
 
-DFX v0.5 is a fork of [shellprotocol@48dac1c](https://github.com/cowri/shell-solidity-v1/tree/48dac1c1a18e2da292b0468577b9e6cbdb3786a4), an AMM for baskets of like-minded pairs. A audit was previously done by [consensys diligence](https://consensys.net/diligence/audits/2020/06/shell-protocol/shell-protocol-audit-2020-06.pdf).
+DFX v0.5 is a fork of [shellprotocol@48dac1c](https://github.com/cowri/shell-solidity-v1/tree/48dac1c1a18e2da292b0468577b9e6cbdb3786a4), an AMM for baskets of like-valued pairs. An audit of that protocol was previously done by [Consensys Diligence](https://consensys.net/diligence/audits/2020/06/shell-protocol/shell-protocol-audit-2020-06.pdf).
 
-We've change the term `Shell` from the original implementation to `Curve`. (i.e. `Shell.sol` has been **renamed** to `Curve.sol`, `ShellFactory.sol` to `CurveFactory.sol`, etc).
+### Major changes
 
-In the original implementation, the implicit assumption was that all the assets in the protocol were like-minded pairs. However that is not the case in the DFX fork as we're swapping between FX **pairs** (not baskets). We're achieving this by having custom assimilators that normalizes the foreign currencies to their USD counterparts. We're sourcing our FX price feed from chainlink oracles.
-
-Withdrawing and depositing related operations will respect the existing LP ratio. As long as the pool ratio hasn't changed since the deposit, amount in ~= amount out (minus fees), even if the reported price on the oracle changes. The oracle is only here to assist with efficient swaps.
-
-The main changes between our implementation and the original can be found in the following files:
+The main changes between our implementation and the original code can be found in the following files:
 
 - All the assimilators
-- `Curve.sol`
+- `Curve.sol` (formerly `Shell.sol`)
 - `CurveFactory.sol` (formerly `ShellFactory.sol`)
 - `Router.sol`
 - `ProportionalLiquidity.sol`
 - `Swaps.sol`
+
+#### Changing the term "Shell" to "Curve"
+
+Throughout the repository, the term `Shell` has been changed to `Curve`. For example, `Shell.sol` has been **renamed** to `Curve.sol`, and `ShellFactory.sol` to `CurveFactory.sol`, etc.
+
+#### Different Valued Pairs
+
+In the original implementation, all pools are assumed to be baskets of like-valued tokens. In our implementation, all pools are assumed to be pairs of different-valued FX stablecoins.
+
+This is achieved by having custom assimilators that normalize the foreign currencies to their USD counterparts. We're sourcing our FX price feed from chainlink oracles.
+
+Withdrawing and depositing related operations will respect the existing LP ratio. As long as the pool ratio hasn't changed since the deposit, amount in ~= amount out (minus fees), even if the reported price on the oracle changes. The oracle is only here to assist with efficient swaps.
 
 ## Third Party Libraries
 
@@ -36,7 +44,7 @@ High level overview.
 
 | Name      | Description                                                                                               |
 | --------- | --------------------------------------------------------------------------------------------------------- |
-| Weights   | Weighting of the pair (We'll be only using 50/50)                                                         |
+| Weights   | Weighting of the pair (only 50/50)                                                         |
 | Alpha     | The maximum and minimum allocation for each reserve                                                       |
 | Beta      | Liquidity depth of the exchange; The higher the value, the flatter the curve at the reported oracle price |
 | Delta/Max | Slippage when exchange is not at the reported oracle price                                                |
@@ -47,7 +55,7 @@ For a more in-depth discussion, refer to [section 3 of the shellprotocol whitepa
 
 ## Testing
 
-We recommend that you run this against a local node. The differene in latency will make a huge difference.
+We recommend that you run this against a local node. The difference in latency will make a huge difference.
 
 ```
 yarn
