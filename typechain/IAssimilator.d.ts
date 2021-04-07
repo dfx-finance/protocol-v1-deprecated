@@ -21,6 +21,7 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface IAssimilatorInterface extends ethers.utils.Interface {
   functions: {
+    "getRate()": FunctionFragment;
     "intakeNumeraire(int128)": FunctionFragment;
     "intakeNumeraireLPRatio(uint256,uint256,address,int128)": FunctionFragment;
     "intakeRaw(uint256)": FunctionFragment;
@@ -36,6 +37,7 @@ interface IAssimilatorInterface extends ethers.utils.Interface {
     "viewRawAmountLPRatio(uint256,uint256,address,int128)": FunctionFragment;
   };
 
+  encodeFunctionData(functionFragment: "getRate", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "intakeNumeraire",
     values: [BigNumberish]
@@ -89,6 +91,7 @@ interface IAssimilatorInterface extends ethers.utils.Interface {
     values: [BigNumberish, BigNumberish, string, BigNumberish]
   ): string;
 
+  decodeFunctionResult(functionFragment: "getRate", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "intakeNumeraire",
     data: BytesLike
@@ -183,6 +186,10 @@ export class IAssimilator extends Contract {
   interface: IAssimilatorInterface;
 
   functions: {
+    getRate(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    "getRate()"(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     intakeNumeraire(
       amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -337,6 +344,10 @@ export class IAssimilator extends Contract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
   };
+
+  getRate(overrides?: CallOverrides): Promise<BigNumber>;
+
+  "getRate()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   intakeNumeraire(
     amount: BigNumberish,
@@ -493,6 +504,10 @@ export class IAssimilator extends Contract {
   ): Promise<BigNumber>;
 
   callStatic: {
+    getRate(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "getRate()"(overrides?: CallOverrides): Promise<BigNumber>;
+
     intakeNumeraire(
       amount: BigNumberish,
       overrides?: CallOverrides
@@ -651,6 +666,10 @@ export class IAssimilator extends Contract {
   filters: {};
 
   estimateGas: {
+    getRate(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "getRate()"(overrides?: CallOverrides): Promise<BigNumber>;
+
     intakeNumeraire(
       amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -807,6 +826,10 @@ export class IAssimilator extends Contract {
   };
 
   populateTransaction: {
+    getRate(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "getRate()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     intakeNumeraire(
       amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }

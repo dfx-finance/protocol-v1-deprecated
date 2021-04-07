@@ -36,7 +36,7 @@ contract EursToUsdAssimilator is IAssimilator {
     // solhint-disable-next-line
     constructor() {}
 
-    function getRate() internal view returns (uint256) {
+    function getRate() public view override returns (uint256) {
         return uint256(oracle.latestAnswer());
     }
 

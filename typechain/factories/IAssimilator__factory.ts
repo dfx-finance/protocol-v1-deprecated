@@ -18,6 +18,19 @@ export class IAssimilator__factory {
 
 const _abi = [
   {
+    inputs: [],
+    name: "getRate",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "int128",

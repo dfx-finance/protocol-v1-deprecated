@@ -29,6 +29,12 @@ contract UsdcToUsdAssimilator is IAssimilator {
     // solhint-disable-next-line
     constructor() {}
 
+    // Multiple by the rate for usd its always 1
+    // solhint-disable-next-line
+    function getRate() public view override returns (uint256) {
+        return uint256(1e8); // Oracle 8 decimals
+    }
+
     function intakeRawAndGetBalance(uint256 _amount) external override returns (int128 amount_, int128 balance_) {
         bool _success = usdc.transferFrom(msg.sender, address(this), _amount);
 

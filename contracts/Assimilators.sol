@@ -37,6 +37,10 @@ library Assimilators {
         return returnData_;
     }
 
+    function getRate(address _assim) internal view returns (uint256 amount_) {
+        amount_ = IAssimilator(_assim).getRate();
+    }
+
     function viewRawAmount(address _assim, int128 _amt) internal view returns (uint256 amount_) {
         amount_ = IAssimilator(_assim).viewRawAmount(_amt);
     }

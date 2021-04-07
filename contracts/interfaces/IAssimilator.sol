@@ -16,6 +16,8 @@
 pragma solidity ^0.7.3;
 
 interface IAssimilator {
+    function getRate() external view returns (uint256);
+
     function intakeRaw(uint256 amount) external returns (int128);
 
     function intakeRawAndGetBalance(uint256 amount) external returns (int128, int128);

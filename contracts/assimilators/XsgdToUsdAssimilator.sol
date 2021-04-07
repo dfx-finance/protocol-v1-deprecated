@@ -22,8 +22,6 @@ import "../lib/ABDKMath64x64.sol";
 import "../interfaces/IAssimilator.sol";
 import "../interfaces/IOracle.sol";
 
-import "hardhat/console.sol";
-
 contract XsgdToUsdAssimilator is IAssimilator {
     using ABDKMath64x64 for int128;
     using ABDKMath64x64 for uint256;
@@ -38,12 +36,8 @@ contract XsgdToUsdAssimilator is IAssimilator {
     // solhint-disable-next-line
     constructor() {}
 
-    function getRate() internal view returns (uint256) {
+    function getRate() public view override returns (uint256) {
         return uint256(oracle.latestAnswer());
-    }
-
-    function xsgdAmountTo18(uint256 _amount) internal pure returns (uint256) {
-        return _amount.mul(1e12);
     }
 
     // takes raw xsgd amount, transfers it in, calculates corresponding numeraire amount and returns it

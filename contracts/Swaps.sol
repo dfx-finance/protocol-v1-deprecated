@@ -8,9 +8,13 @@ import "./CurveMath.sol";
 import "./lib/UnsafeMath64x64.sol";
 import "./lib/ABDKMath64x64.sol";
 
+import "@openzeppelin/contracts/math/SafeMath.sol";
+
 library Swaps {
     using ABDKMath64x64 for int128;
     using UnsafeMath64x64 for int128;
+    using ABDKMath64x64 for uint256;
+    using SafeMath for uint256;
 
     event Trade(
         address indexed trader,
@@ -93,10 +97,31 @@ library Swaps {
         if (_o.ix == _t.ix)
             return Assimilators.intakeNumeraire(_o.addr, Assimilators.outputRaw(_t.addr, _recipient, _targetAmount));
 
+        // If the origin is the quote currency (i.e. usdc)
+        // we need to make sure to massage the _targetAmount
+        // by dividing it by the exchange rate (so it gets
+        // multiplied later to reach the same target amount).
+        // Inelegant solution, but this way we don't need to
+        // re-write large chunks of the code-base
+
+        // curve.assets[1].addr = quoteCurrency
+        // no variable assignment due to stack too deep
+        if (curve.assets[1].addr == _o.addr) {
+            _targetAmount = _targetAmount.mul(1e8).div(Assimilators.getRate(_t.addr));
+        }
+
         (int128 _amt, int128 _oGLiq, int128 _nGLiq, int128[] memory _oBals, int128[] memory _nBals) =
             getTargetSwapData(curve, _t.ix, _o.ix, _t.addr, _recipient, _targetAmount);
 
         _amt = CurveMath.calculateTrade(curve, _oGLiq, _nGLiq, _oBals, _nBals, _amt, _o.ix);
+
+        // If the origin is the quote currency (i.e. usdc)
+        // we need to make sure to massage the _amt too
+
+        // curve.assets[1].addr = quoteCurrency
+        if (curve.assets[1].addr == _o.addr) {
+            _amt = _amt.mul(Assimilators.getRate(_t.addr).divu(1e8));
+        }
 
         _amt = _amt.us_mul(ONE + curve.epsilon);
 
@@ -116,10 +141,31 @@ library Swaps {
         if (_o.ix == _t.ix)
             return Assimilators.viewRawAmount(_o.addr, Assimilators.viewNumeraireAmount(_t.addr, _targetAmount));
 
+        // If the origin is the quote currency (i.e. usdc)
+        // we need to make sure to massage the _targetAmount
+        // by dividing it by the exchange rate (so it gets
+        // multiplied later to reach the same target amount).
+        // Inelegant solution, but this way we don't need to
+        // re-write large chunks of the code-base
+
+        // curve.assets[1].addr = quoteCurrency
+        // no variable assignment due to stack too deep
+        if (curve.assets[1].addr == _o.addr) {
+            _targetAmount = _targetAmount.mul(1e8).div(Assimilators.getRate(_t.addr));
+        }
+
         (int128 _amt, int128 _oGLiq, int128 _nGLiq, int128[] memory _nBals, int128[] memory _oBals) =
             viewTargetSwapData(curve, _t.ix, _o.ix, _targetAmount, _t.addr);
 
         _amt = CurveMath.calculateTrade(curve, _oGLiq, _nGLiq, _oBals, _nBals, _amt, _o.ix);
+
+        // If the origin is the quote currency (i.e. usdc)
+        // we need to make sure to massage the _amt too
+
+        // curve.assets[1].addr = quoteCurrency
+        if (curve.assets[1].addr == _o.addr) {
+            _amt = _amt.mul(Assimilators.getRate(_t.addr).divu(1e8));
+        }
 
         _amt = _amt.us_mul(ONE + curve.epsilon);
 

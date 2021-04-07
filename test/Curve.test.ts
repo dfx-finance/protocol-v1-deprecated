@@ -71,6 +71,17 @@ describe("Curve", function () {
   let mintAndApprove: (tokenAddress: string, minter: Signer, amount: BigNumberish, recipient: string) => Promise<void>;
   let multiMintAndApprove: (requests: [string, Signer, BigNumberish, string][]) => Promise<void>;
 
+  let rates: BigNumber[];
+  const oracles = [ORACLES.CADC.address, ORACLES.XSGD.address, ORACLES.EURS.address];
+
+  beforeEach(async () => {
+    rates = await Promise.all(oracles.map(x => getOracleAnswer(x)));
+  });
+
+  afterEach(async () => {
+    await Promise.all(rates.map((x, i) => updateOracleAnswer(oracles[i], x)));
+  });
+
   before(async function () {
     ({
       users: [user1, user2],
@@ -99,199 +110,775 @@ describe("Curve", function () {
     }));
   });
 
-  describe("Logic", function () {
-    it("50/50 supply withdraw", async function () {
-      const { curve, curveLpToken } = await createCurveAndSetParams({
-        base: cadc.address,
-        quote: usdc.address,
-        baseWeight: parseUnits("0.5"),
-        quoteWeight: parseUnits("0.5"),
-        baseAssimilator: cadcToUsdAssimilator.address,
-        quoteAssimilator: usdcToUsdAssimilator.address,
-        params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+  describe("Swaps", function () {
+    const originAndTargetSwapAndCheckSanity = async ({
+      amount,
+      base,
+      quote,
+      baseDecimals,
+      quoteDecimals,
+      baseWeight,
+      quoteWeight,
+      baseAssimilator,
+      quoteAssimilator,
+      params,
+      oracle,
+    }: {
+      amount: string;
+      base: string;
+      quote: string;
+      baseDecimals: number;
+      quoteDecimals: number;
+      baseWeight: BigNumberish;
+      quoteWeight: BigNumberish;
+      baseAssimilator: string;
+      quoteAssimilator: string;
+      params: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
+      oracle: string;
+    }) => {
+      const { curve } = await createCurveAndSetParams({
+        base,
+        quote,
+        baseWeight,
+        quoteWeight,
+        baseAssimilator: baseAssimilator,
+        quoteAssimilator: quoteAssimilator,
+        params: params,
+      });
+
+      // Calculate expected oracle rate
+      const ORACLE_RATE = await getOracleAnswer(oracle);
+
+      // Mint tokens and approve
+      await multiMintAndApprove([
+        [base, user1, parseUnits("1000000", baseDecimals), curve.address],
+        [quote, user1, parseUnits("1000000", quoteDecimals), curve.address],
+      ]);
+
+      // Proportional Supply
+      await curve.deposit(parseUnits("1000000"), await getFutureTime());
+
+      // Swap
+      let beforeBase = await erc20.attach(base).balanceOf(user1Address);
+      let beforeQuote = await erc20.attach(quote).balanceOf(user1Address);
+
+      const originSwapAmount = parseUnits(amount, baseDecimals);
+      await curve.originSwap(base, quote, originSwapAmount, 0, await getFutureTime());
+
+      let afterBase = await erc20.attach(base).balanceOf(user1Address);
+      let afterQuote = await erc20.attach(quote).balanceOf(user1Address);
+
+      const originExpectedBase = originSwapAmount;
+      const originExpectedQuote = parseUnits(amount, quoteDecimals).mul(ORACLE_RATE).div(parseUnits("1", 8));
+
+      const originDeltaBase = beforeBase.sub(afterBase);
+      const originDeltaQuote = afterQuote.sub(beforeQuote);
+
+      // Get back roughly what the oracle reports
+      // However EURs screws everything up with its 2 decimal places
+      if (quoteDecimals === 2 || baseDecimals === 2) {
+        expectBNAproxEq(originDeltaBase, originExpectedBase, originExpectedBase.div(100));
+        expectBNAproxEq(originDeltaQuote, originExpectedQuote, originExpectedQuote.div(100));
+      } else {
+        expectBNAproxEq(originDeltaBase, originExpectedBase, originExpectedBase.div(2000));
+        expectBNAproxEq(originDeltaQuote, originExpectedQuote, originExpectedQuote.div(2000));
+      }
+
+      // Target Swap
+      beforeBase = await erc20.attach(base).balanceOf(user1Address);
+      beforeQuote = await erc20.attach(quote).balanceOf(user1Address);
+
+      const targetAmount = parseUnits(amount, quoteDecimals);
+      await curve.targetSwap(
+        base,
+        quote,
+        ethers.constants.MaxUint256, // Max amount willing to spend
+        targetAmount, // We want this amount back
+        await getFutureTime(),
+      );
+
+      afterBase = await erc20.attach(base).balanceOf(user1Address);
+      afterQuote = await erc20.attach(quote).balanceOf(user1Address);
+
+      const targetExpectedBase = originSwapAmount.mul(parseUnits("1", 8)).div(ORACLE_RATE);
+      const targetExpectedQuote = targetAmount;
+
+      const targetDeltaBase = beforeBase.sub(afterBase);
+      const targetDeltaQuote = afterQuote.sub(beforeQuote);
+
+      // Target swap works as intended
+      expectBNAproxEq(targetDeltaBase, targetExpectedBase, targetExpectedBase.div(1500));
+      expectBNAproxEq(targetDeltaQuote, targetExpectedQuote, targetExpectedQuote.div(1500));
+    };
+
+    // Basically the same as the initial sanity check
+    // but with swapped base/quote in originSwap/targetSwap
+    // However, the base/quote remains the same in the curve
+    // as the oracle rate reports the price feed very specifically
+    const originAndTargetSwapAndCheckSanityInverse = async ({
+      amount,
+      base,
+      quote,
+      baseDecimals,
+      quoteDecimals,
+      baseWeight,
+      quoteWeight,
+      baseAssimilator,
+      quoteAssimilator,
+      params,
+      oracle,
+    }: {
+      amount: string;
+      base: string;
+      quote: string;
+      baseDecimals: number;
+      quoteDecimals: number;
+      baseWeight: BigNumberish;
+      quoteWeight: BigNumberish;
+      baseAssimilator: string;
+      quoteAssimilator: string;
+      params: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
+      oracle: string;
+    }) => {
+      // We're just flipping them around...
+      const { curve } = await createCurveAndSetParams({
+        base: quote,
+        quote: base,
+        baseWeight: quoteWeight,
+        quoteWeight: baseWeight,
+        baseAssimilator: quoteAssimilator,
+        quoteAssimilator: baseAssimilator,
+        params: params,
+      });
+
+      // Calculate expected oracle rate (inversed)
+      const ORACLE_RATE = await getOracleAnswer(oracle).then(x => {
+        return parseUnits("1", 16).div(x);
       });
 
       // Mint tokens and approve
       await multiMintAndApprove([
-        [TOKENS.USDC.address, user1, parseUnits("100", TOKENS.USDC.decimals), curve.address],
-        [TOKENS.CADC.address, user1, parseUnits("100", TOKENS.CADC.decimals), curve.address],
-        [TOKENS.USDC.address, user2, parseUnits("100", TOKENS.USDC.decimals), curve.address],
-        [TOKENS.CADC.address, user2, parseUnits("100", TOKENS.CADC.decimals), curve.address],
+        [base, user1, parseUnits("1000000", baseDecimals), curve.address],
+        [quote, user1, parseUnits("1000000", quoteDecimals), curve.address],
       ]);
 
-      // Before balances
-      const beforeCurveUSDC = await usdc.balanceOf(curve.address);
-      const beforeUser1USDC = await usdc.balanceOf(user1Address);
-      const beforeUser2USDC = await usdc.balanceOf(user2Address);
+      // Proportional Supply
+      await curve.deposit(parseUnits("1000000"), await getFutureTime());
 
-      const beforeCurveCADC = await cadc.balanceOf(curve.address);
-      const beforeUser1CADC = await cadc.balanceOf(user1Address);
-      const beforeUser2CADC = await cadc.balanceOf(user2Address);
+      // Swap
+      let beforeBase = await erc20.attach(base).balanceOf(user1Address);
+      let beforeQuote = await erc20.attach(quote).balanceOf(user1Address);
 
-      // Proportional Deposit
-      await curve
-        .connect(user1)
-        .deposit(parseUnits("100"), await getFutureTime())
-        .then(x => x.wait());
-      await curve
-        .connect(user2)
-        .deposit(parseUnits("100"), await getFutureTime())
-        .then(x => x.wait());
+      const originSwapAmount = parseUnits(amount, baseDecimals);
+      await curve.originSwap(base, quote, originSwapAmount, 0, await getFutureTime());
 
-      // Get balances again
-      const duringCurveUSDC = await usdc.balanceOf(curve.address);
-      const duringUser1USDC = await usdc.balanceOf(user1Address);
-      const duringUser2USDC = await usdc.balanceOf(user2Address);
+      let afterBase = await erc20.attach(base).balanceOf(user1Address);
+      let afterQuote = await erc20.attach(quote).balanceOf(user1Address);
 
-      const duringCurveCADC = await cadc.balanceOf(curve.address);
-      const duringUser1CADC = await cadc.balanceOf(user1Address);
-      const duringUser2CADC = await cadc.balanceOf(user2Address);
+      const originExpectedBase = originSwapAmount;
+      const originExpectedQuote = parseUnits(amount, quoteDecimals).mul(ORACLE_RATE).div(parseUnits("1", 8));
 
-      // Withdraw
-      await curve.connect(user1).withdraw(await curveLpToken.balanceOf(user1Address), await getFutureTime());
-      await curve.connect(user2).withdraw(await curveLpToken.balanceOf(user2Address), await getFutureTime());
+      const originDeltaBase = beforeBase.sub(afterBase);
+      const originDeltaQuote = afterQuote.sub(beforeQuote);
 
-      // Get final balances
-      const finalCurveUSDC = await usdc.balanceOf(curve.address);
-      const finalUser1USDC = await usdc.balanceOf(user1Address);
-      const finalUser2USDC = await usdc.balanceOf(user2Address);
+      // Get back roughly what the oracle reports
+      // However EURs screws everything up with its 2 decimal places
+      if ((quoteDecimals === 2 || baseDecimals === 2) && amount === "1") {
+        expectBNAproxEq(originDeltaBase, originExpectedBase, originExpectedBase.div(10));
+        expectBNAproxEq(originDeltaQuote, originExpectedQuote, originExpectedQuote.div(10));
+      } else {
+        expectBNAproxEq(originDeltaBase, originExpectedBase, originExpectedBase.div(2000));
+        expectBNAproxEq(originDeltaQuote, originExpectedQuote, originExpectedQuote.div(2000));
+      }
 
-      const finalCurveCADC = await cadc.balanceOf(curve.address);
-      const finalUser1CADC = await cadc.balanceOf(user1Address);
-      const finalUser2CADC = await cadc.balanceOf(user2Address);
+      // Target Swap
+      beforeBase = await erc20.attach(base).balanceOf(user1Address);
+      beforeQuote = await erc20.attach(quote).balanceOf(user1Address);
 
-      // Initial and final balances should be approx eq
-      // Not exactly equal cuz of fees
-      expectBNAproxEq(finalUser1USDC, beforeUser1USDC, parseUnits("0.04", TOKENS.USDC.decimals));
-      expectBNAproxEq(finalUser1CADC, beforeUser1CADC, parseUnits("0.04", TOKENS.CADC.decimals));
-
-      expectBNAproxEq(finalUser2USDC, beforeUser2USDC, parseUnits("0.04", TOKENS.USDC.decimals));
-      expectBNAproxEq(finalUser2CADC, beforeUser2CADC, parseUnits("0.04", TOKENS.CADC.decimals));
-
-      expectBNAproxEq(finalCurveUSDC, beforeCurveUSDC, parseUnits("0.04", TOKENS.USDC.decimals));
-      expectBNAproxEq(finalCurveCADC, beforeCurveCADC, parseUnits("0.04", TOKENS.CADC.decimals));
-
-      // Curve should receive roughly 100 USDC in total, since proportional supply
-      // supplied 50 USDC + 50 / (CADC/USDC) CADC
-      expectBNAproxEq(
-        duringCurveUSDC,
-        parseUnits("100", TOKENS.USDC.decimals),
-        parseUnits("0.04", TOKENS.USDC.decimals),
-      );
-      expectBNAproxEq(
-        duringCurveCADC,
-        parseUnits("100", TOKENS.CADC.decimals)
-          .mul(parseUnits("1", ORACLES.CADC.decimals))
-          .div(await getOracleAnswer(ORACLES.CADC.address)),
-        parseUnits("0.04", TOKENS.CADC.decimals),
+      const targetAmount = parseUnits(amount, quoteDecimals);
+      await curve.targetSwap(
+        base,
+        quote,
+        ethers.constants.MaxUint256, // Max amount willing to spend
+        targetAmount, // We want this amount back
+        await getFutureTime(),
       );
 
-      // User supplied tokens should be the amount of tokens curve has received / 2
-      expectBNAproxEq(
-        duringCurveUSDC.div(BigNumber.from(2)),
-        beforeUser1USDC.sub(duringUser1USDC),
-        parseUnits("0.04", TOKENS.CADC.decimals),
-      );
-      expectBNAproxEq(
-        duringCurveCADC.div(BigNumber.from(2)),
-        beforeUser1CADC.sub(duringUser1CADC),
-        parseUnits("0.04", TOKENS.CADC.decimals),
-      );
+      afterBase = await erc20.attach(base).balanceOf(user1Address);
+      afterQuote = await erc20.attach(quote).balanceOf(user1Address);
 
-      expectBNAproxEq(
-        duringCurveUSDC.div(BigNumber.from(2)),
-        beforeUser2USDC.sub(duringUser2USDC),
-        parseUnits("0.04", TOKENS.CADC.decimals),
-      );
-      expectBNAproxEq(
-        duringCurveCADC.div(BigNumber.from(2)),
-        beforeUser2CADC.sub(duringUser2CADC),
-        parseUnits("0.04", TOKENS.CADC.decimals),
-      );
+      const targetExpectedBase = originSwapAmount.mul(parseUnits("1", 8)).div(ORACLE_RATE);
+      const targetExpectedQuote = targetAmount;
+
+      const targetDeltaBase = beforeBase.sub(afterBase);
+      const targetDeltaQuote = afterQuote.sub(beforeQuote);
+
+      // Target swap works as intended
+      if ((quoteDecimals === 2 || baseDecimals === 2) && amount === "1") {
+        expectBNAproxEq(targetDeltaBase, targetExpectedBase, targetExpectedBase.div(100));
+        expectBNAproxEq(targetDeltaQuote, targetExpectedQuote, targetExpectedQuote.div(100));
+      } else {
+        expectBNAproxEq(targetDeltaBase, targetExpectedBase, targetExpectedBase.div(1500));
+        expectBNAproxEq(targetDeltaQuote, targetExpectedQuote, targetExpectedQuote.div(1500));
+      }
+    };
+
+    const bases = [TOKENS.CADC.address, TOKENS.XSGD.address, TOKENS.EURS.address];
+    const decimals = [TOKENS.CADC.decimals, TOKENS.XSGD.decimals, TOKENS.EURS.decimals];
+    const oracles = [ORACLES.CADC.address, ORACLES.XSGD.address, ORACLES.EURS.address];
+    const weights = [["0.5", "0.5"]];
+    const baseName = ["CADC", "XSGD", "EURS"];
+
+    for (let i = 0; i < bases.length; i++) {
+      for (let j = 0; j < weights.length; j++) {
+        for (let k = 1; k <= 10000; k *= 100) {
+          const name = baseName[i];
+          const baseWeight = weights[j][0];
+          const weightInInt = parseInt((parseFloat(baseWeight) * 100).toString());
+
+          const base = bases[i];
+          const baseDecimals = decimals[i];
+          const oracle = oracles[i];
+          const quoteWeight = weights[j][0];
+
+          it(`${name}/USDC ${weightInInt}/${100 - weightInInt} - ${k} (${baseName[i]} -> USDC)`, async function () {
+            const assimilators = [cadcToUsdAssimilator, xsgdToUsdAssimilator, eursToUsdAssimilator];
+            const baseAssimilator = assimilators[i].address;
+
+            await originAndTargetSwapAndCheckSanity({
+              amount: k.toString(),
+              base,
+              quote: usdc.address,
+              baseDecimals,
+              quoteDecimals: TOKENS.USDC.decimals,
+              baseWeight: parseUnits(baseWeight),
+              quoteWeight: parseUnits(quoteWeight),
+              baseAssimilator,
+              quoteAssimilator: usdcToUsdAssimilator.address,
+              params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+              oracle,
+            });
+          });
+
+          it(`${name}/USDC ${weightInInt}/${100 - weightInInt} - ${k} (USDC -> ${baseName[i]})`, async function () {
+            const assimilators = [cadcToUsdAssimilator, xsgdToUsdAssimilator, eursToUsdAssimilator];
+            const baseAssimilator = assimilators[i].address;
+
+            await originAndTargetSwapAndCheckSanityInverse({
+              amount: k.toString(),
+              base: usdc.address,
+              quote: base,
+              baseDecimals: TOKENS.USDC.decimals,
+              quoteDecimals: baseDecimals,
+              baseWeight: parseUnits(quoteWeight),
+              quoteWeight: parseUnits(baseWeight),
+              baseAssimilator: usdcToUsdAssimilator.address,
+              quoteAssimilator: baseAssimilator,
+              params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+              oracle,
+            });
+          });
+        }
+      }
+    }
+  });
+
+  describe("Pool Ratio changes between operations", function () {
+    describe("viewDeposit", function () {
+      const viewLPDepositWithSanityChecks = async ({
+        amount,
+        base,
+        quote,
+        baseWeight,
+        quoteWeight,
+        baseDecimals,
+        quoteDecimals,
+        baseAssimilator,
+        quoteAssimilator,
+        params,
+        oracle,
+      }: {
+        amount: string;
+        base: string;
+        quote: string;
+        baseWeight: BigNumberish;
+        quoteWeight: BigNumberish;
+        baseDecimals: number;
+        quoteDecimals: number;
+        baseAssimilator: string;
+        quoteAssimilator: string;
+        params: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
+        oracle: string;
+      }) => {
+        const { curve } = await createCurveAndSetParams({
+          base,
+          quote,
+          baseWeight,
+          quoteWeight,
+          baseAssimilator,
+          quoteAssimilator,
+          params,
+        });
+
+        // Mint tokens and approve
+        await multiMintAndApprove([
+          [base, user1, parseUnits("10000000", baseDecimals), curve.address],
+          [quote, user1, parseUnits("10000000", quoteDecimals), curve.address],
+          [base, user2, parseUnits(amount, baseDecimals), curve.address],
+          [quote, user2, parseUnits(amount, quoteDecimals), curve.address],
+        ]);
+
+        const depositAmount = parseUnits("1000000");
+
+        // Make sure initial amount is the oracle value
+        const ORACLE_RATE = await getOracleAnswer(oracle);
+
+        const [lpAmountUser1, [baseViewUser1, quoteViewUser1]] = await curve.viewDeposit(depositAmount);
+        const expectedDepositAmountBase = parseUnits(formatUnits(depositAmount), baseDecimals)
+          .mul(1e8)
+          .div(ORACLE_RATE)
+          .div(2);
+        const expectedDepositAmountQuote = parseUnits(formatUnits(depositAmount), quoteDecimals).div(2);
+
+        expectBNAproxEq(baseViewUser1, expectedDepositAmountBase, expectedDepositAmountBase.div(2000));
+        expectBNAproxEq(quoteViewUser1, expectedDepositAmountQuote, expectedDepositAmountQuote.div(2000));
+
+        // Deposit user 1
+        await curve
+          .connect(user1)
+          .deposit(depositAmount, await getFutureTime())
+          .then(x => x.wait());
+
+        // User swaps a large chunk of QUOTE -> BASE
+        // Shortage of BASE (non-USDC) in the system
+        // Now, when user wants to deposit into the system
+        // with the same amount (say 100), he'll get less as
+        // he's depositing 50 QUOTE (USDC), and LESS BASE (non-usdc)
+        // Quote amount should remain the same
+        await curve
+          .connect(user1)
+          .originSwap(quote, base, parseUnits("1000000", quoteDecimals).div(20), 0, await getFutureTime());
+
+        const [lpAmountUser2, [baseViewUser2, quoteViewUser2]] = await curve.connect(user2).viewDeposit(depositAmount);
+
+        // Not "just" less than
+        expect(lpAmountUser2.mul(102).div(100).lt(lpAmountUser1)).to.be.true;
+        expectBNAproxEq(quoteViewUser2, quoteViewUser1, quoteViewUser2.div(2000));
+        expect(baseViewUser2.mul(104).div(100).lt(baseViewUser1)).to.be.true;
+
+        // User swaps a large chunk of BASE -> QUOTE now
+        // Shortage of QUOTE (USDC) in the system
+        // Now, when user wants to deposit into the system
+        // with the same amount (say 100), he'll get MORE
+        // as he's depositing 50 QUOTE (USDC) and MORE BASE (non-usdc)
+        // Quote amount should be the same
+        await curve
+          .connect(user1)
+          .originSwap(base, quote, parseUnits("1000000", baseDecimals).div(10), 0, await getFutureTime());
+
+        const [lpAmountUser3, [baseViewUser3, quoteViewUser3]] = await curve.connect(user2).viewDeposit(depositAmount);
+
+        expect(lpAmountUser3.mul(100).div(102).gt(lpAmountUser1)).to.be.true;
+        expectBNAproxEq(quoteViewUser3, quoteViewUser1, quoteViewUser2.div(2000));
+        expect(baseViewUser3.mul(100).div(104).gt(baseViewUser1)).to.be.true;
+      };
+
+      for (let i = 1; i <= 10000; i *= 100) {
+        it(`CADC/USDC 50/50 - ${i}`, async function () {
+          await viewLPDepositWithSanityChecks({
+            amount: i.toString(),
+            base: cadc.address,
+            quote: usdc.address,
+            baseWeight: parseUnits("0.5"),
+            quoteWeight: parseUnits("0.5"),
+            baseDecimals: TOKENS.CADC.decimals,
+            quoteDecimals: TOKENS.USDC.decimals,
+            baseAssimilator: cadcToUsdAssimilator.address,
+            quoteAssimilator: usdcToUsdAssimilator.address,
+            params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+            oracle: ORACLES.CADC.address,
+          });
+        });
+      }
+
+      for (let i = 1; i <= 10000; i *= 100) {
+        it(`XSGD/USDC 50/50 - ${i}`, async function () {
+          await viewLPDepositWithSanityChecks({
+            amount: i.toString(),
+            base: xsgd.address,
+            quote: usdc.address,
+            baseWeight: parseUnits("0.5"),
+            quoteWeight: parseUnits("0.5"),
+            baseDecimals: TOKENS.XSGD.decimals,
+            quoteDecimals: TOKENS.USDC.decimals,
+            baseAssimilator: xsgdToUsdAssimilator.address,
+            quoteAssimilator: usdcToUsdAssimilator.address,
+            params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+            oracle: ORACLES.XSGD.address,
+          });
+        });
+      }
+
+      for (let i = 1; i <= 10000; i *= 100) {
+        it(`EURS/USDC 50/50 - ${i}`, async function () {
+          await viewLPDepositWithSanityChecks({
+            amount: i.toString(),
+            base: eurs.address,
+            quote: usdc.address,
+            baseWeight: parseUnits("0.5"),
+            quoteWeight: parseUnits("0.5"),
+            baseDecimals: TOKENS.EURS.decimals,
+            quoteDecimals: TOKENS.USDC.decimals,
+            baseAssimilator: eursToUsdAssimilator.address,
+            quoteAssimilator: usdcToUsdAssimilator.address,
+            params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+            oracle: ORACLES.EURS.address,
+          });
+        });
+      }
     });
 
-    it("50/50 - LPs don't get rekt'd on oracle update", async function () {
-      const { curve, curveLpToken } = await createCurveAndSetParams({
-        base: cadc.address,
-        quote: usdc.address,
-        baseWeight: parseUnits("0.5"),
-        quoteWeight: parseUnits("0.5"),
-        baseAssimilator: cadcToUsdAssimilator.address,
-        quoteAssimilator: usdcToUsdAssimilator.address,
-        params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
-      });
+    describe("viewWithdraw", function () {
+      const viewLPWithdrawWithSanityChecks = async ({
+        amount,
+        base,
+        quote,
+        baseWeight,
+        quoteWeight,
+        baseDecimals,
+        quoteDecimals,
+        baseAssimilator,
+        quoteAssimilator,
+        params,
+      }: {
+        amount: string;
+        base: string;
+        quote: string;
+        baseWeight: BigNumberish;
+        quoteWeight: BigNumberish;
+        baseDecimals: number;
+        quoteDecimals: number;
+        baseAssimilator: string;
+        quoteAssimilator: string;
+        params: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
+      }) => {
+        const { curve, curveLpToken } = await createCurveAndSetParams({
+          base,
+          quote,
+          baseWeight,
+          quoteWeight,
+          baseAssimilator,
+          quoteAssimilator,
+          params,
+        });
 
-      // Mint tokens and approve
-      await multiMintAndApprove([
-        [TOKENS.USDC.address, user1, parseUnits("100", TOKENS.USDC.decimals), curve.address],
-        [TOKENS.CADC.address, user1, parseUnits("100", TOKENS.CADC.decimals), curve.address],
-        [TOKENS.USDC.address, user2, parseUnits("100", TOKENS.USDC.decimals), curve.address],
-        [TOKENS.CADC.address, user2, parseUnits("100", TOKENS.CADC.decimals), curve.address],
-      ]);
+        // Mint tokens and approve
+        await multiMintAndApprove([
+          [base, user1, parseUnits("10000000", baseDecimals), curve.address],
+          [quote, user1, parseUnits("10000000", quoteDecimals), curve.address],
+          [base, user2, parseUnits(amount, baseDecimals), curve.address],
+          [quote, user2, parseUnits(amount, quoteDecimals), curve.address],
+        ]);
 
-      // Proportional Deposit
-      await curve
-        .connect(user1)
-        .deposit(parseUnits("100"), await getFutureTime())
-        .then(x => x.wait());
+        const depositAmount = parseUnits("1000000");
 
-      // Update oracle
-      await updateOracleAnswer(ORACLES.CADC.address, parseUnits("1.2", ORACLES.CADC.decimals));
+        // Deposit user 1
+        await curve
+          .connect(user1)
+          .deposit(depositAmount, await getFutureTime())
+          .then(x => x.wait());
+        const lpAmount = await curveLpToken.balanceOf(user1Address);
 
-      await curve
-        .connect(user2)
-        .deposit(parseUnits("100"), await getFutureTime())
-        .then(x => x.wait());
+        const [baseViewUser1, quoteViewUser1] = await curve.connect(user1).viewWithdraw(lpAmount);
 
-      // Number of curve lp tokens should be roughly the same
-      const user1CurveLP = await curveLpToken.balanceOf(user1Address);
-      const user2CurveLP = await curveLpToken.balanceOf(user1Address);
+        // User swaps a large chunk of QUOTE -> BASE
+        // Shortage of BASE (non-USDC) in the system
+        // Now, when user wants to withdraw from the system
+        // with the same amount of LP tokens, he'll get more
+        // QUOTE and less BASE
+        await curve
+          .connect(user1)
+          .originSwap(quote, base, parseUnits("1000000", quoteDecimals).div(20), 0, await getFutureTime());
 
-      expectBNAproxEq(user1CurveLP, user2CurveLP, parseUnits("0.01"));
+        const [baseViewUser2, quoteViewUser2] = await curve.connect(user1).viewWithdraw(lpAmount);
+
+        expect(quoteViewUser2.mul(100).div(104).gt(quoteViewUser1)).to.be.true;
+        expect(baseViewUser2.mul(104).div(100).lt(baseViewUser1)).to.be.true;
+
+        // User swaps a large chunk of BASE -> QUOTE now
+        // Shortage of QUOTE (USDC) in the system
+        // Now, when user wants to deposit into the system
+        // with the same amount (say 100), he'll get MORE
+        // as he's depositing 50 QUOTE (USDC) and MORE BASE (non-usdc)
+        // Quote amount should be the same
+        await curve
+          .connect(user1)
+          .originSwap(base, quote, parseUnits("1000000", baseDecimals).div(10), 0, await getFutureTime());
+
+        const [baseViewUser3, quoteViewUser3] = await curve.connect(user1).viewWithdraw(lpAmount);
+
+        // Not "just" gt / lt
+        expect(quoteViewUser3.mul(104).div(100).lt(quoteViewUser1)).to.be.true;
+        expect(baseViewUser3.mul(100).div(104).gt(baseViewUser1)).to.be.true;
+      };
+
+      for (let i = 1; i <= 10000; i *= 100) {
+        it(`CADC/USDC 50/50 - ${i}`, async function () {
+          await viewLPWithdrawWithSanityChecks({
+            amount: i.toString(),
+            base: cadc.address,
+            quote: usdc.address,
+            baseWeight: parseUnits("0.5"),
+            quoteWeight: parseUnits("0.5"),
+            baseDecimals: TOKENS.CADC.decimals,
+            quoteDecimals: TOKENS.USDC.decimals,
+            baseAssimilator: cadcToUsdAssimilator.address,
+            quoteAssimilator: usdcToUsdAssimilator.address,
+            params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+          });
+        });
+      }
+
+      for (let i = 1; i <= 10000; i *= 100) {
+        it(`XSGD/USDC 50/50 - ${i}`, async function () {
+          await viewLPWithdrawWithSanityChecks({
+            amount: i.toString(),
+            base: xsgd.address,
+            quote: usdc.address,
+            baseWeight: parseUnits("0.5"),
+            quoteWeight: parseUnits("0.5"),
+            baseDecimals: TOKENS.XSGD.decimals,
+            quoteDecimals: TOKENS.USDC.decimals,
+            baseAssimilator: xsgdToUsdAssimilator.address,
+            quoteAssimilator: usdcToUsdAssimilator.address,
+            params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+          });
+        });
+      }
+
+      for (let i = 1; i <= 10000; i *= 100) {
+        it(`EURS/USDC 50/50 - ${i}`, async function () {
+          await viewLPWithdrawWithSanityChecks({
+            amount: i.toString(),
+            base: eurs.address,
+            quote: usdc.address,
+            baseWeight: parseUnits("0.5"),
+            quoteWeight: parseUnits("0.5"),
+            baseDecimals: TOKENS.EURS.decimals,
+            quoteDecimals: TOKENS.USDC.decimals,
+            baseAssimilator: eursToUsdAssimilator.address,
+            quoteAssimilator: usdcToUsdAssimilator.address,
+            params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+          });
+        });
+      }
     });
 
-    it("40/60 LPs don't get rekt'd on oracle update", async function () {
-      const { curve, curveLpToken } = await createCurveAndSetParams({
-        base: cadc.address,
-        quote: usdc.address,
-        baseWeight: parseUnits("0.4"),
-        quoteWeight: parseUnits("0.6"),
-        baseAssimilator: cadcToUsdAssimilator.address,
-        quoteAssimilator: usdcToUsdAssimilator.address,
-        params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
-      });
+    describe("Add and remove liquidity", function () {
+      const addAndRemoveLiquidityWithSanityChecks = async ({
+        amount,
+        base,
+        quote,
+        baseWeight,
+        quoteWeight,
+        baseDecimals,
+        quoteDecimals,
+        baseAssimilator,
+        quoteAssimilator,
+        params,
+        oracle,
+      }: {
+        amount: string;
+        base: string;
+        quote: string;
+        baseWeight: BigNumberish;
+        quoteWeight: BigNumberish;
+        baseDecimals: number;
+        quoteDecimals: number;
+        baseAssimilator: string;
+        quoteAssimilator: string;
+        params: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
+        oracle: string;
+      }) => {
+        const { curve, curveLpToken } = await createCurveAndSetParams({
+          base,
+          quote,
+          baseWeight,
+          quoteWeight,
+          baseAssimilator,
+          quoteAssimilator,
+          params,
+        });
 
-      // Mint tokens and approve
-      await multiMintAndApprove([
-        [TOKENS.USDC.address, user1, parseUnits("100", TOKENS.USDC.decimals), curve.address],
-        [TOKENS.CADC.address, user1, parseUnits("100", TOKENS.CADC.decimals), curve.address],
-        [TOKENS.USDC.address, user2, parseUnits("100", TOKENS.USDC.decimals), curve.address],
-        [TOKENS.CADC.address, user2, parseUnits("100", TOKENS.CADC.decimals), curve.address],
-      ]);
+        // Mint tokens and approve
+        await multiMintAndApprove([
+          [base, user1, parseUnits("10000000", baseDecimals), curve.address],
+          [quote, user1, parseUnits("10000000", quoteDecimals), curve.address],
+          [base, user2, parseUnits(amount, baseDecimals), curve.address],
+          [quote, user2, parseUnits(amount, quoteDecimals), curve.address],
+        ]);
 
-      // Proportional Deposit
-      await curve
-        .connect(user1)
-        .deposit(parseUnits("100"), await getFutureTime())
-        .then(x => x.wait());
+        // Deposit user 1
+        await curve
+          .connect(user1)
+          .deposit(parseUnits("1000000"), await getFutureTime())
+          .then(x => x.wait());
 
-      // Update oracle
-      await updateOracleAnswer(ORACLES.CADC.address, parseUnits("1.2", ORACLES.CADC.decimals));
+        const ORACLE_RATE = await getOracleAnswer(oracle);
 
-      await curve
-        .connect(user2)
-        .deposit(parseUnits("100"), await getFutureTime())
-        .then(x => x.wait());
+        // 1st Deposit for user 2
+        let beforeBaseBal = await erc20.attach(base).balanceOf(user2Address);
+        let beforeQuoteBal = await erc20.attach(quote).balanceOf(user2Address);
+        let beforeLPBal = await curveLpToken.balanceOf(user2Address);
+        expectBNEq(beforeLPBal, ethers.constants.Zero);
 
-      // Number of curve lp tokens should be roughly the same
-      const user1CurveLP = await curveLpToken.balanceOf(user1Address);
-      const user2CurveLP = await curveLpToken.balanceOf(user1Address);
+        await curve
+          .connect(user2)
+          .deposit(parseUnits(amount), await getFutureTime())
+          .then(x => x.wait());
 
-      expectBNAproxEq(user1CurveLP, user2CurveLP, parseUnits("0.01"));
-    });
+        let afterBaseBal = await erc20.attach(base).balanceOf(user2Address);
+        let afterQuoteBal = await erc20.attach(quote).balanceOf(user2Address);
+        let afterLPBal = await curveLpToken.balanceOf(user2Address);
 
-    afterEach(async function () {
-      await updateOracleAnswer(ORACLES.CADC.address, parseUnits("0.8", ORACLES.CADC.decimals));
+        const lpBal = afterLPBal.sub(beforeLPBal);
+        const baseSupplied = beforeBaseBal.sub(afterBaseBal);
+        const quoteSupplied = beforeQuoteBal.sub(afterQuoteBal);
+
+        expect(afterLPBal.gt(beforeLPBal)).to.be.true;
+        expectBNAproxEq(
+          baseSupplied,
+          parseUnits(amount, baseDecimals).mul(1e8).div(ORACLE_RATE).div(2), // oracle has 8 decimals, we also want to div 2 since we're supplying liquidity
+          parseUnits(amount, Math.max(baseDecimals - 4, 0)),
+        );
+        expectBNAproxEq(quoteSupplied, parseUnits(amount, quoteDecimals).div(2), parseUnits("0.1", baseDecimals));
+
+        // Mint tokens and approve for 2nd deposit
+        await multiMintAndApprove([
+          [base, user2, parseUnits(amount, baseDecimals), curve.address],
+          [quote, user2, parseUnits(amount, quoteDecimals), curve.address],
+        ]);
+
+        beforeBaseBal = await erc20.attach(base).balanceOf(user2Address);
+        beforeQuoteBal = await erc20.attach(quote).balanceOf(user2Address);
+        beforeLPBal = await curveLpToken.balanceOf(user2Address);
+
+        // Update pool ratio
+        await curve
+          .connect(user1)
+          .originSwap(base, quote, parseUnits("1000000", baseDecimals).div(20), 0, await getFutureTime());
+        await curve
+          .connect(user2)
+          .deposit(parseUnits(amount), await getFutureTime())
+          .then(x => x.wait());
+
+        afterBaseBal = await erc20.attach(base).balanceOf(user2Address);
+        afterQuoteBal = await erc20.attach(quote).balanceOf(user2Address);
+        afterLPBal = await curveLpToken.balanceOf(user2Address);
+
+        const lpBal2 = afterLPBal.sub(beforeLPBal);
+        const baseSupplied2 = beforeBaseBal.sub(afterBaseBal);
+        const quoteSupplied2 = beforeQuoteBal.sub(afterQuoteBal);
+
+        // Not "just" lt/gt
+        expect(lpBal2.mul(100).div(102).gt(lpBal)).to.be.true;
+        expect(baseSupplied2.mul(100).div(104).gt(baseSupplied)).to.be.true;
+        expectBNAproxEq(quoteSupplied2, quoteSupplied, quoteSupplied2.div(2000));
+
+        const totalReceivedLP = lpBal.add(lpBal2);
+
+        // 1st Withdrawal
+        beforeBaseBal = await erc20.attach(base).balanceOf(user2Address);
+        beforeQuoteBal = await erc20.attach(quote).balanceOf(user2Address);
+
+        await curve
+          .connect(user2)
+          .withdraw(totalReceivedLP.div(2), await getFutureTime())
+          .then(x => x.wait());
+
+        afterBaseBal = await erc20.attach(base).balanceOf(user2Address);
+        afterQuoteBal = await erc20.attach(quote).balanceOf(user2Address);
+
+        const baseReceived = afterBaseBal.sub(beforeBaseBal);
+        const quoteReceived = afterQuoteBal.sub(beforeQuoteBal);
+
+        // 2nd Withdrawal
+        await updateOracleAnswer(oracle, ORACLE_RATE.mul(2));
+        beforeBaseBal = await erc20.attach(base).balanceOf(user2Address);
+        beforeQuoteBal = await erc20.attach(quote).balanceOf(user2Address);
+
+        await curve
+          .connect(user1)
+          .originSwap(quote, base, parseUnits("1000000", quoteDecimals).div(10), 0, await getFutureTime());
+        await curve
+          .connect(user2)
+          .withdraw(totalReceivedLP.div(2), await getFutureTime())
+          .then(x => x.wait());
+
+        afterBaseBal = await erc20.attach(base).balanceOf(user2Address);
+        afterQuoteBal = await erc20.attach(quote).balanceOf(user2Address);
+
+        const baseReceived2 = afterBaseBal.sub(beforeBaseBal);
+        const quoteReceived2 = afterQuoteBal.sub(beforeQuoteBal);
+
+        // Not 'just' gt/lt
+        expect(quoteReceived2.mul(100).div(104).gt(quoteReceived)).to.be.true;
+        expect(baseReceived2.mul(104).div(100).lt(baseReceived)).to.be.true;
+      };
+
+      for (let i = 1; i <= 10000; i *= 100) {
+        it("CADC/USDC 50/50 - " + i.toString(), async function () {
+          await addAndRemoveLiquidityWithSanityChecks({
+            amount: i.toString(),
+            base: cadc.address,
+            quote: usdc.address,
+            baseWeight: parseUnits("0.5"),
+            quoteWeight: parseUnits("0.5"),
+            baseDecimals: TOKENS.CADC.decimals,
+            quoteDecimals: TOKENS.USDC.decimals,
+            baseAssimilator: cadcToUsdAssimilator.address,
+            quoteAssimilator: usdcToUsdAssimilator.address,
+            params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+            oracle: ORACLES.CADC.address,
+          });
+        });
+      }
+
+      for (let i = 1; i <= 10000; i *= 100) {
+        it("XSGD/USDC 50/50 - " + i.toString(), async function () {
+          await addAndRemoveLiquidityWithSanityChecks({
+            amount: i.toString(),
+            base: xsgd.address,
+            quote: usdc.address,
+            baseWeight: parseUnits("0.5"),
+            quoteWeight: parseUnits("0.5"),
+            baseDecimals: TOKENS.XSGD.decimals,
+            quoteDecimals: TOKENS.USDC.decimals,
+            baseAssimilator: xsgdToUsdAssimilator.address,
+            quoteAssimilator: usdcToUsdAssimilator.address,
+            params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+            oracle: ORACLES.XSGD.address,
+          });
+        });
+      }
+
+      for (let i = 1; i <= 10000; i *= 100) {
+        it("EURS/USDC 50/50 - " + i.toString(), async function () {
+          await addAndRemoveLiquidityWithSanityChecks({
+            amount: "1",
+            base: eurs.address,
+            quote: usdc.address,
+            baseWeight: parseUnits("0.5"),
+            quoteWeight: parseUnits("0.5"),
+            baseDecimals: TOKENS.EURS.decimals,
+            quoteDecimals: TOKENS.USDC.decimals,
+            baseAssimilator: eursToUsdAssimilator.address,
+            quoteAssimilator: usdcToUsdAssimilator.address,
+            params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+            oracle: ORACLES.EURS.address,
+          });
+        });
+      }
     });
   });
 
@@ -777,179 +1364,6 @@ describe("Curve", function () {
           });
         });
       }
-    });
-  });
-
-  describe("Swaps", function () {
-    const originAndTargetSwapAndCheckSanity = async ({
-      base,
-      quote,
-      baseDecimals,
-      quoteDecimals,
-      baseWeight,
-      quoteWeight,
-      baseAssimilator,
-      quoteAssimilator,
-      params,
-      oracle,
-    }: {
-      base: string;
-      quote: string;
-      baseDecimals: number;
-      quoteDecimals: number;
-      baseWeight: BigNumberish;
-      quoteWeight: BigNumberish;
-      baseAssimilator: string;
-      quoteAssimilator: string;
-      params: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
-      oracle: string;
-    }) => {
-      const { curve } = await createCurveAndSetParams({
-        base,
-        quote,
-        baseWeight,
-        quoteWeight,
-        baseAssimilator: baseAssimilator,
-        quoteAssimilator: quoteAssimilator,
-        params: params,
-      });
-
-      // Mint tokens and approve
-      await multiMintAndApprove([
-        [base, user1, parseUnits("1000", baseDecimals), curve.address],
-        [quote, user1, parseUnits("1000", quoteDecimals), curve.address],
-      ]);
-
-      // Proportional Supply
-      await curve.deposit(parseUnits("200"), await getFutureTime());
-
-      // Swap
-      let beforeBase = await erc20.attach(base).balanceOf(user1Address);
-      let beforeQuote = await erc20.attach(quote).balanceOf(user1Address);
-
-      let tx = await curve.originSwap(base, quote, parseUnits("1", baseDecimals), 0, await getFutureTime());
-      await tx.wait();
-
-      let afterBase = await erc20.attach(base).balanceOf(user1Address);
-      let afterQuote = await erc20.attach(quote).balanceOf(user1Address);
-
-      // Calculate expected CADC
-      const ORACLE_RATE = await getOracleAnswer(oracle);
-      const expectedQuote = ORACLE_RATE.div(parseUnits("100", 0));
-
-      // Get back roughly 1 (fees make it not exactly 1)
-      expectBNAproxEq(beforeBase.sub(afterBase), parseUnits("1", baseDecimals), parseUnits("0.04", baseDecimals));
-      expectBNAproxEq(afterQuote.sub(beforeQuote), expectedQuote, parseUnits("0.04", quoteDecimals));
-
-      // Target Swap
-      beforeBase = await erc20.attach(base).balanceOf(user1Address);
-      beforeQuote = await erc20.attach(quote).balanceOf(user1Address);
-
-      tx = await curve.targetSwap(
-        quote,
-        base,
-        parseUnits("5", quoteDecimals),
-        parseUnits("1", baseDecimals).mul(parseUnits("1", 8)).div(ORACLE_RATE), // Oracle decimals is always 8
-        await getFutureTime(),
-      );
-      await tx.wait();
-
-      afterBase = await erc20.attach(base).balanceOf(user1Address);
-      afterQuote = await erc20.attach(quote).balanceOf(user1Address);
-
-      // Target swap works as intended
-      expectBNAproxEq(afterBase.sub(beforeBase), parseUnits("1", baseDecimals), parseUnits("0.04", baseDecimals));
-      expectBNAproxEq(beforeQuote.sub(afterQuote), parseUnits("1", quoteDecimals), parseUnits("0.04", quoteDecimals));
-    };
-
-    it("CADC/USDC 50/50 - originSwap and targetSwap", async function () {
-      await originAndTargetSwapAndCheckSanity({
-        base: cadc.address,
-        quote: usdc.address,
-        baseDecimals: TOKENS.CADC.decimals,
-        quoteDecimals: TOKENS.USDC.decimals,
-        baseWeight: parseUnits("0.5"),
-        quoteWeight: parseUnits("0.5"),
-        baseAssimilator: cadcToUsdAssimilator.address,
-        quoteAssimilator: usdcToUsdAssimilator.address,
-        params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
-        oracle: ORACLES.CADC.address,
-      });
-    });
-
-    it("CADC/USDC 40/60 - originSwap and targetSwap", async function () {
-      await originAndTargetSwapAndCheckSanity({
-        base: cadc.address,
-        quote: usdc.address,
-        baseDecimals: TOKENS.CADC.decimals,
-        quoteDecimals: TOKENS.USDC.decimals,
-        baseWeight: parseUnits("0.4"),
-        quoteWeight: parseUnits("0.6"),
-        baseAssimilator: cadcToUsdAssimilator.address,
-        quoteAssimilator: usdcToUsdAssimilator.address,
-        params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
-        oracle: ORACLES.CADC.address,
-      });
-    });
-
-    it("XSGD/USDC 50/50 - originSwap and targetSwap", async function () {
-      await originAndTargetSwapAndCheckSanity({
-        base: xsgd.address,
-        quote: usdc.address,
-        baseDecimals: TOKENS.XSGD.decimals,
-        quoteDecimals: TOKENS.USDC.decimals,
-        baseWeight: parseUnits("0.5"),
-        quoteWeight: parseUnits("0.5"),
-        baseAssimilator: xsgdToUsdAssimilator.address,
-        quoteAssimilator: usdcToUsdAssimilator.address,
-        params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
-        oracle: ORACLES.XSGD.address,
-      });
-    });
-
-    it("XSGD/USDC 40/60 - originSwap and targetSwap", async function () {
-      await originAndTargetSwapAndCheckSanity({
-        base: xsgd.address,
-        quote: usdc.address,
-        baseDecimals: TOKENS.XSGD.decimals,
-        quoteDecimals: TOKENS.USDC.decimals,
-        baseWeight: parseUnits("0.4"),
-        quoteWeight: parseUnits("0.6"),
-        baseAssimilator: xsgdToUsdAssimilator.address,
-        quoteAssimilator: usdcToUsdAssimilator.address,
-        params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
-        oracle: ORACLES.XSGD.address,
-      });
-    });
-
-    it("EURS/USDC 50/50 - originSwap and targetSwap", async function () {
-      await originAndTargetSwapAndCheckSanity({
-        base: eurs.address,
-        quote: usdc.address,
-        baseDecimals: TOKENS.EURS.decimals,
-        quoteDecimals: TOKENS.USDC.decimals,
-        baseWeight: parseUnits("0.5"),
-        quoteWeight: parseUnits("0.5"),
-        baseAssimilator: eursToUsdAssimilator.address,
-        quoteAssimilator: usdcToUsdAssimilator.address,
-        params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
-        oracle: ORACLES.EURS.address,
-      });
-    });
-
-    it("EURS/USDC 40/60 - originSwap and targetSwap", async function () {
-      await originAndTargetSwapAndCheckSanity({
-        base: eurs.address,
-        quote: usdc.address,
-        baseDecimals: TOKENS.EURS.decimals,
-        quoteDecimals: TOKENS.USDC.decimals,
-        baseWeight: parseUnits("0.4"),
-        quoteWeight: parseUnits("0.6"),
-        baseAssimilator: eursToUsdAssimilator.address,
-        quoteAssimilator: usdcToUsdAssimilator.address,
-        params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
-        oracle: ORACLES.EURS.address,
-      });
     });
   });
 });

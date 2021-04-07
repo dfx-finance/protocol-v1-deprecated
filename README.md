@@ -35,7 +35,7 @@ High level overview.
 
 | Name      | Description                                                                                               |
 | --------- | --------------------------------------------------------------------------------------------------------- |
-| Weights   | Weighting of the pair (e.g. 50/50, 40/60, 30/70...)                                                       |
+| Weights   | Weighting of the pair (We'll be only using 50/50)                                                         |
 | Alpha     | The maximum and minimum allocation for each reserve                                                       |
 | Beta      | Liquidity depth of the exchange; The higher the value, the flatter the curve at the reported oracle price |
 | Delta/Max | Slippage when exchange is not at the reported oracle price                                                |
@@ -45,6 +45,8 @@ High level overview.
 For a more in-depth discussion, refer to [section 3 of the shellprotocol whitepaper](https://github.com/cowri/shell-solidity-v1/blob/master/Shell_White_Paper_v1.0.pdf)
 
 ## Testing
+
+We recommend that you run this against a local node. The differene in latency will make a huge difference.
 
 ```
 yarn
