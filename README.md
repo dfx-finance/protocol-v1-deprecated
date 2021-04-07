@@ -22,6 +22,7 @@ The main changes between our implementation and the original can be found in the
 - `CurveFactory.sol` (formerly `ShellFactory.sol`)
 - `Router.sol`
 - `ProportionalLiquidity.sol`
+- `Swaps.sol`
 
 ## Third Party Libraries
 
