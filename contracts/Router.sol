@@ -31,6 +31,8 @@ contract Router {
     address public factory;
 
     constructor(address _factory) {
+        require(_factory != address(0), "Curve/factory-cannot-be-zeroth-adress");
+
         factory = _factory;
     }
 
