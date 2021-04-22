@@ -386,7 +386,7 @@ contract Curve is Storage {
     }
 
     function transferOwnership(address _newOwner) external onlyOwner {
-        require(_newOwner != address(0), "Curve/new-owner-cannot-be-zeroth-adress");
+        require(_newOwner != address(0), "Curve/new-owner-cannot-be-zeroth-address");
         
         emit OwnershipTransfered(owner, _newOwner);
 
