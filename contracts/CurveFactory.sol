@@ -33,7 +33,7 @@ contract CurveFactory is Ownable {
         address _quoteCurrency
     ) external view returns (address) {
         bytes32 curveId = keccak256(abi.encode(_baseCurrency, _quoteCurrency));
-        returns (curves[curveId]);
+        return (curves[curveId]);
     }
 
     function newCurve(
