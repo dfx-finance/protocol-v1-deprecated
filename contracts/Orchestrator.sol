@@ -160,13 +160,13 @@ library Orchestrator {
         address _reserveApproveTo,
         uint256 _weight
     ) private {
-        require(_numeraire != address(0), "Curve/numeraire-cannot-be-zeroth-adress");
+        require(_numeraire != address(0), "Curve/numeraire-cannot-be-zeroth-address");
 
-        require(_numeraireAssim != address(0), "Curve/numeraire-assimilator-cannot-be-zeroth-adress");
+        require(_numeraireAssim != address(0), "Curve/numeraire-assimilator-cannot-be-zeroth-address");
 
-        require(_reserve != address(0), "Curve/reserve-cannot-be-zeroth-adress");
+        require(_reserve != address(0), "Curve/reserve-cannot-be-zeroth-address");
 
-        require(_reserveAssim != address(0), "Curve/reserve-assimilator-cannot-be-zeroth-adress");
+        require(_reserveAssim != address(0), "Curve/reserve-assimilator-cannot-be-zeroth-address");
 
         require(_weight < 1e18, "Curve/weight-must-be-less-than-one");
 
