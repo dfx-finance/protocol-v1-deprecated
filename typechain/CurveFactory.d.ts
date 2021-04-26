@@ -22,6 +22,7 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface CurveFactoryInterface extends ethers.utils.Interface {
   functions: {
     "curves(bytes32)": FunctionFragment;
+    "getCurve(address,address)": FunctionFragment;
     "newCurve(address,address,uint256,uint256,address,address)": FunctionFragment;
     "owner()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
@@ -29,6 +30,10 @@ interface CurveFactoryInterface extends ethers.utils.Interface {
   };
 
   encodeFunctionData(functionFragment: "curves", values: [BytesLike]): string;
+  encodeFunctionData(
+    functionFragment: "getCurve",
+    values: [string, string]
+  ): string;
   encodeFunctionData(
     functionFragment: "newCurve",
     values: [string, string, BigNumberish, BigNumberish, string, string]
@@ -44,6 +49,7 @@ interface CurveFactoryInterface extends ethers.utils.Interface {
   ): string;
 
   decodeFunctionResult(functionFragment: "curves", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "getCurve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "newCurve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
@@ -115,6 +121,18 @@ export class CurveFactory extends Contract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    getCurve(
+      _baseCurrency: string,
+      _quoteCurrency: string,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    "getCurve(address,address)"(
+      _baseCurrency: string,
+      _quoteCurrency: string,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     newCurve(
       _baseCurrency: string,
       _quoteCurrency: string,
@@ -165,6 +183,18 @@ export class CurveFactory extends Contract {
     overrides?: CallOverrides
   ): Promise<string>;
 
+  getCurve(
+    _baseCurrency: string,
+    _quoteCurrency: string,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  "getCurve(address,address)"(
+    _baseCurrency: string,
+    _quoteCurrency: string,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   newCurve(
     _baseCurrency: string,
     _quoteCurrency: string,
@@ -212,6 +242,18 @@ export class CurveFactory extends Contract {
 
     "curves(bytes32)"(
       arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    getCurve(
+      _baseCurrency: string,
+      _quoteCurrency: string,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    "getCurve(address,address)"(
+      _baseCurrency: string,
+      _quoteCurrency: string,
       overrides?: CallOverrides
     ): Promise<string>;
 
@@ -281,6 +323,18 @@ export class CurveFactory extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getCurve(
+      _baseCurrency: string,
+      _quoteCurrency: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "getCurve(address,address)"(
+      _baseCurrency: string,
+      _quoteCurrency: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     newCurve(
       _baseCurrency: string,
       _quoteCurrency: string,
@@ -332,6 +386,18 @@ export class CurveFactory extends Contract {
 
     "curves(bytes32)"(
       arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getCurve(
+      _baseCurrency: string,
+      _quoteCurrency: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "getCurve(address,address)"(
+      _baseCurrency: string,
+      _quoteCurrency: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

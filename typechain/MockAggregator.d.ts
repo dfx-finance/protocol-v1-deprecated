@@ -21,12 +21,12 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface MockAggregatorInterface extends ethers.utils.Interface {
   functions: {
-    "latestAnswer()": FunctionFragment;
+    "latestRoundData()": FunctionFragment;
     "setAnswer(uint256)": FunctionFragment;
   };
 
   encodeFunctionData(
-    functionFragment: "latestAnswer",
+    functionFragment: "latestRoundData",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -35,7 +35,7 @@ interface MockAggregatorInterface extends ethers.utils.Interface {
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "latestAnswer",
+    functionFragment: "latestRoundData",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "setAnswer", data: BytesLike): Result;
@@ -87,9 +87,9 @@ export class MockAggregator extends Contract {
   interface: MockAggregatorInterface;
 
   functions: {
-    latestAnswer(overrides?: CallOverrides): Promise<[BigNumber]>;
+    latestRoundData(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    "latestAnswer()"(overrides?: CallOverrides): Promise<[BigNumber]>;
+    "latestRoundData()"(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     setAnswer(
       _a: BigNumberish,
@@ -102,9 +102,9 @@ export class MockAggregator extends Contract {
     ): Promise<ContractTransaction>;
   };
 
-  latestAnswer(overrides?: CallOverrides): Promise<BigNumber>;
+  latestRoundData(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "latestAnswer()"(overrides?: CallOverrides): Promise<BigNumber>;
+  "latestRoundData()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   setAnswer(
     _a: BigNumberish,
@@ -117,9 +117,9 @@ export class MockAggregator extends Contract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    latestAnswer(overrides?: CallOverrides): Promise<BigNumber>;
+    latestRoundData(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "latestAnswer()"(overrides?: CallOverrides): Promise<BigNumber>;
+    "latestRoundData()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     setAnswer(_a: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
@@ -132,9 +132,9 @@ export class MockAggregator extends Contract {
   filters: {};
 
   estimateGas: {
-    latestAnswer(overrides?: CallOverrides): Promise<BigNumber>;
+    latestRoundData(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "latestAnswer()"(overrides?: CallOverrides): Promise<BigNumber>;
+    "latestRoundData()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     setAnswer(
       _a: BigNumberish,
@@ -148,9 +148,11 @@ export class MockAggregator extends Contract {
   };
 
   populateTransaction: {
-    latestAnswer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    latestRoundData(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "latestAnswer()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "latestRoundData()"(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     setAnswer(
       _a: BigNumberish,

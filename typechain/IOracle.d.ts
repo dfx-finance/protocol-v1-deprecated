@@ -27,13 +27,8 @@ interface IOracleInterface extends ethers.utils.Interface {
     "confirmAggregator(address)": FunctionFragment;
     "decimals()": FunctionFragment;
     "description()": FunctionFragment;
-    "getAnswer(uint256)": FunctionFragment;
     "getRoundData(uint80)": FunctionFragment;
-    "getTimestamp(uint256)": FunctionFragment;
-    "latestAnswer()": FunctionFragment;
-    "latestRound()": FunctionFragment;
     "latestRoundData()": FunctionFragment;
-    "latestTimestamp()": FunctionFragment;
     "owner()": FunctionFragment;
     "phaseAggregators(uint16)": FunctionFragment;
     "phaseId()": FunctionFragment;
@@ -68,31 +63,11 @@ interface IOracleInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "getAnswer",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "getRoundData",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "getTimestamp",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "latestAnswer",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "latestRound",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "latestRoundData",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "latestTimestamp",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
@@ -145,29 +120,12 @@ interface IOracleInterface extends ethers.utils.Interface {
     functionFragment: "description",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "getAnswer", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getRoundData",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getTimestamp",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "latestAnswer",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "latestRound",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "latestRoundData",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "latestTimestamp",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
@@ -283,16 +241,6 @@ export class IOracle extends Contract {
 
     "description()"(overrides?: CallOverrides): Promise<[string]>;
 
-    getAnswer(
-      _roundId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    "getAnswer(uint256)"(
-      _roundId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
     getRoundData(
       _roundId: BigNumberish,
       overrides?: CallOverrides
@@ -319,24 +267,6 @@ export class IOracle extends Contract {
       }
     >;
 
-    getTimestamp(
-      _roundId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    "getTimestamp(uint256)"(
-      _roundId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    latestAnswer(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    "latestAnswer()"(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    latestRound(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    "latestRound()"(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     latestRoundData(
       overrides?: CallOverrides
     ): Promise<
@@ -360,10 +290,6 @@ export class IOracle extends Contract {
         answeredInRound: BigNumber;
       }
     >;
-
-    latestTimestamp(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    "latestTimestamp()"(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
@@ -506,16 +432,6 @@ export class IOracle extends Contract {
 
   "description()"(overrides?: CallOverrides): Promise<string>;
 
-  getAnswer(
-    _roundId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  "getAnswer(uint256)"(
-    _roundId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   getRoundData(
     _roundId: BigNumberish,
     overrides?: CallOverrides
@@ -542,24 +458,6 @@ export class IOracle extends Contract {
     }
   >;
 
-  getTimestamp(
-    _roundId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  "getTimestamp(uint256)"(
-    _roundId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  latestAnswer(overrides?: CallOverrides): Promise<BigNumber>;
-
-  "latestAnswer()"(overrides?: CallOverrides): Promise<BigNumber>;
-
-  latestRound(overrides?: CallOverrides): Promise<BigNumber>;
-
-  "latestRound()"(overrides?: CallOverrides): Promise<BigNumber>;
-
   latestRoundData(
     overrides?: CallOverrides
   ): Promise<
@@ -583,10 +481,6 @@ export class IOracle extends Contract {
       answeredInRound: BigNumber;
     }
   >;
-
-  latestTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
-
-  "latestTimestamp()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   owner(overrides?: CallOverrides): Promise<string>;
 
@@ -725,16 +619,6 @@ export class IOracle extends Contract {
 
     "description()"(overrides?: CallOverrides): Promise<string>;
 
-    getAnswer(
-      _roundId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "getAnswer(uint256)"(
-      _roundId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getRoundData(
       _roundId: BigNumberish,
       overrides?: CallOverrides
@@ -761,24 +645,6 @@ export class IOracle extends Contract {
       }
     >;
 
-    getTimestamp(
-      _roundId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "getTimestamp(uint256)"(
-      _roundId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    latestAnswer(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "latestAnswer()"(overrides?: CallOverrides): Promise<BigNumber>;
-
-    latestRound(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "latestRound()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     latestRoundData(
       overrides?: CallOverrides
     ): Promise<
@@ -802,10 +668,6 @@ export class IOracle extends Contract {
         answeredInRound: BigNumber;
       }
     >;
-
-    latestTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "latestTimestamp()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
@@ -948,16 +810,6 @@ export class IOracle extends Contract {
 
     "description()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getAnswer(
-      _roundId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "getAnswer(uint256)"(
-      _roundId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getRoundData(
       _roundId: BigNumberish,
       overrides?: CallOverrides
@@ -968,31 +820,9 @@ export class IOracle extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getTimestamp(
-      _roundId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "getTimestamp(uint256)"(
-      _roundId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    latestAnswer(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "latestAnswer()"(overrides?: CallOverrides): Promise<BigNumber>;
-
-    latestRound(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "latestRound()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     latestRoundData(overrides?: CallOverrides): Promise<BigNumber>;
 
     "latestRoundData()"(overrides?: CallOverrides): Promise<BigNumber>;
-
-    latestTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "latestTimestamp()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1102,16 +932,6 @@ export class IOracle extends Contract {
 
     "description()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    getAnswer(
-      _roundId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "getAnswer(uint256)"(
-      _roundId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     getRoundData(
       _roundId: BigNumberish,
       overrides?: CallOverrides
@@ -1122,33 +942,9 @@ export class IOracle extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getTimestamp(
-      _roundId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "getTimestamp(uint256)"(
-      _roundId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    latestAnswer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "latestAnswer()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    latestRound(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "latestRound()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     latestRoundData(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "latestRoundData()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    latestTimestamp(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "latestTimestamp()"(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
