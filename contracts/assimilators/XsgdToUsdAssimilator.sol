@@ -37,13 +37,8 @@ contract XsgdToUsdAssimilator is IAssimilator {
     constructor() {}
 
     function getRate() public view override returns (uint256) {
-        (
-            uint80 roundID, 
-            int price,
-            uint startedAt,
-            uint timeStamp,
-            uint80 answeredInRound
-        ) = oracle.latestRoundData();
+        (uint80 roundID, int256 price, uint256 startedAt, uint256 timeStamp, uint80 answeredInRound) =
+            oracle.latestRoundData();
         return uint256(price);
     }
 
