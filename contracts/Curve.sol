@@ -409,7 +409,7 @@ contract Curve is Storage {
     ) external deadline(_deadline) transactable nonReentrant returns (uint256 targetAmount_) {
         targetAmount_ = Swaps.originSwap(curve, _origin, _target, _originAmount, msg.sender);
 
-        require(targetAmount_ > _minTargetAmount, "Curve/below-min-target-amount");
+        require(targetAmount_ >= _minTargetAmount, "Curve/below-min-target-amount");
     }
 
     function originSwapDiscountCHI(
@@ -421,7 +421,7 @@ contract Curve is Storage {
     ) external deadline(_deadline) transactable nonReentrant discountCHI returns (uint256 targetAmount_) {
         targetAmount_ = Swaps.originSwap(curve, _origin, _target, _originAmount, msg.sender);
 
-        require(targetAmount_ > _minTargetAmount, "Curve/below-min-target-amount");
+        require(targetAmount_ >= _minTargetAmount, "Curve/below-min-target-amount");
     }
 
     /// @notice view how much target amount a fixed origin amount will swap for
@@ -453,7 +453,7 @@ contract Curve is Storage {
     ) external deadline(_deadline) transactable nonReentrant returns (uint256 originAmount_) {
         originAmount_ = Swaps.targetSwap(curve, _origin, _target, _targetAmount, msg.sender);
 
-        require(originAmount_ < _maxOriginAmount, "Curve/above-max-origin-amount");
+        require(originAmount_ <= _maxOriginAmount, "Curve/above-max-origin-amount");
     }
 
     /// @notice view how much of the origin currency the target currency will take
