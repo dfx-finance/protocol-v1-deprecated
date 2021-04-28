@@ -37,7 +37,7 @@ contract EursToUsdAssimilator is IAssimilator {
     constructor() {}
 
     function getRate() public view override returns (uint256) {
-        (uint80 roundID, int256 price, uint256 startedAt, uint256 timeStamp, uint80 answeredInRound) =
+        (, int256 price, , , ) =
             oracle.latestRoundData();
         return uint256(price);
     }
