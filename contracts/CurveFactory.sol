@@ -28,6 +28,14 @@ contract CurveFactory is Ownable {
 
     mapping(bytes32 => address) public curves;
 
+    function getCurve(
+        address _baseCurrency,
+        address _quoteCurrency
+    ) external view returns (address) {
+        bytes32 curveId = keccak256(abi.encode(_baseCurrency, _quoteCurrency));
+        return (curves[curveId]);
+    }
+
     function newCurve(
         address _baseCurrency,
         address _quoteCurrency,
@@ -37,9 +45,7 @@ contract CurveFactory is Ownable {
         address _quoteAssimilator
     ) public onlyOwner returns (Curve) {
         bytes32 curveId = keccak256(abi.encode(_baseCurrency, _quoteCurrency));
-        if (curves[curveId] != address(0)) {
-            return Curve(curves[curveId]);
-        }
+        if (curves[curveId] != address(0)) revert("CurveFactory/currency-pair-already-exists");
 
         address[] memory _assets = new address[](10);
         uint256[] memory _assetWeights = new uint256[](2);
