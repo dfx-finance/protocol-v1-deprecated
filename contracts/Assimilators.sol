@@ -15,15 +15,19 @@
 
 pragma solidity ^0.7.3;
 
+import "@openzeppelin/contracts/utils/Address.sol";
 import "./interfaces/IAssimilator.sol";
 import "./lib/ABDKMath64x64.sol";
 
 library Assimilators {
     using ABDKMath64x64 for int128;
+    using Address for address;
 
     IAssimilator public constant iAsmltr = IAssimilator(address(0));
 
     function delegate(address _callee, bytes memory _data) internal returns (bytes memory) {
+        require(_callee.isContract(), "Assimilators/callee-is-not-a-contract");
+
         // solhint-disable-next-line
         (bool _success, bytes memory returnData_) = _callee.delegatecall(_data);
 
