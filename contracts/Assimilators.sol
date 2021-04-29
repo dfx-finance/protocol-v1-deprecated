@@ -27,7 +27,7 @@ library Assimilators {
 
     function delegate(address _callee, bytes memory _data) internal returns (bytes memory) {
         require(_callee.isContract(), "Assimilators/callee-is-not-a-contract");
-        
+
         // solhint-disable-next-line
         (bool _success, bytes memory returnData_) = _callee.delegatecall(_data);
 

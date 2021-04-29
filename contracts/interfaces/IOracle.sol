@@ -28,8 +28,6 @@ interface IOracle {
 
     function description() external view returns (string memory);
 
-    function getAnswer(uint256 _roundId) external view returns (int256);
-
     function getRoundData(uint80 _roundId)
         external
         view
@@ -41,12 +39,6 @@ interface IOracle {
             uint80 answeredInRound
         );
 
-    function getTimestamp(uint256 _roundId) external view returns (uint256);
-
-    function latestAnswer() external view returns (int256);
-
-    function latestRound() external view returns (uint256);
-
     function latestRoundData()
         external
         view
@@ -57,8 +49,6 @@ interface IOracle {
             uint256 updatedAt,
             uint80 answeredInRound
         );
-
-    function latestTimestamp() external view returns (uint256);
 
     function owner() external view returns (address);
 

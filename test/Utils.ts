@@ -89,7 +89,8 @@ export const getOracleAnswer = async (oracleAddress: string): Promise<BigNumber>
   }
 
   const oracle = await ethers.getContractAt(EACAggregatorProxyABI, oracleAddress);
-  return oracle.latestAnswer();
+  const roundData = await oracle.latestRoundData();
+  return roundData[1].price;
 };
 
 export const updateOracleAnswer = async (oracleAddress: string, amount: BigNumberish | number): Promise<void> => {

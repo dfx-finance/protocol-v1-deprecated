@@ -28,10 +28,7 @@ contract CurveFactory is Ownable {
 
     mapping(bytes32 => address) public curves;
 
-    function getCurve(
-        address _baseCurrency,
-        address _quoteCurrency
-    ) external view returns (address) {
+    function getCurve(address _baseCurrency, address _quoteCurrency) external view returns (address) {
         bytes32 curveId = keccak256(abi.encode(_baseCurrency, _quoteCurrency));
         return (curves[curveId]);
     }
