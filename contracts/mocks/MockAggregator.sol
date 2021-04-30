@@ -8,7 +8,7 @@ contract MockAggregator {
         _answer = _a;
     }
 
-    function latestRoundData() external view returns (uint256) {
+    function latestAnswer() external view returns (uint256) {
         return _answer;
     }
 }
