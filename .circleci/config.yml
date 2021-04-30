@@ -49,6 +49,7 @@ jobs:
           name: "Run CI Tests"
           command: |
             npm install -g yarn
+            yarn install
             yarn compile
             yarn test
           when: always
@@ -76,4 +77,6 @@ workflows:
   commit:
     jobs:
       - security-test
-      - ci-test
+      - ci-test:
+          context:
+            - org-global
