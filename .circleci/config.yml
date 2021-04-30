@@ -37,7 +37,9 @@ jobs:
     docker:
       - image: cimg/node:14.16.1
       - image: trufflesuite/ganache-cli
-        command: ganache-cli -f $ALCHEMY_URL -l 15000000 --chainId
+        command: ganache-cli -f $ALCHEMY_URI -l 15000000 --chainId
+        environment:
+          ALCHEMY_URI: $ALCHEMY_URI
     steps:
       - checkout
       - <<: *step_restore_cache
@@ -46,8 +48,9 @@ jobs:
       - run:
           name: "Run CI Tests"
           command: |
-            npm run compile
-            npm run test
+            npm install -g yarn
+            yarn compile
+            yarn test
           when: always
       
   security-test:
