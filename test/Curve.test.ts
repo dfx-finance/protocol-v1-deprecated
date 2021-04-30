@@ -110,6 +110,75 @@ describe("Curve", function () {
     }));
   });
 
+  describe("Invariant Checking", function () {
+    const checkInvariant = async function (base: string, baseAssimilator: string, baseDecimals: number) {
+      // We're just flipping them around...
+      const { curve } = await createCurveAndSetParams({
+        base: base,
+        quote: TOKENS.USDC.address,
+        baseWeight: parseUnits("0.5"),
+        quoteWeight: parseUnits("0.5"),
+        baseAssimilator: baseAssimilator,
+        quoteAssimilator: usdcToUsdAssimilator.address,
+        params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+      });
+
+      const c: Curve = curve as Curve;
+
+      await multiMintAndApprove([
+        [base, user1, parseUnits("10000000", baseDecimals), c.address],
+        [TOKENS.USDC.address, user1, parseUnits("10000000", 6), c.address],
+        [base, user2, parseUnits("10000000", baseDecimals), c.address],
+        [TOKENS.USDC.address, user2, parseUnits("10000000", 6), c.address],
+      ]);
+      await c.deposit(parseUnits("1000000"), await getFutureTime());
+
+      await c
+        .connect(user2)
+        .originSwap(base, TOKENS.USDC.address, parseUnits("1000", baseDecimals), 0, await getFutureTime());
+      await c
+        .connect(user2)
+        .originSwap(base, TOKENS.USDC.address, parseUnits("1000", baseDecimals), 0, await getFutureTime());
+      await c
+        .connect(user2)
+        .originSwap(base, TOKENS.USDC.address, parseUnits("1000", baseDecimals), 0, await getFutureTime());
+      await c
+        .connect(user2)
+        .originSwap(base, TOKENS.USDC.address, parseUnits("1000", baseDecimals), 0, await getFutureTime());
+      await c.connect(user2).deposit(parseUnits("100"), await getFutureTime());
+      await c.connect(user2).deposit(parseUnits("100"), await getFutureTime());
+      await c.connect(user2).originSwap(TOKENS.USDC.address, base, parseUnits("1000", 6), 0, await getFutureTime());
+      await c.connect(user2).withdraw(parseUnits("1"), await getFutureTime());
+      await c.connect(user2).originSwap(TOKENS.USDC.address, base, parseUnits("1000", 6), 0, await getFutureTime());
+      await c.connect(user2).withdraw(parseUnits("10"), await getFutureTime());
+      await c.connect(user2).originSwap(TOKENS.USDC.address, base, parseUnits("1000", 6), 0, await getFutureTime());
+      await c.connect(user2).withdraw(parseUnits("15"), await getFutureTime());
+      await c.connect(user2).originSwap(TOKENS.USDC.address, base, parseUnits("1000", 6), 0, await getFutureTime());
+      await c.connect(user2).withdraw(parseUnits("30"), await getFutureTime());
+      await c.connect(user2).originSwap(TOKENS.USDC.address, base, parseUnits("1000", 6), 0, await getFutureTime());
+      await c.connect(user2).deposit(parseUnits("100"), await getFutureTime());
+      await c.connect(user2).deposit(parseUnits("100"), await getFutureTime());
+      await c.connect(user2).deposit(parseUnits("100"), await getFutureTime());
+      await c.connect(user2).deposit(parseUnits("100"), await getFutureTime());
+      await c.connect(user2).deposit(parseUnits("100"), await getFutureTime());
+
+      const bal = await c.balanceOf(user2Address);
+      await c.connect(user2).withdraw(bal, await getFutureTime());
+    };
+
+    it("CADC", async function () {
+      await checkInvariant(TOKENS.CADC.address, cadcToUsdAssimilator.address, TOKENS.CADC.decimals);
+    });
+
+    it("XSGD", async function () {
+      await checkInvariant(TOKENS.XSGD.address, xsgdToUsdAssimilator.address, TOKENS.XSGD.decimals);
+    });
+
+    it("EURS", async function () {
+      await checkInvariant(TOKENS.EURS.address, eursToUsdAssimilator.address, TOKENS.EURS.decimals);
+    });
+  });
+
   describe("Swaps", function () {
     const originAndTargetSwapAndCheckSanity = async ({
       amount,

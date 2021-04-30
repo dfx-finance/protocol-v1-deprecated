@@ -33,6 +33,23 @@ step_setup_solc_select: &step_setup_solc_select
     command: |
       sudo pip3 install solc-select
 jobs:
+  ci-test:
+    docker:
+      - image: cimg/node:14.16.1
+      - image: trufflesuite/ganache-cli
+        command: ganache-cli -f $ALCHEMY_URL -l 15000000 --chainId
+    steps:
+      - checkout
+      - <<: *step_restore_cache
+      - <<: *step_setup_global_packages
+      - <<: *step_save_cache
+      - run:
+          name: "Run CI Tests"
+          command: |
+            npm run compile
+            npm run test
+          when: always
+      
   security-test:
     <<: *job_python
     steps:

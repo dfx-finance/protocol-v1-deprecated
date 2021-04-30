@@ -94,15 +94,20 @@ describe("Factory", function () {
       params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
     });
 
-    await createCurveAndSetParams({
-      base: cadc.address,
-      quote: usdc.address,
-      baseWeight: parseUnits("0.4"),
-      quoteWeight: parseUnits("0.6"),
-      baseAssimilator: cadcToUsdAssimilator.address,
-      quoteAssimilator: usdcToUsdAssimilator.address,
-      params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
-    });
+    try {
+      await createCurveAndSetParams({
+        base: cadc.address,
+        quote: usdc.address,
+        baseWeight: parseUnits("0.4"),
+        quoteWeight: parseUnits("0.6"),
+        baseAssimilator: cadcToUsdAssimilator.address,
+        quoteAssimilator: usdcToUsdAssimilator.address,
+        params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+      });
+      throw new Error("newCurve should throw error");
+    } catch (e) {
+      expect(e.toString()).to.include("CurveFactory/currency-pair-already-exists");
+    }
 
     const curveCadcUsdcAddress = await curveFactory.curves(
       ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["uint256", "uint256"], [cadc.address, usdc.address])),

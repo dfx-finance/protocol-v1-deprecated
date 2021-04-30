@@ -33,6 +33,9 @@ library ProportionalLiquidity {
 
         (int128 _oGLiq, int128[] memory _oBals) = getGrossLiquidityAndBalancesForDeposit(curve);
 
+        // Needed to calculate liquidity invariant
+        (int128 _oGLiqProp, int128[] memory _oBalsProp) = getGrossLiquidityAndBalances(curve);
+
         // No liquidity, oracle sets the ratio
         if (_oGLiq == 0) {
             for (uint256 i = 0; i < _length; i++) {
@@ -65,7 +68,7 @@ library ProportionalLiquidity {
             _newShells = _newShells.mul(_totalShells);
         }
 
-        requireLiquidityInvariant(curve, _totalShells, _newShells, _oGLiq, _oBals);
+        requireLiquidityInvariant(curve, _totalShells, _newShells, _oGLiqProp, _oBalsProp);
 
         mint(curve, msg.sender, curves_ = _newShells.mulu(1e18));
 
