@@ -46,10 +46,9 @@ jobs:
       - run:
           name: "Run CI Tests"
           command: |
-            npm install -g yarn
-            yarn install
-            yarn compile
-            yarn test
+            npm install
+            npm run compile
+            npm run test
           when: always
       
   security-test:
