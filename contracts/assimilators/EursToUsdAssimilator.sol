@@ -37,8 +37,7 @@ contract EursToUsdAssimilator is IAssimilator {
     constructor() {}
 
     function getRate() public view override returns (uint256) {
-        (, int256 price, , , ) = oracle.latestRoundData();
-        return uint256(price);
+        return uint256(oracle.latestAnswer());
     }
 
     // takes raw eurs amount, transfers it in, calculates corresponding numeraire amount and returns it

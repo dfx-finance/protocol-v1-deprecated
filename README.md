@@ -23,7 +23,7 @@ High level overview.
 
 | Name      | Description                                                                                               |
 | --------- | --------------------------------------------------------------------------------------------------------- |
-| Weights   | Weighting of the pair (only 50/50)                                                                        |
+| Weights   | Weighting of the pair (only 50/50)                                                         |
 | Alpha     | The maximum and minimum allocation for each reserve                                                       |
 | Beta      | Liquidity depth of the exchange; The higher the value, the flatter the curve at the reported oracle price |
 | Delta/Max | Slippage when exchange is not at the reported oracle price                                                |
@@ -31,7 +31,6 @@ High level overview.
 | Lambda    | Dynamic fee captured when slippage occurs                                                                 |
 
 For a more in-depth discussion, refer to [section 3 of the shellprotocol whitepaper](https://github.com/cowri/shell-solidity-v1/blob/master/Shell_White_Paper_v1.0.pdf)
-
 ### Major changes from the Shell Protocol
 
 The main changes between our implementation and the original code can be found in the following files:

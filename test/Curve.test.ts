@@ -323,89 +323,6 @@ describe("Curve", function () {
       }
     };
 
-    // Does an originSwap and targetSwap with the same token
-    // i.e. CADC -> CADC, USDC -> USDC
-    const similarOriginAndTargetSwapCheckSanity = async ({
-      base,
-      quote,
-      baseDecimals,
-      quoteDecimals,
-      baseWeight,
-      quoteWeight,
-      baseAssimilator,
-      quoteAssimilator,
-      params,
-    }: {
-      base: string;
-      quote: string;
-      baseDecimals: number;
-      quoteDecimals: number;
-      baseWeight: BigNumberish;
-      quoteWeight: BigNumberish;
-      baseAssimilator: string;
-      quoteAssimilator: string;
-      params: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
-    }) => {
-      const { curve } = await createCurveAndSetParams({
-        base,
-        quote,
-        baseWeight,
-        quoteWeight,
-        baseAssimilator,
-        quoteAssimilator,
-        params,
-      });
-
-      await multiMintAndApprove([
-        [base, user1, parseUnits("1000000", baseDecimals), curve.address],
-        [quote, user1, parseUnits("1000000", quoteDecimals), curve.address],
-        [base, user2, parseUnits("1000000", baseDecimals), curve.address],
-        [quote, user2, parseUnits("1000000", quoteDecimals), curve.address],
-      ]);
-
-      await curve.connect(user1).deposit(parseUnits("1000000"), await getFutureTime());
-
-      const beforeBase = await erc20.attach(base).balanceOf(user2Address);
-      await curve.connect(user2).originSwap(base, base, parseUnits("100", baseDecimals), 0, await getFutureTime());
-      const afterBase = await erc20.attach(base).balanceOf(user2Address);
-
-      if (baseDecimals === 2) {
-        expectBNAproxEq(beforeBase, afterBase, parseUnits("10", 0));
-      } else {
-        expectBNAproxEq(beforeBase, afterBase, parseUnits("0.0001", baseDecimals));
-      }
-
-      try {
-        await curve
-          .connect(user2)
-          .targetSwap(base, base, ethers.constants.MaxUint256, parseUnits("1000", baseDecimals), await getFutureTime());
-        throw new Error("Shouldnt be able to targetSwap similar base amount");
-      } catch (e) {
-        // We good
-      }
-
-      const beforeQuote = await erc20.attach(quote).balanceOf(user2Address);
-      await curve.connect(user2).originSwap(quote, quote, parseUnits("100", quoteDecimals), 0, await getFutureTime());
-      const afterQuote = await erc20.attach(quote).balanceOf(user2Address);
-
-      expectBNAproxEq(beforeQuote, afterQuote, parseUnits("0.0001", quoteDecimals));
-
-      try {
-        await curve
-          .connect(user2)
-          .targetSwap(
-            quote,
-            quote,
-            ethers.constants.MaxUint256,
-            parseUnits("1000", quoteDecimals),
-            await getFutureTime(),
-          );
-        throw new Error("Shouldnt be able to targetSwap similar base amount");
-      } catch (e) {
-        // We good
-      }
-    };
-
     const bases = [TOKENS.CADC.address, TOKENS.XSGD.address, TOKENS.EURS.address];
     const decimals = [TOKENS.CADC.decimals, TOKENS.XSGD.decimals, TOKENS.EURS.decimals];
     const oracles = [ORACLES.CADC.address, ORACLES.XSGD.address, ORACLES.EURS.address];
@@ -462,35 +379,6 @@ describe("Curve", function () {
             });
           });
         }
-      }
-    }
-
-    for (let i = 0; i < bases.length; i++) {
-      for (let j = 0; j < weights.length; j++) {
-        const name = baseName[i];
-        const baseWeight = weights[j][0];
-        const weightInInt = parseInt((parseFloat(baseWeight) * 100).toString());
-
-        const base = bases[i];
-        const baseDecimals = decimals[i];
-        const quoteWeight = weights[j][0];
-
-        it(`${name}/USDC ${weightInInt}/${100 - weightInInt} - (${baseName[i]} -> ${baseName[i]})`, async function () {
-          const assimilators = [cadcToUsdAssimilator, xsgdToUsdAssimilator, eursToUsdAssimilator];
-          const baseAssimilator = assimilators[i].address;
-
-          await similarOriginAndTargetSwapCheckSanity({
-            base,
-            quote: usdc.address,
-            baseDecimals,
-            quoteDecimals: TOKENS.USDC.decimals,
-            baseWeight: parseUnits(baseWeight),
-            quoteWeight: parseUnits(quoteWeight),
-            baseAssimilator,
-            quoteAssimilator: usdcToUsdAssimilator.address,
-            params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
-          });
-        });
       }
     }
   });
