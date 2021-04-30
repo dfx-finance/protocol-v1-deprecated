@@ -37,9 +37,7 @@ jobs:
     docker:
       - image: cimg/node:14.16.1
       - image: trufflesuite/ganache-cli
-        command: ganache-cli -f $ALCHEMY_URI -l 15000000 --chainId
-        environment:
-          ALCHEMY_URI: $ALCHEMY_URI
+        command: ganache-cli -f https://eth-mainnet.alchemyapi.io/v2/TKLrQ9-f0AahbCEYRaPGh7EsJRVYYLh2 -l 15000000 --chainId
     steps:
       - checkout
       - <<: *step_restore_cache
@@ -77,6 +75,4 @@ workflows:
   commit:
     jobs:
       - security-test
-      - ci-test:
-          context:
-            - org-global
+      - ci-test
