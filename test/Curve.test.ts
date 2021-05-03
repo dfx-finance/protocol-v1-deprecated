@@ -1365,8 +1365,13 @@ describe("Curve", function () {
         const baseReceived2 = afterBaseBal.sub(beforeBaseBal);
         const quoteReceived2 = afterQuoteBal.sub(beforeQuoteBal);
 
-        expectBNAproxEq(baseReceived2, baseReceived, baseReceived2.div(2000));
-        expectBNAproxEq(quoteReceived2, quoteReceived, quoteReceived2.div(2000));
+        if (baseDecimals === 2) {
+          expectBNAproxEq(baseReceived2, baseReceived, baseReceived2.div(20));
+          expectBNAproxEq(quoteReceived2, quoteReceived, quoteReceived2.div(20));
+        } else {
+          expectBNAproxEq(baseReceived2, baseReceived, baseReceived2.div(2000));
+          expectBNAproxEq(quoteReceived2, quoteReceived, quoteReceived2.div(2000));
+        }
 
         // In = Out, regardless of Oracle price
         // As its dependent on LP ratio
@@ -1374,8 +1379,13 @@ describe("Curve", function () {
         expectBNAproxEq(baseSupplied, baseReceived, baseReceived.div(ethers.BigNumber.from("2000")));
         expectBNAproxEq(quoteSupplied, quoteReceived, quoteReceived.div(ethers.BigNumber.from("2000")));
 
-        expectBNAproxEq(baseSupplied2, baseReceived2, baseReceived2.div(ethers.BigNumber.from("2000")));
-        expectBNAproxEq(quoteSupplied2, quoteReceived2, quoteReceived2.div(ethers.BigNumber.from("2000")));
+        if (baseDecimals === 2) {
+          expectBNAproxEq(baseSupplied2, baseReceived2, baseReceived2.div(ethers.BigNumber.from("20")));
+          expectBNAproxEq(quoteSupplied2, quoteReceived2, quoteReceived2.div(ethers.BigNumber.from("20")));
+        } else {
+          expectBNAproxEq(baseSupplied2, baseReceived2, baseReceived2.div(ethers.BigNumber.from("2000")));
+          expectBNAproxEq(quoteSupplied2, quoteReceived2, quoteReceived2.div(ethers.BigNumber.from("2000")));
+        }
 
         await updateOracleAnswer(oracle, ORACLE_RATE);
       };
