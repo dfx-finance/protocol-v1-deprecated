@@ -112,8 +112,7 @@ library Orchestrator {
         address[] storage reserves,
         address[] storage derivatives,
         address[] calldata _assets,
-        uint256[] calldata _assetWeights,
-        address[] calldata _derivativeAssimilators
+        uint256[] calldata _assetWeights
     ) external {
         for (uint256 i = 0; i < _assetWeights.length; i++) {
             uint256 ix = i * 5;
@@ -132,21 +131,6 @@ library Orchestrator {
                 _assets[3 + ix], // reserve assimilator
                 _assets[4 + ix], // reserve approve to
                 _assetWeights[i]
-            );
-        }
-
-        for (uint256 i = 0; i < _derivativeAssimilators.length / 5; i++) {
-            uint256 ix = i * 5;
-
-            derivatives.push(_derivativeAssimilators[ix]);
-
-            includeAssimilator(
-                curve,
-                _derivativeAssimilators[ix], // derivative
-                _derivativeAssimilators[1 + ix], // numeraire
-                _derivativeAssimilators[2 + ix], // reserve
-                _derivativeAssimilators[3 + ix], // assimilator
-                _derivativeAssimilators[4 + ix] // derivative approve to
             );
         }
     }

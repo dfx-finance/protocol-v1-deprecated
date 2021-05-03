@@ -46,7 +46,6 @@ contract CurveFactory is Ownable {
 
         address[] memory _assets = new address[](10);
         uint256[] memory _assetWeights = new uint256[](2);
-        address[] memory _derivativeAssimilators = new address[](2);
 
         // Base Currency
         _assets[0] = _baseCurrency;
@@ -66,12 +65,8 @@ contract CurveFactory is Ownable {
         _assetWeights[0] = _baseWeight;
         _assetWeights[1] = _quoteWeight;
 
-        // Assimilators
-        _derivativeAssimilators[0] = _baseAssimilator;
-        _derivativeAssimilators[1] = _quoteAssimilator;
-
         // New curve
-        Curve curve = new Curve(_assets, _assetWeights, _derivativeAssimilators);
+        Curve curve = new Curve(_assets, _assetWeights);
         curve.transferOwnership(msg.sender);
         curves[curveId] = address(curve);
 
