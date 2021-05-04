@@ -308,8 +308,7 @@ contract Curve is Storage {
 
     constructor(
         address[] memory _assets,
-        uint256[] memory _assetWeights,
-        address[] memory _derivativeAssimilators
+        uint256[] memory _assetWeights
     ) {
         owner = msg.sender;
         emit OwnershipTransfered(address(0), msg.sender);
@@ -320,8 +319,7 @@ contract Curve is Storage {
             reserves,
             derivatives,
             _assets,
-            _assetWeights,
-            _derivativeAssimilators
+            _assetWeights
         );
     }
 
