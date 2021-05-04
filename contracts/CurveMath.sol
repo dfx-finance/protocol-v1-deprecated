@@ -53,7 +53,7 @@ library CurveMath {
         uint256 _length = _bals.length;
 
         for (uint256 i = 0; i < _length; i++) {
-            int128 _ideal = _gLiq.us_mul(_weights[i]);
+            int128 _ideal = _gLiq.mul(_weights[i]);
             psi_ += calculateMicroFee(_bals[i], _ideal, _beta, _delta);
         }
     }
@@ -65,30 +65,30 @@ library CurveMath {
         int128 _delta
     ) private pure returns (int128 fee_) {
         if (_bal < _ideal) {
-            int128 _threshold = _ideal.us_mul(ONE - _beta);
+            int128 _threshold = _ideal.mul(ONE - _beta);
 
             if (_bal < _threshold) {
                 int128 _feeMargin = _threshold - _bal;
 
-                fee_ = _feeMargin.us_div(_ideal);
-                fee_ = fee_.us_mul(_delta);
+                fee_ = _feeMargin.div(_ideal);
+                fee_ = fee_.mul(_delta);
 
                 if (fee_ > MAX) fee_ = MAX;
 
-                fee_ = fee_.us_mul(_feeMargin);
+                fee_ = fee_.mul(_feeMargin);
             } else fee_ = 0;
         } else {
-            int128 _threshold = _ideal.us_mul(ONE + _beta);
+            int128 _threshold = _ideal.mul(ONE + _beta);
 
             if (_bal > _threshold) {
                 int128 _feeMargin = _bal - _threshold;
 
-                fee_ = _feeMargin.us_div(_ideal);
-                fee_ = fee_.us_mul(_delta);
+                fee_ = _feeMargin.div(_ideal);
+                fee_ = fee_.mul(_delta);
 
                 if (fee_ > MAX) fee_ = MAX;
 
-                fee_ = fee_.us_mul(_feeMargin);
+                fee_ = fee_.mul(_feeMargin);
             } else fee_ = 0;
         }
     }
@@ -118,7 +118,7 @@ library CurveMath {
                 prevAmount = outputAmt_;
                 outputAmt_ = _omega < _psi
                     ? -(_inputAmt + _omega - _psi)
-                    : -(_inputAmt + _lambda.us_mul(_omega - _psi));
+                    : -(_inputAmt + _lambda.mul(_omega - _psi));
             }
 
             if (outputAmt_ / 1e13 == prevAmount / 1e13) {
@@ -179,7 +179,7 @@ library CurveMath {
         }
 
         if (_totalShells != 0) {
-            curves_ = _totalShells.us_mul(_curveMultiplier);
+            curves_ = _totalShells.mul(_curveMultiplier);
 
             enforceLiquidityInvariant(_totalShells, curves_, _oGLiq, _nGLiq, _omega, _psi);
         }
@@ -231,15 +231,15 @@ library CurveMath {
         int128 _alpha = curve.alpha;
 
         for (uint256 i = 0; i < _length; i++) {
-            int128 _nIdeal = _nGLiq.us_mul(_weights[i]);
+            int128 _nIdeal = _nGLiq.mul(_weights[i]);
 
             if (_nBals[i] > _nIdeal) {
                 int128 _upperAlpha = ONE + _alpha;
 
-                int128 _nHalt = _nIdeal.us_mul(_upperAlpha);
+                int128 _nHalt = _nIdeal.mul(_upperAlpha);
 
                 if (_nBals[i] > _nHalt) {
-                    int128 _oHalt = _oGLiq.us_mul(_weights[i]).us_mul(_upperAlpha);
+                    int128 _oHalt = _oGLiq.mul(_weights[i]).mul(_upperAlpha);
 
                     if (_oBals[i] < _oHalt) revert("Curve/upper-halt");
                     if (_nBals[i] - _nHalt > _oBals[i] - _oHalt) revert("Curve/upper-halt");
@@ -247,11 +247,11 @@ library CurveMath {
             } else {
                 int128 _lowerAlpha = ONE - _alpha;
 
-                int128 _nHalt = _nIdeal.us_mul(_lowerAlpha);
+                int128 _nHalt = _nIdeal.mul(_lowerAlpha);
 
                 if (_nBals[i] < _nHalt) {
-                    int128 _oHalt = _oGLiq.us_mul(_weights[i]);
-                    _oHalt = _oHalt.us_mul(_lowerAlpha);
+                    int128 _oHalt = _oGLiq.mul(_weights[i]);
+                    _oHalt = _oHalt.mul(_lowerAlpha);
 
                     if (_oBals[i] > _oHalt) revert("Curve/lower-halt");
                     if (_nHalt - _nBals[i] > _oHalt - _oBals[i]) revert("Curve/lower-halt");
