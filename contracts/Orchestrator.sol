@@ -114,6 +114,9 @@ library Orchestrator {
         address[] calldata _assets,
         uint256[] calldata _assetWeights
     ) external {
+        require(_assetWeights.length == 2, "Curve/assetWeights-must-be-length-two");
+        require(_assets.length % 5 == 0, "Curve/assets-must-be-divisible-by-five");
+
         for (uint256 i = 0; i < _assetWeights.length; i++) {
             uint256 ix = i * 5;
 
