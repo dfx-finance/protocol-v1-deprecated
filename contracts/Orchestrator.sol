@@ -16,6 +16,7 @@
 pragma solidity ^0.7.3;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 
 import "./lib/ABDKMath64x64.sol";
 
@@ -24,6 +25,7 @@ import "./Storage.sol";
 import "./CurveMath.sol";
 
 library Orchestrator {
+    using SafeERC20 for IERC20;
     using ABDKMath64x64 for int128;
     using ABDKMath64x64 for uint256;
 
@@ -94,18 +96,6 @@ library Orchestrator {
         fee_ = CurveMath.calculateFee(_gLiq, _bals, curve.beta, curve.delta, curve.weights);
     }
 
-    function safeApprove(
-        address _token,
-        address _spender,
-        uint256 _value
-    ) private {
-        (bool success, ) =
-            // solhint-disable-next-line
-            _token.call(abi.encodeWithSignature("approve(address,uint256)", _spender, _value));
-
-        require(success, "SafeERC20: low-level call failed");
-    }
-
     function initialize(
         Storage.Curve storage curve,
         address[] storage numeraires,
@@ -170,7 +160,7 @@ library Orchestrator {
 
         require(_weight < 1e18, "Curve/weight-must-be-less-than-one");
 
-        if (_numeraire != _reserve) safeApprove(_numeraire, _reserveApproveTo, uint256(-1));
+        if (_numeraire != _reserve) IERC20(_numeraire).safeApprove(_reserveApproveTo, uint256(-1));
 
         Storage.Assimilator storage _numeraireAssimilator = curve.assimilators[_numeraire];
 
@@ -215,7 +205,7 @@ library Orchestrator {
 
         require(_assimilator != address(0), "Curve/assimilator-cannot-be-zeroth-address");
 
-        safeApprove(_numeraire, _derivativeApproveTo, uint256(-1));
+        IERC20(_numeraire).safeApprove(_derivativeApproveTo, uint256(-1));
 
         Storage.Assimilator storage _numeraireAssim = curve.assimilators[_numeraire];
 
