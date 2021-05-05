@@ -80,20 +80,23 @@ library CurveMath {
         }
     }
 
-    function calculateTradeLoop(
+    function calculateTrade(
         Storage.Curve storage curve,
         int128 _oGLiq,
         int128 _nGLiq,
-        int128[] memory _nBals,
         int128[] memory _oBals,
-        int128 _beta,
-        int128 _delta,
-        int128[] memory _weights,
-        int128 _omega,
+        int128[] memory _nBals,
         int128 _inputAmt,
-        int128 _lambda,
         uint256 _outputIndex
     ) internal view returns (int128 outputAmt_) {
+        outputAmt_ = -_inputAmt;
+
+        int128 _lambda = curve.lambda;
+        int128 _beta = curve.beta;
+        int128 _delta = curve.delta;
+        int128[] memory _weights = curve.weights;
+
+        int128 _omega = calculateFee(_oGLiq, _oBals, _beta, _delta, _weights);
         int128 _psi;
 
         for (uint256 i = 0; i < 32; i++) {
@@ -123,42 +126,8 @@ library CurveMath {
                 _nBals[_outputIndex] = _oBals[_outputIndex].add(outputAmt_);
             }
         }
+
         revert("Curve/swap-convergence-failed");
-    }
-
-    function calculateTrade(
-        Storage.Curve storage curve,
-        int128 _oGLiq,
-        int128 _nGLiq,
-        int128[] memory _oBals,
-        int128[] memory _nBals,
-        int128 _inputAmt,
-        uint256 _outputIndex
-    ) internal view returns (int128 outputAmt_) {
-        outputAmt_ = -_inputAmt;
-
-        int128 _lambda = curve.lambda;
-        int128 _beta = curve.beta;
-        int128 _delta = curve.delta;
-        int128[] memory _weights = curve.weights;
-
-        int128 _omega = calculateFee(_oGLiq, _oBals, _beta, _delta, _weights);
-
-        return
-            outputAmt_ = calculateTradeLoop(
-                curve,
-                _oGLiq,
-                _nGLiq,
-                _nBals,
-                _oBals,
-                _beta,
-                _delta,
-                _weights,
-                _omega,
-                _inputAmt,
-                _lambda,
-                _outputIndex
-            );
     }
 
     function calculateLiquidityMembrane(
