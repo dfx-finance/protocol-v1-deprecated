@@ -33,6 +33,18 @@ library CurveMath {
     function calculateFee(
         int128 _gLiq,
         int128[] memory _bals,
+        Storage.Curve storage curve,
+        int128[] memory _weights
+    ) internal view returns (int128 psi_) {
+        int128 _beta = curve.beta;
+        int128 _delta = curve.delta;
+
+        psi_ = calculateFee(_gLiq, _bals, _beta, _delta, _weights);
+    }
+
+    function calculateFee(
+        int128 _gLiq,
+        int128[] memory _bals,
         int128 _beta,
         int128 _delta,
         int128[] memory _weights
@@ -92,15 +104,13 @@ library CurveMath {
         outputAmt_ = -_inputAmt;
 
         int128 _lambda = curve.lambda;
-        int128 _beta = curve.beta;
-        int128 _delta = curve.delta;
         int128[] memory _weights = curve.weights;
 
-        int128 _omega = calculateFee(_oGLiq, _oBals, _beta, _delta, _weights);
+        int128 _omega = calculateFee(_oGLiq, _oBals, curve, _weights);
         int128 _psi;
 
         for (uint256 i = 0; i < 32; i++) {
-            _psi = calculateFee(_nGLiq, _nBals, _beta, _delta, _weights);
+            _psi = calculateFee(_nGLiq, _nBals, curve, _weights);
 
             int128 prevAmount;
             {
