@@ -30,6 +30,7 @@ library CurveMath {
     using UnsafeMath64x64 for int128;
     using ABDKMath64x64 for uint256;
 
+    // This is used to prevent stack too deep errors
     function calculateFee(
         int128 _gLiq,
         int128[] memory _bals,
