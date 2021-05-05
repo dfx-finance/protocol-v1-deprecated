@@ -102,13 +102,15 @@ library CurveMath {
         for (uint256 i = 0; i < 32; i++) {
             _psi = calculateFee(_nGLiq, _nBals, _beta, _delta, _weights);
 
-            if (
-                (outputAmt_ = _omega < _psi
+            int128 prevAmount;
+            {
+                prevAmount = outputAmt_;
+                outputAmt_ = _omega < _psi
                     ? -(_inputAmt + _omega - _psi)
-                    : -(_inputAmt + _lambda.us_mul(_omega - _psi))) /
-                    1e13 ==
-                outputAmt_ / 1e13
-            ) {
+                    : -(_inputAmt + _lambda.us_mul(_omega - _psi));
+            }
+
+            if (outputAmt_ / 1e13 == prevAmount / 1e13) {
                 _nGLiq = _oGLiq + _inputAmt + outputAmt_;
 
                 _nBals[_outputIndex] = _oBals[_outputIndex] + outputAmt_;
