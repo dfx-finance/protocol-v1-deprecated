@@ -30,6 +30,19 @@ library CurveMath {
     using UnsafeMath64x64 for int128;
     using ABDKMath64x64 for uint256;
 
+    // This is used to prevent stack too deep errors
+    function calculateFee(
+        int128 _gLiq,
+        int128[] memory _bals,
+        Storage.Curve storage curve,
+        int128[] memory _weights
+    ) internal view returns (int128 psi_) {
+        int128 _beta = curve.beta;
+        int128 _delta = curve.delta;
+
+        psi_ = calculateFee(_gLiq, _bals, _beta, _delta, _weights);
+    }
+
     function calculateFee(
         int128 _gLiq,
         int128[] memory _bals,
@@ -92,23 +105,23 @@ library CurveMath {
         outputAmt_ = -_inputAmt;
 
         int128 _lambda = curve.lambda;
-        int128 _beta = curve.beta;
-        int128 _delta = curve.delta;
         int128[] memory _weights = curve.weights;
 
-        int128 _omega = calculateFee(_oGLiq, _oBals, _beta, _delta, _weights);
+        int128 _omega = calculateFee(_oGLiq, _oBals, curve, _weights);
         int128 _psi;
 
         for (uint256 i = 0; i < 32; i++) {
-            _psi = calculateFee(_nGLiq, _nBals, _beta, _delta, _weights);
+            _psi = calculateFee(_nGLiq, _nBals, curve, _weights);
 
-            if (
-                (outputAmt_ = _omega < _psi
+            int128 prevAmount;
+            {
+                prevAmount = outputAmt_;
+                outputAmt_ = _omega < _psi
                     ? -(_inputAmt + _omega - _psi)
-                    : -(_inputAmt + _lambda.us_mul(_omega - _psi))) /
-                    1e13 ==
-                outputAmt_ / 1e13
-            ) {
+                    : -(_inputAmt + _lambda.us_mul(_omega - _psi));
+            }
+
+            if (outputAmt_ / 1e13 == prevAmount / 1e13) {
                 _nGLiq = _oGLiq + _inputAmt + outputAmt_;
 
                 _nBals[_outputIndex] = _oBals[_outputIndex] + outputAmt_;
