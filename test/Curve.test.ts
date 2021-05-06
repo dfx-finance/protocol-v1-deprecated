@@ -352,7 +352,7 @@ describe("Curve", function () {
 
       // Get back roughly what the oracle reports
       // However EURs screws everything up with its 2 decimal places
-      if ((quoteDecimals === 2 || baseDecimals === 2) && amount === "1") {
+      if (quoteDecimals === 2 || baseDecimals === 2) {
         expectBNAproxEq(originDeltaBase, originExpectedBase, originExpectedBase.div(10));
         expectBNAproxEq(originDeltaQuote, originExpectedQuote, originExpectedQuote.div(10));
       } else {
@@ -384,8 +384,8 @@ describe("Curve", function () {
 
       // Target swap works as intended
       if ((quoteDecimals === 2 || baseDecimals === 2) && amount === "1") {
-        expectBNAproxEq(targetDeltaBase, targetExpectedBase, targetExpectedBase.div(100));
-        expectBNAproxEq(targetDeltaQuote, targetExpectedQuote, targetExpectedQuote.div(100));
+        expectBNAproxEq(targetDeltaBase, targetExpectedBase, targetExpectedBase.div(50));
+        expectBNAproxEq(targetDeltaQuote, targetExpectedQuote, targetExpectedQuote.div(50));
       } else {
         expectBNAproxEq(targetDeltaBase, targetExpectedBase, targetExpectedBase.div(1500));
         expectBNAproxEq(targetDeltaQuote, targetExpectedQuote, targetExpectedQuote.div(1500));

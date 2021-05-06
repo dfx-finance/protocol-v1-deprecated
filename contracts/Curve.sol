@@ -306,21 +306,11 @@ contract Curve is Storage {
         _;
     }
 
-    constructor(
-        address[] memory _assets,
-        uint256[] memory _assetWeights
-    ) {
+    constructor(address[] memory _assets, uint256[] memory _assetWeights) {
         owner = msg.sender;
         emit OwnershipTransfered(address(0), msg.sender);
 
-        Orchestrator.initialize(
-            curve,
-            numeraires,
-            reserves,
-            derivatives,
-            _assets,
-            _assetWeights
-        );
+        Orchestrator.initialize(curve, numeraires, reserves, derivatives, _assets, _assetWeights);
     }
 
     /// @notice sets the parameters for the pool
