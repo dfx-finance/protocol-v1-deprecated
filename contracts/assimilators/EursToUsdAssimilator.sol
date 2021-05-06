@@ -50,7 +50,7 @@ contract EursToUsdAssimilator is IAssimilator {
 
         uint256 _rate = getRate();
 
-        balance_ = _balance.divu(1e2);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e2);
 
         amount_ = ((_amount * _rate) / 1e8).divu(1e2);
     }

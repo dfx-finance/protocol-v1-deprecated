@@ -50,7 +50,7 @@ contract XsgdToUsdAssimilator is IAssimilator {
 
         uint256 _rate = getRate();
 
-        balance_ = _balance.divu(1e6);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e6);
 
         amount_ = ((_amount * _rate) / 1e8).divu(1e6);
     }
