@@ -209,7 +209,7 @@ contract EursToUsdAssimilator is IAssimilator {
 
         uint256 _balance = eurs.balanceOf(_addr);
 
-        balance_ = _balance.divu(1e2);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e2);
     }
 
     // views the numeraire value of the current balance of the reserve, in this case eurs

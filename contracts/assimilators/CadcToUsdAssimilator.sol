@@ -202,7 +202,7 @@ contract CadcToUsdAssimilator is IAssimilator {
 
         uint256 _balance = cadc.balanceOf(_addr);
 
-        balance_ = _balance.divu(1e18);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e18);
     }
 
     // views the numeraire value of the current balance of the reserve, in this case cadc

@@ -209,7 +209,7 @@ contract XsgdToUsdAssimilator is IAssimilator {
 
         uint256 _balance = xsgd.balanceOf(_addr);
 
-        balance_ = _balance.divu(1e6);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e6);
     }
 
     // views the numeraire value of the current balance of the reserve, in this case xsgd
