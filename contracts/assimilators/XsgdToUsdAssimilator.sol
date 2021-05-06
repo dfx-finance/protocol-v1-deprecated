@@ -122,7 +122,7 @@ contract XsgdToUsdAssimilator is IAssimilator {
 
         amount_ = _xsgdAmount.divu(1e6);
 
-        balance_ = _balance.divu(1e6);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e6);
     }
 
     // takes a raw amount of xsgd and transfers it out, returns numeraire value of the raw amount

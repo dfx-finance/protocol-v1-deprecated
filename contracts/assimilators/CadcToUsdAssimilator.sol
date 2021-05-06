@@ -118,7 +118,7 @@ contract CadcToUsdAssimilator is IAssimilator {
 
         amount_ = _cadcAmount.divu(1e18);
 
-        balance_ = _balance.divu(1e18);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e18);
     }
 
     // takes a raw amount of cadc and transfers it out, returns numeraire value of the raw amount

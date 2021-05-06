@@ -122,7 +122,7 @@ contract EursToUsdAssimilator is IAssimilator {
 
         amount_ = _eursAmount.divu(1e2);
 
-        balance_ = _balance.divu(1e2);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e2);
     }
 
     // takes a raw amount of eurs and transfers it out, returns numeraire value of the raw amount
