@@ -64,7 +64,7 @@ library Curves {
      * no way affects any of the arithmetic of the contract, including
      * {IERC20-balanceOf} and {IERC20-transfer}.
      */
-    function decimals() public pure returns (uint8) {
+    function decimals() external returns (uint8) {
         return 18;
     }
 
@@ -306,8 +306,10 @@ contract Curve is Storage {
         _;
     }
 
-    constructor(address[] memory _assets, uint256[] memory _assetWeights) {
+    constructor(string memory _name, string memory _symbol, address[] memory _assets, uint256[] memory _assetWeights) {
         owner = msg.sender;
+        name_ = _name;
+        symbol_ = _symbol;
         emit OwnershipTransfered(address(0), msg.sender);
 
         Orchestrator.initialize(curve, numeraires, reserves, derivatives, _assets, _assetWeights);
@@ -524,6 +526,18 @@ contract Curve is Storage {
             this.supportsInterface.selector == _interface || // erc165
             bytes4(0x7f5828d0) == _interface || // eip173
             bytes4(0x36372b07) == _interface; // erc20
+    }
+
+    function name() public view returns (string) {
+        return name_;
+    }
+
+    function symbol() public view returns (string) {
+        return symbol_;
+    }
+
+    function decimals() public view returns (uint8) {
+        return Curves.decimals();
     }
 
     /// @notice transfers curve tokens

@@ -34,6 +34,8 @@ contract CurveFactory is Ownable {
     }
 
     function newCurve(
+        string memory _name,
+        string memory _symbol,
         address _baseCurrency,
         address _quoteCurrency,
         uint256 _baseWeight,
@@ -66,7 +68,7 @@ contract CurveFactory is Ownable {
         _assetWeights[1] = _quoteWeight;
 
         // New curve
-        Curve curve = new Curve(_assets, _assetWeights);
+        Curve curve = new Curve(_name, _symbol, _assets, _assetWeights);
         curve.transferOwnership(msg.sender);
         curves[curveId] = address(curve);
 
