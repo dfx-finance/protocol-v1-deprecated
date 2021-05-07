@@ -51,8 +51,8 @@ contract Storage {
     // Ownable
     address public owner;
 
-    string public name;
-    string public symbol;
+    string public name_;
+    string public symbol_;
 
     address[] public derivatives;
     address[] public numeraires;
