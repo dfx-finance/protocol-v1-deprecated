@@ -50,7 +50,7 @@ contract XsgdToUsdAssimilator is IAssimilator {
 
         uint256 _rate = getRate();
 
-        balance_ = _balance.divu(1e6);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e6);
 
         amount_ = ((_amount * _rate) / 1e8).divu(1e6);
     }
@@ -122,7 +122,7 @@ contract XsgdToUsdAssimilator is IAssimilator {
 
         amount_ = _xsgdAmount.divu(1e6);
 
-        balance_ = _balance.divu(1e6);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e6);
     }
 
     // takes a raw amount of xsgd and transfers it out, returns numeraire value of the raw amount
@@ -209,7 +209,7 @@ contract XsgdToUsdAssimilator is IAssimilator {
 
         uint256 _balance = xsgd.balanceOf(_addr);
 
-        balance_ = _balance.divu(1e6);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e6);
     }
 
     // views the numeraire value of the current balance of the reserve, in this case xsgd

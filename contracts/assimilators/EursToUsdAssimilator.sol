@@ -50,7 +50,7 @@ contract EursToUsdAssimilator is IAssimilator {
 
         uint256 _rate = getRate();
 
-        balance_ = _balance.divu(1e2);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e2);
 
         amount_ = ((_amount * _rate) / 1e8).divu(1e2);
     }
@@ -122,7 +122,7 @@ contract EursToUsdAssimilator is IAssimilator {
 
         amount_ = _eursAmount.divu(1e2);
 
-        balance_ = _balance.divu(1e2);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e2);
     }
 
     // takes a raw amount of eurs and transfers it out, returns numeraire value of the raw amount
@@ -209,7 +209,7 @@ contract EursToUsdAssimilator is IAssimilator {
 
         uint256 _balance = eurs.balanceOf(_addr);
 
-        balance_ = _balance.divu(1e2);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e2);
     }
 
     // views the numeraire value of the current balance of the reserve, in this case eurs

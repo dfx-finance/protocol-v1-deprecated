@@ -50,7 +50,7 @@ contract CadcToUsdAssimilator is IAssimilator {
 
         uint256 _rate = getRate();
 
-        balance_ = _balance.divu(1e18);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e18);
 
         amount_ = ((_amount * _rate) / 1e8).divu(1e18);
     }
@@ -118,7 +118,7 @@ contract CadcToUsdAssimilator is IAssimilator {
 
         amount_ = _cadcAmount.divu(1e18);
 
-        balance_ = _balance.divu(1e18);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e18);
     }
 
     // takes a raw amount of cadc and transfers it out, returns numeraire value of the raw amount
@@ -202,7 +202,7 @@ contract CadcToUsdAssimilator is IAssimilator {
 
         uint256 _balance = cadc.balanceOf(_addr);
 
-        balance_ = _balance.divu(1e18);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e18);
     }
 
     // views the numeraire value of the current balance of the reserve, in this case cadc
