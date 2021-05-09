@@ -13,13 +13,15 @@ import { ORACLES, TOKENS } from "./Constants";
 import { getFutureTime, updateOracleAnswer, expectBNAproxEq, expectBNEq, getOracleAnswer } from "./Utils";
 
 import { scaffoldTest, scaffoldHelpers } from "./Setup";
-import { formatUnits } from "ethers/lib/utils";
+import { formatUnits, namehash } from "ethers/lib/utils";
 import { format } from "prettier";
 
 chai.use(chaiBigNumber(BigNumber));
 
 const { parseUnits } = ethers.utils;
 
+const NAME = "DFX V1"
+const SYMBOL = "DFX-V1"
 const ALPHA = parseUnits("0.5");
 const BETA = parseUnits("0.35");
 const MAX = parseUnits("0.15");
@@ -48,6 +50,8 @@ describe("Curve", function () {
   let erc20: ERC20;
 
   let createCurveAndSetParams: ({
+    name,
+    symbol,
     base,
     quote,
     baseWeight,
@@ -56,6 +60,8 @@ describe("Curve", function () {
     quoteAssimilator,
     params,
   }: {
+    name: string;
+    symbol: string;
     base: string;
     quote: string;
     baseWeight: BigNumberish;
@@ -114,6 +120,8 @@ describe("Curve", function () {
     const checkInvariant = async function (base: string, baseAssimilator: string, baseDecimals: number) {
       // We're just flipping them around...
       const { curve } = await createCurveAndSetParams({
+        name: NAME,
+        symbol: SYMBOL,
         base: base,
         quote: TOKENS.USDC.address,
         baseWeight: parseUnits("0.5"),
@@ -182,6 +190,8 @@ describe("Curve", function () {
   describe("Swaps", function () {
     const originAndTargetSwapAndCheckSanity = async ({
       amount,
+      name,
+      symbol,
       base,
       quote,
       baseDecimals,
@@ -194,6 +204,8 @@ describe("Curve", function () {
       oracle,
     }: {
       amount: string;
+      name: string;
+      symbol: string;
       base: string;
       quote: string;
       baseDecimals: number;
@@ -206,6 +218,8 @@ describe("Curve", function () {
       oracle: string;
     }) => {
       const { curve } = await createCurveAndSetParams({
+        name,
+        symbol,
         base,
         quote,
         baseWeight,
@@ -286,6 +300,8 @@ describe("Curve", function () {
     // as the oracle rate reports the price feed very specifically
     const originAndTargetSwapAndCheckSanityInverse = async ({
       amount,
+      name,
+      symbol,
       base,
       quote,
       baseDecimals,
@@ -298,6 +314,8 @@ describe("Curve", function () {
       oracle,
     }: {
       amount: string;
+      name: string;
+      symbol: string;
       base: string;
       quote: string;
       baseDecimals: number;
@@ -311,6 +329,8 @@ describe("Curve", function () {
     }) => {
       // We're just flipping them around...
       const { curve } = await createCurveAndSetParams({
+        name: symbol,
+        symbol: name,
         base: quote,
         quote: base,
         baseWeight: quoteWeight,
@@ -416,6 +436,8 @@ describe("Curve", function () {
 
             await originAndTargetSwapAndCheckSanity({
               amount: k.toString(),
+              name: NAME,
+              symbol: SYMBOL,
               base,
               quote: usdc.address,
               baseDecimals,
@@ -435,6 +457,8 @@ describe("Curve", function () {
 
             await originAndTargetSwapAndCheckSanityInverse({
               amount: k.toString(),
+              name: NAME,
+              symbol: SYMBOL,
               base: usdc.address,
               quote: base,
               baseDecimals: TOKENS.USDC.decimals,
@@ -456,6 +480,8 @@ describe("Curve", function () {
     describe("viewDeposit", function () {
       const viewLPDepositWithSanityChecks = async ({
         amount,
+        name,
+        symbol,
         base,
         quote,
         baseWeight,
@@ -467,6 +493,8 @@ describe("Curve", function () {
         params,
         oracle,
       }: {
+        name: string;
+        symbol: string;
         amount: string;
         base: string;
         quote: string;
@@ -480,6 +508,8 @@ describe("Curve", function () {
         oracle: string;
       }) => {
         const { curve } = await createCurveAndSetParams({
+          name,
+          symbol,
           base,
           quote,
           baseWeight,
@@ -556,6 +586,8 @@ describe("Curve", function () {
         it(`CADC/USDC 50/50 - ${i}`, async function () {
           await viewLPDepositWithSanityChecks({
             amount: i.toString(),
+            name: NAME,
+            symbol: SYMBOL,
             base: cadc.address,
             quote: usdc.address,
             baseWeight: parseUnits("0.5"),
@@ -574,6 +606,8 @@ describe("Curve", function () {
         it(`XSGD/USDC 50/50 - ${i}`, async function () {
           await viewLPDepositWithSanityChecks({
             amount: i.toString(),
+            name: NAME,
+            symbol: SYMBOL,
             base: xsgd.address,
             quote: usdc.address,
             baseWeight: parseUnits("0.5"),
@@ -592,6 +626,8 @@ describe("Curve", function () {
         it(`EURS/USDC 50/50 - ${i}`, async function () {
           await viewLPDepositWithSanityChecks({
             amount: i.toString(),
+            name: NAME,
+            symbol: SYMBOL,
             base: eurs.address,
             quote: usdc.address,
             baseWeight: parseUnits("0.5"),
@@ -610,6 +646,8 @@ describe("Curve", function () {
     describe("viewWithdraw", function () {
       const viewLPWithdrawWithSanityChecks = async ({
         amount,
+        name,
+        symbol,
         base,
         quote,
         baseWeight,
@@ -620,6 +658,8 @@ describe("Curve", function () {
         quoteAssimilator,
         params,
       }: {
+        name,
+        symbol,
         amount: string;
         base: string;
         quote: string;
@@ -632,6 +672,8 @@ describe("Curve", function () {
         params: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
       }) => {
         const { curve, curveLpToken } = await createCurveAndSetParams({
+          name,
+          symbol,
           base,
           quote,
           baseWeight,
@@ -695,6 +737,8 @@ describe("Curve", function () {
         it(`CADC/USDC 50/50 - ${i}`, async function () {
           await viewLPWithdrawWithSanityChecks({
             amount: i.toString(),
+            name: NAME,
+            symbol: SYMBOL,
             base: cadc.address,
             quote: usdc.address,
             baseWeight: parseUnits("0.5"),
@@ -712,6 +756,8 @@ describe("Curve", function () {
         it(`XSGD/USDC 50/50 - ${i}`, async function () {
           await viewLPWithdrawWithSanityChecks({
             amount: i.toString(),
+            name: NAME,
+            symbol: SYMBOL,
             base: xsgd.address,
             quote: usdc.address,
             baseWeight: parseUnits("0.5"),
@@ -729,6 +775,8 @@ describe("Curve", function () {
         it(`EURS/USDC 50/50 - ${i}`, async function () {
           await viewLPWithdrawWithSanityChecks({
             amount: i.toString(),
+            name: NAME,
+            symbol: SYMBOL,
             base: eurs.address,
             quote: usdc.address,
             baseWeight: parseUnits("0.5"),
@@ -746,6 +794,8 @@ describe("Curve", function () {
     describe("Add and remove liquidity", function () {
       const addAndRemoveLiquidityWithSanityChecks = async ({
         amount,
+        name,
+        symbol,
         base,
         quote,
         baseWeight,
@@ -757,6 +807,8 @@ describe("Curve", function () {
         params,
         oracle,
       }: {
+        name: string,
+        symbol: string,
         amount: string;
         base: string;
         quote: string;
@@ -771,6 +823,8 @@ describe("Curve", function () {
       }) => {
         const { curve, curveLpToken } = await createCurveAndSetParams({
           base,
+          name,
+          symbol,
           quote,
           baseWeight,
           quoteWeight,
@@ -899,6 +953,8 @@ describe("Curve", function () {
         it("CADC/USDC 50/50 - " + i.toString(), async function () {
           await addAndRemoveLiquidityWithSanityChecks({
             amount: i.toString(),
+            name: NAME,
+            symbol: SYMBOL,
             base: cadc.address,
             quote: usdc.address,
             baseWeight: parseUnits("0.5"),
@@ -917,6 +973,8 @@ describe("Curve", function () {
         it("XSGD/USDC 50/50 - " + i.toString(), async function () {
           await addAndRemoveLiquidityWithSanityChecks({
             amount: i.toString(),
+            name: NAME,
+            symbol: SYMBOL,
             base: xsgd.address,
             quote: usdc.address,
             baseWeight: parseUnits("0.5"),
@@ -935,6 +993,8 @@ describe("Curve", function () {
         it("EURS/USDC 50/50 - " + i.toString(), async function () {
           await addAndRemoveLiquidityWithSanityChecks({
             amount: "1",
+            name: NAME,
+            symbol: SYMBOL,
             base: eurs.address,
             quote: usdc.address,
             baseWeight: parseUnits("0.5"),
@@ -955,6 +1015,8 @@ describe("Curve", function () {
     describe("viewDeposit", function () {
       const viewDepositWithSanityChecks = async ({
         amount,
+        name,
+        symbol,
         base,
         quote,
         baseWeight,
@@ -967,6 +1029,8 @@ describe("Curve", function () {
         oracle,
       }: {
         amount: string;
+        name: string;
+        symbol: string;
         base: string;
         quote: string;
         baseWeight: BigNumberish;
@@ -979,6 +1043,8 @@ describe("Curve", function () {
         oracle: string;
       }) => {
         const { curve } = await createCurveAndSetParams({
+          name,
+          symbol,
           base,
           quote,
           baseWeight,
@@ -1038,6 +1104,8 @@ describe("Curve", function () {
         it(`CADC/USDC 50/50 - ${i}`, async function () {
           await viewDepositWithSanityChecks({
             amount: i.toString(),
+            name: NAME,
+            symbol: SYMBOL,
             base: cadc.address,
             quote: usdc.address,
             baseWeight: parseUnits("0.5"),
@@ -1056,6 +1124,8 @@ describe("Curve", function () {
         it(`XSGD/USDC 50/50 - ${i}`, async function () {
           await viewDepositWithSanityChecks({
             amount: i.toString(),
+            name: NAME,
+            symbol: SYMBOL,
             base: xsgd.address,
             quote: usdc.address,
             baseWeight: parseUnits("0.5"),
@@ -1074,6 +1144,8 @@ describe("Curve", function () {
         it(`EURS/USDC 50/50 - ${i}`, async function () {
           await viewDepositWithSanityChecks({
             amount: i.toString(),
+            name: NAME,
+            symbol: SYMBOL,
             base: eurs.address,
             quote: usdc.address,
             baseWeight: parseUnits("0.5"),
@@ -1092,6 +1164,8 @@ describe("Curve", function () {
     describe("viewWithdraw", function () {
       const viewWithdrawWithSanityChecks = async ({
         amount,
+        name,
+        symbol,
         base,
         quote,
         baseWeight,
@@ -1103,6 +1177,8 @@ describe("Curve", function () {
         params,
         oracle,
       }: {
+        name: string;
+        symbol: string;
         amount: string;
         base: string;
         quote: string;
@@ -1116,6 +1192,8 @@ describe("Curve", function () {
         oracle: string;
       }) => {
         const { curve, curveLpToken } = await createCurveAndSetParams({
+          name, 
+          symbol,
           base,
           quote,
           baseWeight,
@@ -1175,6 +1253,8 @@ describe("Curve", function () {
         it(`CADC/USDC 50/50 - ${i}`, async function () {
           await viewWithdrawWithSanityChecks({
             amount: i.toString(),
+            name: NAME,
+            symbol: SYMBOL,
             base: cadc.address,
             quote: usdc.address,
             baseWeight: parseUnits("0.5"),
@@ -1193,6 +1273,8 @@ describe("Curve", function () {
         it("XSGD/USDC 50/50 - " + i.toString(), async function () {
           await viewWithdrawWithSanityChecks({
             amount: i.toString(),
+            name: NAME,
+            symbol: SYMBOL,
             base: xsgd.address,
             quote: usdc.address,
             baseWeight: parseUnits("0.5"),
@@ -1211,6 +1293,8 @@ describe("Curve", function () {
         it("EURS/USDC 50/50 - " + i.toString(), async function () {
           await viewWithdrawWithSanityChecks({
             amount: "10000",
+            name: NAME,
+            symbol: SYMBOL,
             base: eurs.address,
             quote: usdc.address,
             baseWeight: parseUnits("0.5"),
@@ -1229,6 +1313,8 @@ describe("Curve", function () {
     describe("Add and remove liquidity", function () {
       const addAndRemoveLiquidityWithSanityChecks = async ({
         amount,
+        name,
+        symbol,
         base,
         quote,
         baseWeight,
@@ -1241,6 +1327,8 @@ describe("Curve", function () {
         oracle,
       }: {
         amount: string;
+        name: string;
+        symbol: string;
         base: string;
         quote: string;
         baseWeight: BigNumberish;
@@ -1253,6 +1341,8 @@ describe("Curve", function () {
         oracle: string;
       }) => {
         const { curve, curveLpToken } = await createCurveAndSetParams({
+          name,
+          symbol,
           base,
           quote,
           baseWeight,
@@ -1394,6 +1484,8 @@ describe("Curve", function () {
         it("CADC/USDC 50/50 - " + i.toString(), async function () {
           await addAndRemoveLiquidityWithSanityChecks({
             amount: i.toString(),
+            name: NAME,
+            symbol: SYMBOL,
             base: cadc.address,
             quote: usdc.address,
             baseWeight: parseUnits("0.5"),
@@ -1412,6 +1504,8 @@ describe("Curve", function () {
         it("XSGD/USDC 50/50 - " + i.toString(), async function () {
           await addAndRemoveLiquidityWithSanityChecks({
             amount: i.toString(),
+            name: NAME,
+            symbol: SYMBOL,
             base: xsgd.address,
             quote: usdc.address,
             baseWeight: parseUnits("0.5"),
@@ -1430,6 +1524,8 @@ describe("Curve", function () {
         it("EURS/USDC 50/50 - " + i.toString(), async function () {
           await addAndRemoveLiquidityWithSanityChecks({
             amount: "1",
+            name: NAME,
+            symbol: SYMBOL,
             base: eurs.address,
             quote: usdc.address,
             baseWeight: parseUnits("0.5"),
