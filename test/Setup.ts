@@ -80,6 +80,8 @@ export const scaffoldTest = async () => {
 // eslint-disable-next-line
 export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: CurveFactory; erc20: ERC20 }) => {
   const createCurve = async function ({
+    name,
+    symbol,
     base,
     quote,
     baseWeight,
@@ -88,6 +90,8 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
     quoteAssimilator,
     params,
   }: {
+    name: string;
+    symbol: string;
     base: string;
     quote: string;
     baseWeight: BigNumberish;
@@ -96,7 +100,7 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
     quoteAssimilator: string;
     params?: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
   }): Promise<{ curve: Curve; curveLpToken: ERC20 }> {
-    await curveFactory.newCurve(base, quote, baseWeight, quoteWeight, baseAssimilator, quoteAssimilator);
+    await curveFactory.newCurve(name, symbol, base, quote, baseWeight, quoteWeight, baseAssimilator, quoteAssimilator);
 
     // Get curve address
     const curveAddress = await curveFactory.curves(
@@ -119,6 +123,8 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
   };
 
   const createCurveAndSetParams = async function ({
+    name,
+    symbol,
     base,
     quote,
     baseWeight,
@@ -127,6 +133,8 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
     quoteAssimilator,
     params,
   }: {
+    name: string;
+    symbol: string;
     base: string;
     quote: string;
     baseWeight: BigNumberish;
@@ -136,6 +144,8 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
     params: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
   }) {
     const { curve, curveLpToken } = await createCurve({
+      name,
+      symbol,
       base,
       quote,
       baseWeight,
