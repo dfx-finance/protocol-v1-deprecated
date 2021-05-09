@@ -15,6 +15,8 @@ chai.use(chaiBigNumber(BigNumber));
 
 const { parseUnits } = ethers.utils;
 
+const NAME = "DFX V1";
+const SYMBOL = "DFX V1";
 const ALPHA = parseUnits("0.5");
 const BETA = parseUnits("0.35");
 const MAX = parseUnits("0.15");
@@ -39,6 +41,8 @@ describe("Factory", function () {
   let erc20: ERC20;
 
   let createCurveAndSetParams: ({
+    name,
+    symbol,
     base,
     quote,
     baseWeight,
@@ -47,6 +51,8 @@ describe("Factory", function () {
     quoteAssimilator,
     params,
   }: {
+    name: string;
+    symbol: string;
     base: string;
     quote: string;
     baseWeight: BigNumberish;
@@ -85,6 +91,8 @@ describe("Factory", function () {
 
   it("No duplicate pairs", async function () {
     const { curve } = await createCurveAndSetParams({
+      name: NAME,
+      symbol: SYMBOL,
       base: cadc.address,
       quote: usdc.address,
       baseWeight: parseUnits("0.4"),
@@ -96,6 +104,8 @@ describe("Factory", function () {
 
     try {
       await createCurveAndSetParams({
+        name: NAME,
+        symbol: SYMBOL,
         base: cadc.address,
         quote: usdc.address,
         baseWeight: parseUnits("0.4"),

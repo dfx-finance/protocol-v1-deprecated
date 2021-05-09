@@ -10,6 +10,8 @@ import { Router } from "../../typechain/Router";
 import { BigNumberish, Signer } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 
+const NAME = "DFX V1"
+const SYMBOL = "DFX-V1"
 const ALPHA = parseUnits("0.5");
 const BETA = parseUnits("0.35");
 const MAX = parseUnits("0.15");
@@ -60,7 +62,7 @@ async function main() {
   const usdc = (await ethers.getContractAt("ERC20", TOKENS.USDC.address)) as ERC20;
   const cadc = (await ethers.getContractAt("ERC20", TOKENS.CADC.address)) as ERC20;
   const eurs = (await ethers.getContractAt("ERC20", TOKENS.EURS.address)) as ERC20;
-  const xsgd = (await ethers.getContractAt("ERC20", TOKENS.XSGD.address)) as ERC20;
+  const xsgd = (await ethers.getContractAt("ERC20", TOKENS.XSGD.address)) as ERC20;  
 
   const erc20 = (await ethers.getContractAt("ERC20", ethers.constants.AddressZero)) as ERC20;
 
@@ -80,6 +82,8 @@ async function main() {
   const router = (await RouterFactory.deploy(curveFactory.address, { gasLimit: 12000000 })) as Router;
 
   const createCurve = async function ({
+    name,
+    symbol,
     base,
     quote,
     baseWeight,
@@ -87,6 +91,8 @@ async function main() {
     baseAssimilator,
     quoteAssimilator,
   }: {
+    name: string;
+    symbol: string;
     base: string;
     quote: string;
     baseWeight: BigNumberish;
@@ -94,7 +100,7 @@ async function main() {
     baseAssimilator: string;
     quoteAssimilator: string;
   }): Promise<{ curve: Curve; curveLpToken: ERC20 }> {
-    const tx = await curveFactory.newCurve(base, quote, baseWeight, quoteWeight, baseAssimilator, quoteAssimilator, {
+    const tx = await curveFactory.newCurve(name, symbol, base, quote, baseWeight, quoteWeight, baseAssimilator, quoteAssimilator, {
       gasLimit: 12000000,
     });
     await tx.wait();
@@ -113,6 +119,8 @@ async function main() {
   };
 
   const createCurveAndSetParams = async function ({
+    name,
+    symbol,
     base,
     quote,
     baseWeight,
@@ -121,6 +129,8 @@ async function main() {
     quoteAssimilator,
     params,
   }: {
+    name: string;
+    symbol: string;
     base: string;
     quote: string;
     baseWeight: BigNumberish;
@@ -130,6 +140,8 @@ async function main() {
     params: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
   }) {
     const { curve, curveLpToken } = await createCurve({
+      name,
+      symbol,
       base,
       quote,
       baseWeight,
@@ -181,6 +193,8 @@ async function main() {
   };
 
   const { curve: curveCADC } = await createCurveAndSetParams({
+    name: cadcToUsdAssimilator.address,
+    symbol: cadcToUsdAssimilator.address,
     base: cadc.address,
     quote: usdc.address,
     baseWeight: parseUnits("0.5"),
@@ -191,6 +205,8 @@ async function main() {
   });
 
   const { curve: curveXSGD } = await createCurveAndSetParams({
+    name: NAME,
+    symbol: SYMBOL,
     base: xsgd.address,
     quote: usdc.address,
     baseWeight: parseUnits("0.5"),
@@ -201,6 +217,8 @@ async function main() {
   });
 
   const { curve: curveEURS } = await createCurveAndSetParams({
+    name: NAME,
+    symbol: SYMBOL,
     base: eurs.address,
     quote: usdc.address,
     baseWeight: parseUnits("0.5"),

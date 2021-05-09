@@ -18,6 +18,8 @@ chai.use(chaiBigNumber(BigNumber));
 
 const { parseUnits } = ethers.utils;
 
+const NAME = "DFX V1";
+const SYMBOL = "DFX-V1";
 const ALPHA = parseUnits("0.5");
 const BETA = parseUnits("0.35");
 const MAX = parseUnits("0.15");
@@ -46,6 +48,8 @@ describe("Router", function () {
   let erc20: ERC20;
 
   let createCurveAndSetParams: ({
+    name,
+    symbol,
     base,
     quote,
     baseWeight,
@@ -54,6 +58,8 @@ describe("Router", function () {
     quoteAssimilator,
     params,
   }: {
+    name: string;
+    symbol: string;
     base: string;
     quote: string;
     baseWeight: BigNumberish;
@@ -98,6 +104,8 @@ describe("Router", function () {
   });
   beforeEach(async function () {
     const { curve: curveCADC } = await createCurveAndSetParams({
+      name: NAME,
+      symbol: SYMBOL,
       base: cadc.address,
       quote: usdc.address,
       baseWeight: parseUnits("0.4"),
@@ -108,6 +116,8 @@ describe("Router", function () {
     });
 
     const { curve: curveXSGD } = await createCurveAndSetParams({
+      name: NAME,
+      symbol: SYMBOL,
       base: xsgd.address,
       quote: usdc.address,
       baseWeight: parseUnits("0.4"),
@@ -118,6 +128,8 @@ describe("Router", function () {
     });
 
     const { curve: curveEURS } = await createCurveAndSetParams({
+      name: NAME,
+      symbol: SYMBOL,
       base: eurs.address,
       quote: usdc.address,
       baseWeight: parseUnits("0.4"),
