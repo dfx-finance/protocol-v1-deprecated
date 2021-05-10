@@ -194,7 +194,7 @@ async function main() {
 
   const { curve: curveCADC } = await createCurveAndSetParams({
     name: NAME,
-    symbol: SYMBOLgi,
+    symbol: SYMBOL,
     base: cadc.address,
     quote: usdc.address,
     baseWeight: parseUnits("0.5"),
