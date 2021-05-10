@@ -174,7 +174,7 @@ describe("Curve", function () {
       await c.connect(user2).withdraw(bal, await getFutureTime());
     };
 
-    it.only("CADC", async function () {
+    it("CADC", async function () {
       await checkInvariant(TOKENS.CADC.address, cadcToUsdAssimilator.address, TOKENS.CADC.decimals);
     });
 
