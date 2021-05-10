@@ -20,8 +20,8 @@ chai.use(chaiBigNumber(BigNumber));
 
 const { parseUnits } = ethers.utils;
 
-const NAME = "DFX V1"
-const SYMBOL = "DFX-V1"
+const NAME = "DFX V1";
+const SYMBOL = "DFX-V1";
 const ALPHA = parseUnits("0.5");
 const BETA = parseUnits("0.35");
 const MAX = parseUnits("0.15");
@@ -174,7 +174,7 @@ describe("Curve", function () {
       await c.connect(user2).withdraw(bal, await getFutureTime());
     };
 
-    it("CADC", async function () {
+    it.only("CADC", async function () {
       await checkInvariant(TOKENS.CADC.address, cadcToUsdAssimilator.address, TOKENS.CADC.decimals);
     });
 
@@ -658,8 +658,8 @@ describe("Curve", function () {
         quoteAssimilator,
         params,
       }: {
-        name,
-        symbol,
+        name;
+        symbol;
         amount: string;
         base: string;
         quote: string;
@@ -807,8 +807,8 @@ describe("Curve", function () {
         params,
         oracle,
       }: {
-        name: string,
-        symbol: string,
+        name: string;
+        symbol: string;
         amount: string;
         base: string;
         quote: string;
@@ -1192,7 +1192,7 @@ describe("Curve", function () {
         oracle: string;
       }) => {
         const { curve, curveLpToken } = await createCurveAndSetParams({
-          name, 
+          name,
           symbol,
           base,
           quote,
