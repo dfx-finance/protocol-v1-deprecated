@@ -193,8 +193,8 @@ async function main() {
   };
 
   const { curve: curveCADC } = await createCurveAndSetParams({
-    name: cadcToUsdAssimilator.address,
-    symbol: cadcToUsdAssimilator.address,
+    name: NAME,
+    symbol: SYMBOL,
     base: cadc.address,
     quote: usdc.address,
     baseWeight: parseUnits("0.5"),
