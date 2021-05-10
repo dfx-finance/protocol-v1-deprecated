@@ -89,7 +89,7 @@ describe("Factory", function () {
     }));
   });
 
-  it.only("No duplicate pairs", async function () {
+  it("No duplicate pairs", async function () {
     const { curve } = await createCurveAndSetParams({
       name: NAME,
       symbol: SYMBOL,
