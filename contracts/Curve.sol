@@ -289,7 +289,12 @@ contract Curve is Storage {
         _;
     }
 
-    constructor(string memory _name, string memory _symbol, address[] memory _assets, uint256[] memory _assetWeights) {
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        address[] memory _assets,
+        uint256[] memory _assetWeights
+    ) {
         owner = msg.sender;
         name_ = _name;
         symbol_ = _symbol;
