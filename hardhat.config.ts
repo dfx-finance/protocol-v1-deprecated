@@ -17,7 +17,15 @@ task("accounts", "Prints the list of accounts", async (args, hre) => {
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn moreww
 const config: HardhatUserConfig = {
-  solidity: "0.7.3",
+  solidity: {
+    version: "0.7.3",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
+    },
+  },
   networks: {
     localhost: {
       url: "http://127.0.0.1:8545",
@@ -27,7 +35,7 @@ const config: HardhatUserConfig = {
         enabled: true,
         url: process.env.RPC_URL ? process.env.RPC_URL : "http://127.0.0.1:8545",
       },
-      blockGasLimit: 20000000,
+      blockGasLimit: 15000000,
     },
   },
   mocha: {

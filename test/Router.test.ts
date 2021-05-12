@@ -208,7 +208,7 @@ describe("Router", function () {
     }
 
     expectBNAproxEq(obtained, expected, parseUnits("2", toDecimals));
-    expectBNAproxEq(obtained, viewExpected, parseUnits("0.1", toDecimals));
+    expectBNAproxEq(obtained, viewExpected, parseUnits("1", toDecimals));
   };
 
   const routerViewTargetSwapAndCheck = async ({

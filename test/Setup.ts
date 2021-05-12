@@ -89,6 +89,7 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
     baseAssimilator,
     quoteAssimilator,
     params,
+    yesWhitelisting,
   }: {
     name: string;
     symbol: string;
@@ -99,6 +100,7 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
     baseAssimilator: string;
     quoteAssimilator: string;
     params?: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
+    yesWhitelisting?: boolean;
   }): Promise<{ curve: Curve; curveLpToken: ERC20 }> {
     await curveFactory.newCurve(name, symbol, base, quote, baseWeight, quoteWeight, baseAssimilator, quoteAssimilator);
 
@@ -108,6 +110,10 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
     );
     const curveLpToken = (await ethers.getContractAt("ERC20", curveAddress)) as ERC20;
     const curve = (await ethers.getContractAt("Curve", curveAddress)) as Curve;
+
+    if (!yesWhitelisting) {
+      await curve.turnOffWhitelisting();
+    }
 
     // Set params for the curve
     if (params) {
@@ -132,6 +138,7 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
     baseAssimilator,
     quoteAssimilator,
     params,
+    yesWhitelisting,
   }: {
     name: string;
     symbol: string;
@@ -142,6 +149,7 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
     baseAssimilator: string;
     quoteAssimilator: string;
     params: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
+    yesWhitelisting?: boolean;
   }) {
     const { curve, curveLpToken } = await createCurve({
       name,
@@ -152,6 +160,7 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
       quoteWeight,
       baseAssimilator,
       quoteAssimilator,
+      yesWhitelisting,
     });
 
     const tx = await curve.setParams(...params);

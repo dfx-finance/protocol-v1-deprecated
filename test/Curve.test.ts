@@ -263,8 +263,8 @@ describe("Curve", function () {
         expectBNAproxEq(originDeltaBase, originExpectedBase, originExpectedBase.div(100));
         expectBNAproxEq(originDeltaQuote, originExpectedQuote, originExpectedQuote.div(100));
       } else {
-        expectBNAproxEq(originDeltaBase, originExpectedBase, originExpectedBase.div(2000));
-        expectBNAproxEq(originDeltaQuote, originExpectedQuote, originExpectedQuote.div(2000));
+        expectBNAproxEq(originDeltaBase, originExpectedBase, originExpectedBase.div(1500));
+        expectBNAproxEq(originDeltaQuote, originExpectedQuote, originExpectedQuote.div(1500));
       }
 
       // Target Swap
@@ -874,7 +874,7 @@ describe("Curve", function () {
           parseUnits(amount, baseDecimals).mul(1e8).div(ORACLE_RATE).div(2), // oracle has 8 decimals, we also want to div 2 since we're supplying liquidity
           parseUnits(amount, Math.max(baseDecimals - 4, 0)),
         );
-        expectBNAproxEq(quoteSupplied, parseUnits(amount, quoteDecimals).div(2), parseUnits("0.1", baseDecimals));
+        expectBNAproxEq(quoteSupplied, parseUnits(amount, quoteDecimals).div(2), parseUnits("1", baseDecimals));
 
         // Mint tokens and approve for 2nd deposit
         await multiMintAndApprove([
@@ -1243,8 +1243,8 @@ describe("Curve", function () {
         const [viewBase, viewQuote] = await curve.viewWithdraw(afterLPBal);
 
         // Fees take up small portion
-        expectBNAproxEq(viewBase, baseSupplied, baseSupplied.div(2000));
-        expectBNAproxEq(viewQuote, quoteSupplied, quoteSupplied.div(2000));
+        expectBNAproxEq(viewBase, baseSupplied, baseSupplied.div(1500));
+        expectBNAproxEq(viewQuote, quoteSupplied, quoteSupplied.div(1500));
 
         await updateOracleAnswer(oracle, ORACLE_RATE);
       };
@@ -1393,7 +1393,7 @@ describe("Curve", function () {
           parseUnits(amount, baseDecimals).mul(1e8).div(ORACLE_RATE).div(2), // oracle has 8 decimals, we also want to div 2 since we're supplying liquidity
           parseUnits(amount, Math.max(baseDecimals - 4, 0)),
         );
-        expectBNAproxEq(quoteSupplied, parseUnits(amount, quoteDecimals).div(2), parseUnits("0.1", baseDecimals));
+        expectBNAproxEq(quoteSupplied, parseUnits(amount, quoteDecimals).div(2), parseUnits("1", baseDecimals));
 
         // Mint tokens and approve for 2nd deposit
         await multiMintAndApprove([
@@ -1466,15 +1466,15 @@ describe("Curve", function () {
         // In = Out, regardless of Oracle price
         // As its dependent on LP ratio
         // Has a small fee (0.05%)
-        expectBNAproxEq(baseSupplied, baseReceived, baseReceived.div(ethers.BigNumber.from("2000")));
-        expectBNAproxEq(quoteSupplied, quoteReceived, quoteReceived.div(ethers.BigNumber.from("2000")));
+        expectBNAproxEq(baseSupplied, baseReceived, baseReceived.div(ethers.BigNumber.from("1500")));
+        expectBNAproxEq(quoteSupplied, quoteReceived, quoteReceived.div(ethers.BigNumber.from("1500")));
 
         if (baseDecimals === 2) {
           expectBNAproxEq(baseSupplied2, baseReceived2, baseReceived2.div(ethers.BigNumber.from("20")));
           expectBNAproxEq(quoteSupplied2, quoteReceived2, quoteReceived2.div(ethers.BigNumber.from("20")));
         } else {
-          expectBNAproxEq(baseSupplied2, baseReceived2, baseReceived2.div(ethers.BigNumber.from("2000")));
-          expectBNAproxEq(quoteSupplied2, quoteReceived2, quoteReceived2.div(ethers.BigNumber.from("2000")));
+          expectBNAproxEq(baseSupplied2, baseReceived2, baseReceived2.div(ethers.BigNumber.from("1500")));
+          expectBNAproxEq(quoteSupplied2, quoteReceived2, quoteReceived2.div(ethers.BigNumber.from("1500")));
         }
 
         await updateOracleAnswer(oracle, ORACLE_RATE);
