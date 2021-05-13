@@ -2,13 +2,27 @@
 pragma solidity ^0.7.3;
 
 contract MockAggregator {
-    uint256 internal _answer;
+    int256 internal _answer;
 
-    function setAnswer(uint256 _a) external {
+    function setAnswer(int256 _a) external {
         _answer = _a;
     }
 
-    function latestAnswer() external view returns (uint256) {
+    function latestAnswer() external view returns (int256) {
         return _answer;
+    }
+
+    function latestRoundData()
+        external
+        view
+        returns (
+            uint80,
+            int256,
+            uint256,
+            uint256,
+            uint80
+        )
+    {
+        return (0, _answer, 0, 0, 0);
     }
 }

@@ -37,7 +37,8 @@ contract XsgdToUsdAssimilator is IAssimilator {
     constructor() {}
 
     function getRate() public view override returns (uint256) {
-        return uint256(oracle.latestAnswer());
+        (, int256 price, , , ) = oracle.latestRoundData();
+        return uint256(price);
     }
 
     // takes raw xsgd amount, transfers it in, calculates corresponding numeraire amount and returns it
