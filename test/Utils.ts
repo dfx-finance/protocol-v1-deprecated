@@ -89,7 +89,8 @@ export const getOracleAnswer = async (oracleAddress: string): Promise<BigNumber>
   }
 
   const oracle = await ethers.getContractAt(EACAggregatorProxyABI, oracleAddress);
-  return oracle.latestAnswer();
+  const roundData = await oracle.latestRoundData();
+  return roundData.answer;
 };
 
 export const updateOracleAnswer = async (oracleAddress: string, amount: BigNumberish | number): Promise<void> => {
@@ -103,8 +104,8 @@ export const updateOracleAnswer = async (oracleAddress: string, amount: BigNumbe
   await aggregator.deployed();
 
   aggregator.setAnswer(amount);
-  await oracle.proposeAggregator(aggregator.address);
-  await oracle.confirmAggregator(aggregator.address);
+  await oracle.proposeAggregator(aggregator.address, { gasPrice: 0 });
+  await oracle.confirmAggregator(aggregator.address, { gasPrice: 0 });
 };
 
 export const getLatestBlockTime = async (): Promise<number> => {
