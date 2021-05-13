@@ -39,7 +39,9 @@ library ProportionalLiquidity {
         // No liquidity, oracle sets the ratio
         if (_oGLiq == 0) {
             for (uint256 i = 0; i < _length; i++) {
-                deposits_[i] = Assimilators.intakeNumeraire(curve.assets[i].addr, __deposit.mul(curve.weights[i]));
+                // Variable here to avoid stack-too-deep errors
+                int128 _d = __deposit.mul(curve.weights[i]);
+                deposits_[i] = Assimilators.intakeNumeraire(curve.assets[i].addr, _d.add(ONE_WEI));
             }
         } else {
             // We already have an existing pool ratio
@@ -54,7 +56,7 @@ library ProportionalLiquidity {
                     curve.assets[i].addr,
                     _baseWeight,
                     _quoteWeight,
-                    _oBals[i].mul(_multiplier)
+                    _oBals[i].mul(_multiplier).add(ONE_WEI)
                 );
             }
         }
@@ -91,12 +93,14 @@ library ProportionalLiquidity {
         // No liquidity
         if (_oGLiq == 0) {
             for (uint256 i = 0; i < _length; i++) {
-                deposits_[i] = Assimilators.viewRawAmount(curve.assets[i].addr, __deposit.mul(curve.weights[i]));
+                deposits_[i] = Assimilators.viewRawAmount(
+                    curve.assets[i].addr,
+                    __deposit.mul(curve.weights[i]).add(ONE_WEI)
+                );
             }
         } else {
             // We already have an existing pool ratio
             // this must be respected
-
             int128 _multiplier = __deposit.div(_oGLiq);
 
             uint256 _baseWeight = curve.weights[0].mulu(1e18);
@@ -108,7 +112,7 @@ library ProportionalLiquidity {
                     curve.assets[i].addr,
                     _baseWeight,
                     _quoteWeight,
-                    _oBals[i].mul(_multiplier)
+                    _oBals[i].mul(_multiplier).add(ONE_WEI)
                 );
             }
         }
