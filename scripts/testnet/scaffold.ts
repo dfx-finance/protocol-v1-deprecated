@@ -12,11 +12,21 @@ import { parseUnits } from "ethers/lib/utils";
 
 const NAME = "DFX V1";
 const SYMBOL = "DFX-V1";
-const ALPHA = parseUnits("0.5");
-const BETA = parseUnits("0.35");
+
+// Weights are always 50/50
+
+// Pool must respect a 10/90 ratio
+// i.e. value of one pair cannot exceed 90% of the pools value
+const ALPHA = parseUnits("0.8");
+
+// Slippage (fees) will that will be introduced when one of the tokens's ratio:
+// - exceeds 75% of the pool value
+// - goes under 25% of the pool value
+const BETA = parseUnits("0.5");
+
 const MAX = parseUnits("0.15");
-const EPSILON = parseUnits("0.0004");
-const LAMBDA = parseUnits("0.3");
+const EPSILON = parseUnits("0.0004"); // 4 basis point, same as curve
+const LAMBDA = parseUnits("0.33");
 
 export const getDeployer = async (): Promise<{
   deployer: Signer;
@@ -32,7 +42,7 @@ export const getDeployer = async (): Promise<{
 };
 
 async function main() {
-  const { deployer } = await getDeployer();
+  const { deployer, user1 } = await getDeployer();
 
   console.log(`Setting up scaffolding at network ${ethers.provider.connection.url}`);
   console.log(`Deployer account: ${await deployer.getAddress()}`);
@@ -249,6 +259,7 @@ async function main() {
     [TOKENS.XSGD.address, deployer, parseUnits("10000000", TOKENS.XSGD.decimals), curveXSGD.address],
     [TOKENS.USDC.address, deployer, parseUnits("10000000", TOKENS.USDC.decimals), curveEURS.address],
     [TOKENS.EURS.address, deployer, parseUnits("10000000", TOKENS.EURS.decimals), curveEURS.address],
+    [TOKENS.EURS.address, user1, parseUnits("5000000", TOKENS.EURS.decimals), curveEURS.address],
   ]);
 
   await curveCADC
@@ -263,7 +274,7 @@ async function main() {
 
   await curveEURS
     .connect(deployer)
-    .deposit(parseUnits("10000000"), await getFutureTime())
+    .deposit(parseUnits("5000000"), await getFutureTime())
     .then(x => x.wait());
 
   console.log(`Scaffolding done. Each pool is initialized with 10mil USD liquidity`);
@@ -280,6 +291,19 @@ async function main() {
       4,
     ),
   );
+
+  // console.log("ALPHA", formatUnits(ALPHA));
+  // console.log("BETA", formatUnits(BETA));
+  // console.log("MAX", formatUnits(MAX));
+  // console.log("EPSILON", formatUnits(EPSILON));
+  // console.log("LAMBDA", formatUnits(LAMBDA));
+  // console.log("Swapping 1000000 EUR to USDC");
+  // console.log("Before USDC bal", formatUnits(await usdc.balanceOf(await user1.getAddress()), 6));
+  // await eurs.connect(user1).approve(curveEURS.address, ethers.constants.MaxUint256);
+  // await curveEURS
+  //   .connect(user1)
+  //   .originSwap(eurs.address, usdc.address, parseUnits("1000000", TOKENS.EURS.decimals), 0, await getFutureTime());
+  // console.log("After USDC bal", formatUnits(await usdc.balanceOf(await user1.getAddress()), 6));
 }
 
 // We recommend this pattern to be able to use async/await everywhere
