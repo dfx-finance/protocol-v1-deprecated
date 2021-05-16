@@ -107,6 +107,7 @@ async function main() {
       Orchestrator: orchestratorLib.address,
       ProportionalLiquidity: proportionalLiquidityLib.address,
       Swaps: swapsLib.address,
+      ViewLiquidity: viewLiquidityLib.address,
     },
     curveFactory: curveFactory.address,
     router: router.address,
