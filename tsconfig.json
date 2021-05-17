@@ -5,7 +5,8 @@
     "strict": false,
     "esModuleInterop": true,
     "outDir": "dist",
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "resolveJsonModule": true
   },
   "exclude": ["node_modules"],
   "include": [

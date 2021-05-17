@@ -25,8 +25,8 @@ const ALPHA = parseUnits("0.8");
 const BETA = parseUnits("0.5");
 
 const MAX = parseUnits("0.15");
-const EPSILON = parseUnits("0.0004"); // 4 basis point, same as curve
-const LAMBDA = parseUnits("0.33");
+const EPSILON = parseUnits("0.0005"); // 5 basis point
+const LAMBDA = parseUnits("0.3");
 
 export const getDeployer = async (): Promise<{
   deployer: Signer;

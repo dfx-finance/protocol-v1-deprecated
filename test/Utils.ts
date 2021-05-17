@@ -20,6 +20,18 @@ const sendETH = async (address, amount = 0.1) => {
   });
 };
 
+export function snapshotAndRevert() {
+  let snapshotId;
+
+  beforeEach(async () => {
+    snapshotId = await ethers.provider.send("evm_snapshot", []);
+  });
+
+  afterEach(async () => {
+    await ethers.provider.send("evm_revert", [snapshotId]);
+  });
+}
+
 export const unlockAccountAndGetSigner = async (address: string): Promise<Signer> => {
   await provider.send("hardhat_impersonateAccount", [address]);
 
@@ -112,7 +124,11 @@ export const getLatestBlockTime = async (): Promise<number> => {
   const blockNumber = await provider.getBlockNumber();
   const block = await provider.getBlock(blockNumber);
 
-  return block.timestamp;
+  if (block) {
+    return block.timestamp;
+  }
+
+  return new Date().getTime();
 };
 
 export const getFutureTime = async (): Promise<number> => {
