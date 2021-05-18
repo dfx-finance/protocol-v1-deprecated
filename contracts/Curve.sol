@@ -303,8 +303,8 @@ contract Curve is Storage, MerkleProver {
         uint256[] memory _assetWeights
     ) {
         owner = msg.sender;
-        name_ = _name;
-        symbol_ = _symbol;
+        name = _name;
+        symbol = _symbol;
         emit OwnershipTransfered(address(0), msg.sender);
 
         Orchestrator.initialize(curve, numeraires, reserves, derivatives, _assets, _assetWeights);
@@ -553,18 +553,6 @@ contract Curve is Storage, MerkleProver {
             this.supportsInterface.selector == _interface || // erc165
             bytes4(0x7f5828d0) == _interface || // eip173
             bytes4(0x36372b07) == _interface; // erc20
-    }
-
-    function name() public view returns (string memory) {
-        return name_;
-    }
-
-    function symbol() public view returns (string memory) {
-        return symbol_;
-    }
-
-    function decimals() public pure returns (uint8) {
-        return 18;
     }
 
     /// @notice transfers curve tokens
