@@ -141,33 +141,33 @@ describe("Curve Mainnet Sanity Checks", function () {
       .withdraw(await curve.connect(user).balanceOf(userAddress), await getFutureTime(), { gasPrice: 0 });
   };
 
-  it("CADC", async function () {
-    const base = TOKENS.CADC.address;
-    const quote = TOKENS.USDC.address;
-    const baseDecimals = TOKENS.CADC.decimals;
-    const quoteDecimals = TOKENS.USDC.decimals;
-    const curve = curveCADC;
+  // it("CADC", async function () {
+  //   const base = TOKENS.CADC.address;
+  //   const quote = TOKENS.USDC.address;
+  //   const baseDecimals = TOKENS.CADC.decimals;
+  //   const quoteDecimals = TOKENS.USDC.decimals;
+  //   const curve = curveCADC;
 
-    await sanityCheck(base, quote, baseDecimals, quoteDecimals, curve);
-  });
+  //   await sanityCheck(base, quote, baseDecimals, quoteDecimals, curve);
+  // });
 
-  it("EURS", async function () {
-    const base = TOKENS.EURS.address;
-    const quote = TOKENS.USDC.address;
-    const baseDecimals = TOKENS.EURS.decimals;
-    const quoteDecimals = TOKENS.USDC.decimals;
-    const curve = curveEURS;
+  // it("EURS", async function () {
+  //   const base = TOKENS.EURS.address;
+  //   const quote = TOKENS.USDC.address;
+  //   const baseDecimals = TOKENS.EURS.decimals;
+  //   const quoteDecimals = TOKENS.USDC.decimals;
+  //   const curve = curveEURS;
 
-    await sanityCheck(base, quote, baseDecimals, quoteDecimals, curve);
-  });
+  //   await sanityCheck(base, quote, baseDecimals, quoteDecimals, curve);
+  // });
 
-  it("XSGD", async function () {
-    const base = TOKENS.XSGD.address;
-    const quote = TOKENS.USDC.address;
-    const baseDecimals = TOKENS.XSGD.decimals;
-    const quoteDecimals = TOKENS.USDC.decimals;
-    const curve = curveXSGD;
+  // it("XSGD", async function () {
+  //   const base = TOKENS.XSGD.address;
+  //   const quote = TOKENS.USDC.address;
+  //   const baseDecimals = TOKENS.XSGD.decimals;
+  //   const quoteDecimals = TOKENS.USDC.decimals;
+  //   const curve = curveXSGD;
 
-    await sanityCheck(base, quote, baseDecimals, quoteDecimals, curve);
-  });
+  //   await sanityCheck(base, quote, baseDecimals, quoteDecimals, curve);
+  // });
 });

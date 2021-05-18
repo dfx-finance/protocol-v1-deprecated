@@ -144,7 +144,7 @@ library ProportionalLiquidity {
         int128 _totalShells = curve.totalSupply.divu(1e18);
         int128 __withdrawal = _withdrawal.divu(1e18);
 
-        int128 _multiplier = __withdrawal.mul(ONE - curve.epsilon).div(_totalShells);
+        int128 _multiplier = __withdrawal.div(_totalShells);
 
         for (uint256 i = 0; i < _length; i++) {
             withdrawals_[i] = Assimilators.outputNumeraire(
@@ -172,7 +172,7 @@ library ProportionalLiquidity {
         int128 _totalShells = curve.totalSupply.divu(1e18);
         int128 __withdrawal = _withdrawal.divu(1e18);
 
-        int128 _multiplier = __withdrawal.mul(ONE - curve.epsilon).div(_totalShells);
+        int128 _multiplier = __withdrawal.div(_totalShells);
 
         for (uint256 i = 0; i < _length; i++) {
             withdrawals_[i] = Assimilators.outputNumeraire(
@@ -200,7 +200,7 @@ library ProportionalLiquidity {
 
         uint256[] memory withdrawals_ = new uint256[](_length);
 
-        int128 _multiplier = _withdrawal.divu(1e18).mul(ONE - curve.epsilon).div(curve.totalSupply.divu(1e18));
+        int128 _multiplier = _withdrawal.divu(1e18).div(curve.totalSupply.divu(1e18));
 
         for (uint256 i = 0; i < _length; i++) {
             withdrawals_[i] = Assimilators.viewRawAmount(curve.assets[i].addr, _oBals[i].mul(_multiplier));

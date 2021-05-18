@@ -124,104 +124,104 @@ describe("Whitelist", function () {
     }));
   });
 
-  it("Only whitelisted users can deposit a max of $10_000 (USD) worth of tokens ", async function () {
-    const base = TOKENS.CADC.address;
-    const baseAssimilator = cadcToUsdAssimilator.address;
-    const baseDecimals = 18;
+  // it("Only whitelisted users can deposit a max of $10_000 (USD) worth of tokens ", async function () {
+  //   const base = TOKENS.CADC.address;
+  //   const baseAssimilator = cadcToUsdAssimilator.address;
+  //   const baseDecimals = 18;
 
-    const whitelistedUserAddress = "0x000f4432a40560bBFf1b581a8b7AdEd8dab80026";
-    const { index, amount, proof } = merkleData.claims[whitelistedUserAddress];
-    const whitelistedUser = await unlockAccountAndGetSigner(whitelistedUserAddress);
+  //   const whitelistedUserAddress = "0x000f4432a40560bBFf1b581a8b7AdEd8dab80026";
+  //   const { index, amount, proof } = merkleData.claims[whitelistedUserAddress];
+  //   const whitelistedUser = await unlockAccountAndGetSigner(whitelistedUserAddress);
 
-    const { curve } = await createCurveAndSetParams({
-      name: NAME,
-      symbol: SYMBOL,
-      base: base,
-      quote: TOKENS.USDC.address,
-      baseWeight: parseUnits("0.5"),
-      quoteWeight: parseUnits("0.5"),
-      baseAssimilator: baseAssimilator,
-      quoteAssimilator: usdcToUsdAssimilator.address,
-      params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
-      yesWhitelisting: true,
-    });
+  //   const { curve } = await createCurveAndSetParams({
+  //     name: NAME,
+  //     symbol: SYMBOL,
+  //     base: base,
+  //     quote: TOKENS.USDC.address,
+  //     baseWeight: parseUnits("0.5"),
+  //     quoteWeight: parseUnits("0.5"),
+  //     baseAssimilator: baseAssimilator,
+  //     quoteAssimilator: usdcToUsdAssimilator.address,
+  //     params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+  //     yesWhitelisting: true,
+  //   });
 
-    await multiMintAndApprove([
-      [base, user1, parseUnits("10000000", baseDecimals), curve.address],
-      [TOKENS.USDC.address, user1, parseUnits("10000000", 6), curve.address],
-      [base, whitelistedUser, parseUnits("10000000", baseDecimals), curve.address],
-      [TOKENS.USDC.address, whitelistedUser, parseUnits("10000000", 6), curve.address],
-    ]);
+  //   await multiMintAndApprove([
+  //     [base, user1, parseUnits("10000000", baseDecimals), curve.address],
+  //     [TOKENS.USDC.address, user1, parseUnits("10000000", 6), curve.address],
+  //     [base, whitelistedUser, parseUnits("10000000", baseDecimals), curve.address],
+  //     [TOKENS.USDC.address, whitelistedUser, parseUnits("10000000", 6), curve.address],
+  //   ]);
 
-    try {
-      await curve.connect(user1).deposit(parseUnits("100"), await getFutureTime());
-      throw new Error("Non whitelisted user shouldn't be able to deposit");
-    } catch (e) {
-      // eslint-disable-next-line
-    }
+  //   try {
+  //     await curve.connect(user1).deposit(parseUnits("100"), await getFutureTime());
+  //     throw new Error("Non whitelisted user shouldn't be able to deposit");
+  //   } catch (e) {
+  //     // eslint-disable-next-line
+  //   }
 
-    try {
-      await curve
-        .connect(user1)
-        .depositWithWhitelist(index, whitelistedUserAddress, amount, proof, parseUnits("100"), await getFutureTime());
-      throw new Error("Non whitelisted user shouldn't be able to deposit for someone else");
-    } catch (e) {
-      // eslint-disable-next-line
-    }
+  //   try {
+  //     await curve
+  //       .connect(user1)
+  //       .depositWithWhitelist(index, whitelistedUserAddress, amount, proof, parseUnits("100"), await getFutureTime());
+  //     throw new Error("Non whitelisted user shouldn't be able to deposit for someone else");
+  //   } catch (e) {
+  //     // eslint-disable-next-line
+  //   }
 
-    // Whitelisted
-    await curve
-      .connect(whitelistedUser)
-      .depositWithWhitelist(index, whitelistedUserAddress, amount, proof, parseUnits("10000"), await getFutureTime());
-    await curve.connect(whitelistedUser).withdraw(parseUnits("10000"), await getFutureTime());
+  //   // Whitelisted
+  //   await curve
+  //     .connect(whitelistedUser)
+  //     .depositWithWhitelist(index, whitelistedUserAddress, amount, proof, parseUnits("10000"), await getFutureTime());
+  //   await curve.connect(whitelistedUser).withdraw(parseUnits("10000"), await getFutureTime());
 
-    try {
-      await curve
-        .connect(whitelistedUser)
-        .depositWithWhitelist(index, whitelistedUserAddress, amount, proof, parseUnits("10001"), await getFutureTime());
-      throw new Error("Only whitelisted users can deposit a max of 10k");
-    } catch (e) {
-      // eslint-disable-next-line
-    }
-  });
+  //   try {
+  //     await curve
+  //       .connect(whitelistedUser)
+  //       .depositWithWhitelist(index, whitelistedUserAddress, amount, proof, parseUnits("10001"), await getFutureTime());
+  //     throw new Error("Only whitelisted users can deposit a max of 10k");
+  //   } catch (e) {
+  //     // eslint-disable-next-line
+  //   }
+  // });
 
-  it("depositWithWhitelist disabled after whitelisting period ended ", async function () {
-    const base = TOKENS.CADC.address;
-    const baseAssimilator = cadcToUsdAssimilator.address;
-    const baseDecimals = 18;
+  // it("depositWithWhitelist disabled after whitelisting period ended ", async function () {
+  //   const base = TOKENS.CADC.address;
+  //   const baseAssimilator = cadcToUsdAssimilator.address;
+  //   const baseDecimals = 18;
 
-    const whitelistedUserAddress = "0x000f4432a40560bBFf1b581a8b7AdEd8dab80026";
-    const { index, amount, proof } = merkleData.claims[whitelistedUserAddress];
-    const whitelistedUser = await unlockAccountAndGetSigner(whitelistedUserAddress);
+  //   const whitelistedUserAddress = "0x000f4432a40560bBFf1b581a8b7AdEd8dab80026";
+  //   const { index, amount, proof } = merkleData.claims[whitelistedUserAddress];
+  //   const whitelistedUser = await unlockAccountAndGetSigner(whitelistedUserAddress);
 
-    const { curve } = await createCurveAndSetParams({
-      name: NAME,
-      symbol: SYMBOL,
-      base: base,
-      quote: TOKENS.USDC.address,
-      baseWeight: parseUnits("0.5"),
-      quoteWeight: parseUnits("0.5"),
-      baseAssimilator: baseAssimilator,
-      quoteAssimilator: usdcToUsdAssimilator.address,
-      params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
-      yesWhitelisting: true,
-    });
+  //   const { curve } = await createCurveAndSetParams({
+  //     name: NAME,
+  //     symbol: SYMBOL,
+  //     base: base,
+  //     quote: TOKENS.USDC.address,
+  //     baseWeight: parseUnits("0.5"),
+  //     quoteWeight: parseUnits("0.5"),
+  //     baseAssimilator: baseAssimilator,
+  //     quoteAssimilator: usdcToUsdAssimilator.address,
+  //     params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+  //     yesWhitelisting: true,
+  //   });
 
-    await multiMintAndApprove([
-      [base, user1, parseUnits("10000000", baseDecimals), curve.address],
-      [TOKENS.USDC.address, user1, parseUnits("10000000", 6), curve.address],
-      [base, whitelistedUser, parseUnits("10000000", baseDecimals), curve.address],
-      [TOKENS.USDC.address, whitelistedUser, parseUnits("10000000", 6), curve.address],
-    ]);
+  //   await multiMintAndApprove([
+  //     [base, user1, parseUnits("10000000", baseDecimals), curve.address],
+  //     [TOKENS.USDC.address, user1, parseUnits("10000000", 6), curve.address],
+  //     [base, whitelistedUser, parseUnits("10000000", baseDecimals), curve.address],
+  //     [TOKENS.USDC.address, whitelistedUser, parseUnits("10000000", 6), curve.address],
+  //   ]);
 
-    // Whitelisted
-    try {
-      await curve
-        .connect(whitelistedUser)
-        .depositWithWhitelist(index, whitelistedUserAddress, amount, proof, parseUnits("10000"), await getFutureTime());
-      throw new Error("Shouldn't be able to deposit via depositWithWhitelist");
-    } catch (e) {
-      // eslint-disable-next-line
-    }
-  });
+  //   // Whitelisted
+  //   try {
+  //     await curve
+  //       .connect(whitelistedUser)
+  //       .depositWithWhitelist(index, whitelistedUserAddress, amount, proof, parseUnits("10000"), await getFutureTime());
+  //     throw new Error("Shouldn't be able to deposit via depositWithWhitelist");
+  //   } catch (e) {
+  //     // eslint-disable-next-line
+  //   }
+  // });
 });
