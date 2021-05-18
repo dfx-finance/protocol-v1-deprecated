@@ -1592,7 +1592,7 @@ describe("Curve", function () {
   //     console.log("========");
   //   };
 
-  //   const getDepositAmount = async (baseMaxAmount: BigNumber) => {
+  //   const getDepositAmountFromBase = async (baseMaxAmount: BigNumber) => {
   //     // Calculate internal pool ratio quote/base ratio
   //     // Can ignore weights cause they're always 50/50
   //     const ratio = (await erc20.attach(quote).balanceOf(curve.address))
@@ -1608,11 +1608,29 @@ describe("Curve", function () {
 
   //     const [lpTokens, amounts] = await curve.viewDeposit(depositAmount);
 
-  //     console.log('#####')
-  //     console.log('deposit', formatUnits(depositAmount))
-  //     console.log('obtained lp tokens', formatUnits(lpTokens))
-  //     console.log('amounts to deposit', amounts.map(x => formatUnits(x)));
-  //     console.log('#####')
+  //     console.log("#####");
+  //     console.log("deposit", formatUnits(depositAmount));
+  //     console.log("obtained lp tokens", formatUnits(lpTokens));
+  //     console.log(
+  //       "amounts to deposit",
+  //       amounts.map(x => formatUnits(x)),
+  //     );
+  //     console.log("#####");
+  //   };
+
+  //   const getDepositAmountFromQuote = async (quoteMaxAmount: BigNumber) => {
+  //     const depositAmount = quoteMaxAmount.mul(2).mul(parseUnits("1", 18 - quoteDecimals));
+
+  //     const [lpTokens, amounts] = await curve.viewDeposit(depositAmount);
+
+  //     console.log("#####");
+  //     console.log("deposit", formatUnits(depositAmount));
+  //     console.log("obtained lp tokens", formatUnits(lpTokens));
+  //     console.log(
+  //       "amounts to deposit",
+  //       amounts.map(x => formatUnits(x)),
+  //     );
+  //     console.log("#####");
   //   };
 
   //   // Deposit user 1
@@ -1625,7 +1643,8 @@ describe("Curve", function () {
   //     user1Address,
   //   );
 
-  //   await getDepositAmount(parseUnits("6023"));
+  //   await getDepositAmountFromBase(parseUnits("6023"));
+  //   await getDepositAmountFromQuote(parseUnits("5000", quoteDecimals));
   //   await logDelta(
   //     async () =>
   //       await curve
@@ -1637,7 +1656,8 @@ describe("Curve", function () {
 
   //   await curve.originSwap(base, quote, parseUnits("10", baseDecimals), 0, await getFutureTime());
 
-  //   await getDepositAmount(parseUnits("6033"));
+  //   await getDepositAmountFromBase(parseUnits("6033"));
+  //   await getDepositAmountFromQuote(parseUnits("5000", quoteDecimals));
   //   await logDelta(
   //     async () =>
   //       await curve

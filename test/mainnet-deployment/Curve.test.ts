@@ -47,15 +47,15 @@ describe("Curve Mainnet Sanity Checks", function () {
 
     curveCADC = (await ethers.getContractAt(
       "./contracts/Curve.sol:Curve",
-      "0x52F1eE265befa61c83a654d242348b18Ad85C3d3",
+      "0xa6c0cbcaebd93ad3c6c94412ec06aaa37870216d",
     )) as Curve;
     curveEURS = (await ethers.getContractAt(
       "./contracts/Curve.sol:Curve",
-      "0xF3d8451c6A25368D1c8957EC8C6Aa76B86ba3a46",
+      "0x1a4Ffe0DCbDB4d551cfcA61A5626aFD190731347",
     )) as Curve;
     curveXSGD = (await ethers.getContractAt(
       "./contracts/Curve.sol:Curve",
-      "0xEd9D7341C80F1c8A109696356d8fa35bd766489C",
+      "0x2baB29a12a9527a179Da88F422cDaaA223A90bD5",
     )) as Curve;
   });
 
