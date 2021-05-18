@@ -71,12 +71,9 @@ contract UsdcToUsdAssimilator is IAssimilator {
     }
 
     function intakeNumeraireLPRatio(
-        // solhint-disable-next-line
-        uint256 _baseWeight,
-        // solhint-disable-next-line
-        uint256 _quoteWeight,
-        // solhint-disable-next-line
-        address _addr,
+        uint256,
+        uint256,
+        address,
         int128 _amount
     ) external override returns (uint256 amount_) {
         amount_ = _amount.mulu(1e6);
@@ -135,12 +132,9 @@ contract UsdcToUsdAssimilator is IAssimilator {
     }
 
     function viewRawAmountLPRatio(
-        // solhint-disable-next-line
-        uint256 _baseWeight,
-        // solhint-disable-next-line
-        uint256 _quoteWeight,
-        // solhint-disable-next-line
-        address _addr,
+        uint256,
+        uint256,
+        address,
         int128 _amount
     ) external pure override returns (uint256 amount_) {
         amount_ = _amount.mulu(1e6);
@@ -162,16 +156,16 @@ contract UsdcToUsdAssimilator is IAssimilator {
         balance_ = ((_balance * _rate) / 1e8).divu(1e6);
     }
 
-    // views the numeraire value of the current balance of the reserve, in this case xsgd
-    // instead of calculating with chainlink's "rate" it'll be determined by the existing
-    // token ratio
-    // Mainly to protect LP from losing
+    // views the numeraire value of the current balance of the reserve wrt to USD
+    // since this is already the USD assimlator, the ratio is just 1
     function viewNumeraireBalanceLPRatio(
         uint256,
         uint256,
         address _addr
     ) external view override returns (int128 balance_) {
-        return viewNumeraireBalance(_addr);
+        uint256 _balance = usdc.balanceOf(_addr);
+
+        return _balance.divu(1e6);
     }
 
     function viewNumeraireAmountAndBalance(address _addr, uint256 _amount)
@@ -180,10 +174,12 @@ contract UsdcToUsdAssimilator is IAssimilator {
         override
         returns (int128 amount_, int128 balance_)
     {
-        amount_ = _amount.divu(1e6);
+        uint256 _rate = getRate();
+
+        amount_ = ((_amount * _rate) / 1e8).divu(1e6);
 
         uint256 _balance = usdc.balanceOf(_addr);
 
-        balance_ = _balance.divu(1e6);
+        balance_ = ((_balance * _rate) / 1e8).divu(1e6);
     }
 }

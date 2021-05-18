@@ -51,8 +51,9 @@ contract Storage {
     // Ownable
     address public owner;
 
-    string public name_;
-    string public symbol_;
+    string public name;
+    string public symbol;
+    uint8 public constant decimals = 18;
 
     address[] public derivatives;
     address[] public numeraires;

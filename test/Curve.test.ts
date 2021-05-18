@@ -22,8 +22,8 @@ const { parseUnits } = ethers.utils;
 
 const NAME = "DFX V1";
 const SYMBOL = "DFX-V1";
-const ALPHA = parseUnits("0.5");
-const BETA = parseUnits("0.35");
+const ALPHA = parseUnits("0.8");
+const BETA = parseUnits("0.5");
 const MAX = parseUnits("0.15");
 const EPSILON = parseUnits("0.0004");
 const LAMBDA = parseUnits("0.3");
@@ -1541,4 +1541,119 @@ describe("Curve", function () {
       }
     });
   });
+
+  // it.only("Test ratios", async () => {
+  //   const base = TOKENS.CADC.address;
+  //   const quote = TOKENS.USDC.address;
+
+  //   const baseAssimilator = cadcToUsdAssimilator.address;
+  //   const quoteAssimilator = usdcToUsdAssimilator.address;
+
+  //   const baseDecimals = TOKENS.CADC.decimals;
+  //   const quoteDecimals = TOKENS.USDC.decimals;
+
+  //   const params = [ALPHA, BETA, MAX, EPSILON, LAMBDA];
+
+  //   const { curve, curveLpToken } = await createCurveAndSetParams({
+  //     name: "DFX",
+  //     symbol: "DFX",
+  //     base,
+  //     quote,
+  //     baseWeight: parseUnits("0.5"),
+  //     quoteWeight: parseUnits("0.5"),
+  //     baseAssimilator,
+  //     quoteAssimilator,
+  //     params: params as any,
+  //   });
+
+  //   // Mint tokens and approve
+  //   await multiMintAndApprove([
+  //     [base, user1, parseUnits("1000000", baseDecimals), curve.address],
+  //     [quote, user1, parseUnits("1000000", quoteDecimals), curve.address],
+  //     [base, user2, parseUnits("1000000", baseDecimals), curve.address],
+  //     [quote, user2, parseUnits("1000000", quoteDecimals), curve.address],
+  //   ]);
+
+  //   const logDelta = async (f, addr) => {
+  //     const bbefore = await erc20.attach(base).balanceOf(addr);
+  //     const qbefore = await erc20.attach(quote).balanceOf(addr);
+  //     const lpBefore = await curve.balanceOf(addr);
+
+  //     await f();
+
+  //     const bafter = await erc20.attach(base).balanceOf(addr);
+  //     const qafter = await erc20.attach(quote).balanceOf(addr);
+  //     const lpAfter = await curve.balanceOf(addr);
+
+  //     console.log("base delta", formatUnits(bbefore.sub(bafter), baseDecimals));
+  //     console.log("quote delta", formatUnits(qbefore.sub(qafter), quoteDecimals));
+  //     console.log("user lp balance delta", formatUnits(lpAfter.sub(lpBefore)));
+  //     console.log("total Supply", formatUnits(await curve.totalSupply()));
+  //     console.log("========");
+  //   };
+
+  //   const getDepositAmount = async (baseMaxAmount: BigNumber) => {
+  //     // Calculate internal pool ratio quote/base ratio
+  //     // Can ignore weights cause they're always 50/50
+  //     const ratio = (await erc20.attach(quote).balanceOf(curve.address))
+  //       .mul(parseUnits("1", 18 - quoteDecimals))
+  //       .mul(parseUnits("1"))
+  //       .div((await erc20.attach(base).balanceOf(curve.address)).mul(parseUnits("1", 18 - baseDecimals)));
+
+  //     const depositAmount = baseMaxAmount
+  //       .mul(parseUnits("1", 18 - baseDecimals))
+  //       .mul(ratio)
+  //       .div(parseUnits("1"))
+  //       .mul(2);
+
+  //     const [lpTokens, amounts] = await curve.viewDeposit(depositAmount);
+
+  //     console.log('#####')
+  //     console.log('deposit', formatUnits(depositAmount))
+  //     console.log('obtained lp tokens', formatUnits(lpTokens))
+  //     console.log('amounts to deposit', amounts.map(x => formatUnits(x)));
+  //     console.log('#####')
+  //   };
+
+  //   // Deposit user 1
+  //   await logDelta(
+  //     async () =>
+  //       await curve
+  //         .connect(user1)
+  //         .deposit(parseUnits("10000"), await getFutureTime())
+  //         .then(x => x.wait()),
+  //     user1Address,
+  //   );
+
+  //   await getDepositAmount(parseUnits("6023"));
+  //   await logDelta(
+  //     async () =>
+  //       await curve
+  //         .connect(user2)
+  //         .deposit(parseUnits("10000"), await getFutureTime())
+  //         .then(x => x.wait()),
+  //     user2Address,
+  //   );
+
+  //   await curve.originSwap(base, quote, parseUnits("10", baseDecimals), 0, await getFutureTime());
+
+  //   await getDepositAmount(parseUnits("6033"));
+  //   await logDelta(
+  //     async () =>
+  //       await curve
+  //         .connect(user1)
+  //         .deposit(parseUnits("10000"), await getFutureTime())
+  //         .then(x => x.wait()),
+  //     user1Address,
+  //   );
+
+  //   await logDelta(
+  //     async () =>
+  //       await curve
+  //         .connect(user2)
+  //         .deposit(parseUnits("10000"), await getFutureTime())
+  //         .then(x => x.wait()),
+  //     user2Address,
+  //   );
+  // });
 });
