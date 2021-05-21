@@ -22,8 +22,6 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 
 import "./Curve.sol";
 
-import "hardhat/console.sol";
-
 contract Zap {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
@@ -261,7 +259,7 @@ contract Zap {
         uint8 curveBaseDecimals = ERC20(Curve(_curve).reserves(0)).decimals();
         (, uint256[] memory outs) = Curve(_curve).viewDeposit(2e18);
         uint256 ratio = outs[0].mul(10**(36 - curveBaseDecimals)).div(outs[1].mul(1e12));
-        uint256 quoteAmount = _baseAmount.mul(1e18).div(ratio).div(1e12);
+        uint256 quoteAmount = _baseAmount.mul(10**(36 - curveBaseDecimals)).div(ratio).div(1e12);
 
         return quoteAmount;
     }
@@ -320,6 +318,13 @@ contract Zap {
                 10**(18 - curveBaseDecimals + curveBaseDecimals - 2)
             );
             depositAmount2 = usdcDepositAmount.add(baseDepositAmount.mul(1e18).div(curveRatio));
+
+            // EURS 2 decimals fuck things up for small amounts
+            // Need to give 2% slippage
+            if (curveBaseDecimals == 2) {
+                depositAmount2 = depositAmount2.mul(98).div(100);
+            }
+
             (, outs2) = Curve(_curve).viewDeposit(depositAmount2);
         }
 
@@ -513,6 +518,9 @@ contract Zap {
             ratio = usdcDelta.mul(1e6).div(usdcAmount);
             depositAmount = depositAmount.sub(depositAmount.mul(ratio).div(1e6));
         }
+
+        // Truncate for rounding errors
+        depositAmount = depositAmount.div(1e16).mul(1e16);
 
         return (depositAmount, baseAmount, usdcAmount);
     }
