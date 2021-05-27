@@ -499,6 +499,11 @@ contract Zap {
         // Trim out decimal values
         uint256 depositAmount = usdcDepositAmount.add(baseDepositAmount.mul(1e18).div(curveRatio));
 
+        // Good morning fuck EURS
+        if (curveBaseDecimals == 2) {
+            depositAmount = depositAmount.mul(98).div(100);
+        }
+
         // // Make sure we have enough of our inputs
         (, uint256[] memory outs) = Curve(_curve).viewDeposit(1e18);
 
