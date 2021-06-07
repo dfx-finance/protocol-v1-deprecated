@@ -22,11 +22,13 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 
 import "./Curve.sol";
 
+import "hardhat/console.sol";
+
 contract Zap {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
-    IERC20 public constant USDC = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
+    IERC20 private constant USDC = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
 
     struct ZapData {
         address curve;
@@ -48,7 +50,9 @@ contract Zap {
         uint256 curveRatio;
         uint256 depositAmount1;
         uint256 depositAmount2;
+        uint256 lp1;
         uint256[] outs1;
+        uint256 lp2;
         uint256[] outs2;
     }
 
@@ -135,6 +139,8 @@ contract Zap {
         return lpAmount;
     }
 
+    // **** View only functions **** //
+
     /// @notice Iteratively calculates how much base to swap
     /// @param _curve The address of the curve
     /// @param _zapAmount The amount to zap, denominated in the ERC20's decimal placing
@@ -216,18 +222,28 @@ contract Zap {
 
     // **** Helper functions ****
 
-    /// @notice Given a base amount, and a quote amount, calculate the max number of LP tokens
-    ///         that can be generated, along with the base/quote amounts that will be used maximally
+    /// @notice Given a base amount, and a quote amount, calculate the deposit amount,
+    ///         the number of LP tokens that will be generated, along with the maximized
+    ///         base/quote amounts
     /// @param _curve The address of the curve
     /// @param _baseAmount The amount of base tokens
     /// @param _quoteAmount The amount of base tokens
-    /// @return uint256 - The max quote amount
+    /// @return uint256 - The deposit amount
+    /// @return uint256 - The LPTs received
     /// @return uint256[] memory - The baseAmount and quoteAmount
     function calcMaxDepositAmount(
         address _curve,
         uint256 _baseAmount,
         uint256 _quoteAmount
-    ) public view returns (uint256, uint256[] memory) {
+    )
+        public
+        view
+        returns (
+            uint256,
+            uint256,
+            uint256[] memory
+        )
+    {
         return
             _calcMaxDepositAmount(
                 _curve,
@@ -298,34 +314,38 @@ contract Zap {
 
         uint256 depositAmount1;
         uint256 depositAmount2;
+        uint256 lp1;
         uint256[] memory outs1;
+        uint256 lp2;
         uint256[] memory outs2;
 
         // Stack too deep
         {
-            // Prune amounts to get best possible result
-            uint256 usdcDepositAmount = dd.curQuoteAmount.div(1e4).mul(1e16);
-            uint256 baseDepositAmount =
-                maxBaseAmount.div(10**(curveBaseDecimals - 2)).mul(
-                    10**(18 - curveBaseDecimals + curveBaseDecimals - 2)
-                );
+            uint256 usdcDepositAmount = dd.curQuoteAmount.mul(1e12);
+            uint256 baseDepositAmount = maxBaseAmount.mul(10**(18 - curveBaseDecimals));
             depositAmount1 = usdcDepositAmount.add(baseDepositAmount.mul(1e18).div(curveRatio));
-            (, outs1) = Curve(_curve).viewDeposit(depositAmount1);
+
+            // Prune amounts to get best possible result
+            // Due to loss in precision in floating point math
+            depositAmount1 = depositAmount1.mul(9995).div(10000);
+            (lp1, outs1) = Curve(_curve).viewDeposit(depositAmount1);
 
             // Re-using variables
             usdcDepositAmount = maxQuoteAmount.div(1e4).mul(1e16);
-            baseDepositAmount = dd.curBaseAmount.div(10**(curveBaseDecimals - 2)).mul(
-                10**(18 - curveBaseDecimals + curveBaseDecimals - 2)
-            );
+            baseDepositAmount = dd.curBaseAmount.mul(10**(18 - curveBaseDecimals));
             depositAmount2 = usdcDepositAmount.add(baseDepositAmount.mul(1e18).div(curveRatio));
 
-            // EURS 2 decimals fuck things up for small amounts
+            // Prune amounts to get best possible result
+            // Due to loss in precision in floating point math
+            depositAmount2 = depositAmount2.mul(9995).div(10000);
+
+            // EURS 2 decimals screws things up for small amounts
             // Need to give 2% slippage
             if (curveBaseDecimals == 2) {
                 depositAmount2 = depositAmount2.mul(98).div(100);
             }
 
-            (, outs2) = Curve(_curve).viewDeposit(depositAmount2);
+            (lp2, outs2) = Curve(_curve).viewDeposit(depositAmount2);
         }
 
         return
@@ -333,7 +353,9 @@ contract Zap {
                 curveRatio: curveRatio,
                 depositAmount1: depositAmount1,
                 depositAmount2: depositAmount2,
+                lp1: lp1,
                 outs1: outs1,
+                lp2: lp2,
                 outs2: outs2
             });
     }
@@ -341,7 +363,11 @@ contract Zap {
     function _calcMaxDepositAmount(address _curve, DepositData memory dd)
         internal
         view
-        returns (uint256, uint256[] memory)
+        returns (
+            uint256,
+            uint256,
+            uint256[] memory
+        )
     {
         DepositAmountsData memory dad = _getDepositAmountsData(_curve, dd);
 
@@ -369,7 +395,7 @@ contract Zap {
             dad.outs1[1] <= dd.maxQuoteAmount &&
             (dad.outs2[0] > dd.maxBaseAmount || dad.outs2[1] > dd.maxQuoteAmount)
         ) {
-            return (dad.depositAmount1, dad.outs1);
+            return (dad.depositAmount1, dad.lp1, dad.outs1);
         }
 
         // Only deposit 2 is valid
@@ -378,15 +404,15 @@ contract Zap {
             dad.outs2[1] <= dd.maxQuoteAmount &&
             (dad.outs1[0] > dd.maxBaseAmount || dad.outs1[1] > dd.maxQuoteAmount)
         ) {
-            return (dad.depositAmount2, dad.outs2);
+            return (dad.depositAmount2, dad.lp2, dad.outs2);
         }
 
         // Both valid however, just return the largest
-        if (dad.depositAmount1 > dad.depositAmount2) {
-            return (dad.depositAmount1, dad.outs1);
+        if (dad.lp1 > dad.lp2) {
+            return (dad.depositAmount1, dad.lp1, dad.outs1);
         }
 
-        return (dad.depositAmount2, dad.outs2);
+        return (dad.depositAmount2, dad.lp2, dad.outs2);
     }
 
     function _calcQuoteSwapAmount(uint256 initialSwapAmount, ZapData memory zapData) internal view returns (uint256) {
@@ -421,6 +447,11 @@ contract Zap {
             } else if (userRatio < curveRatio) {
                 // We swapping too little
                 swapAmount = swapAmount.add(delta);
+            }
+
+            // Cannot swap more than zapAmount
+            if (swapAmount > zapData.zapAmount) {
+                swapAmount = zapData.zapAmount - 1;
             }
 
             // Keep halving
@@ -462,6 +493,11 @@ contract Zap {
             } else if (userRatio < curveRatio) {
                 // We swapping too much
                 swapAmount = swapAmount.sub(delta);
+            }
+
+            // Cannot swap more than zap
+            if (swapAmount > zapData.zapAmount) {
+                swapAmount = zapData.zapAmount - 1;
             }
 
             // Keep halving
