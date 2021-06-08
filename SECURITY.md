@@ -28,9 +28,9 @@ security related issues according to the
 For all security related issues, DFX Finance has four main points of contact:
 
 | Contact      | Public key                                                                   | Email                   |
-| ------------ | ---------------------------------------------------------------------------- | ----------------------- | ----------- |
+| ------------ | ---------------------------------------------------------------------------- | ----------------------- |
 | Kendrick Tan | [PGP](https://gist.github.com/kendricktan/80b89b5b7e6e76ba0eaa9abe746d2059)  | kendrick at dfx.finance |
-| Adrian Li    | [PGP](https://gist.github.com/adrianmcli/18f80733da56c41541dd81e4a6a7a0f1)   | adrian at dfx.finance   | @adrianmcli |
+| Adrian Li    | [PGP](https://gist.github.com/adrianmcli/18f80733da56c41541dd81e4a6a7a0f1)   | adrian at dfx.finance   |
 | Kevin Zhang  | [PGP](https://gist.github.com/kevinzhangTO/2828507836e2e1cacd05c9185a0670d9) | kevin at dfx.finance    |
 
 Include all contacts in your communication, PGP encrypted to all parties.
