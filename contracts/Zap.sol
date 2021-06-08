@@ -44,16 +44,6 @@ contract Zap {
         uint256 maxQuoteAmount;
     }
 
-    struct DepositAmountsData {
-        uint256 curveRatio;
-        uint256 depositAmount1;
-        uint256 depositAmount2;
-        uint256 lp1;
-        uint256[] outs1;
-        uint256 lp2;
-        uint256[] outs2;
-    }
-
     /// @notice Zaps from a quote token (non-USDC) into the LP pool
     /// @param _curve The address of the curve
     /// @param _zapAmount The amount to zap, denominated in the ERC20's decimal placing
@@ -116,7 +106,19 @@ contract Zap {
         }
 
         // Calculate deposit amount
-        (uint256 depositAmount, uint256 baseAmount, uint256 quoteAmount) = _calcDepositAmount(_curve, base);
+        uint256 baseAmount = IERC20(base).balanceOf(address(this));
+        uint256 quoteAmount = USDC.balanceOf(address(this));
+        (uint256 depositAmount, , ) =
+            _calcDepositAmount(
+                _curve,
+                base,
+                DepositData({
+                    curBaseAmount: baseAmount,
+                    curQuoteAmount: quoteAmount,
+                    maxBaseAmount: baseAmount,
+                    maxQuoteAmount: quoteAmount
+                })
+            );
 
         // Can only deposit the smaller amount as we won't have enough of the
         // token to deposit
@@ -220,20 +222,15 @@ contract Zap {
 
     // **** Helper functions ****
 
-    /// @notice Given a base amount, and a quote amount, calculate the deposit amount,
+    /// @notice Given a quote amount, calculate the maximum deposit amount, along with the
     ///         the number of LP tokens that will be generated, along with the maximized
     ///         base/quote amounts
     /// @param _curve The address of the curve
-    /// @param _baseAmount The amount of base tokens
-    /// @param _quoteAmount The amount of base tokens
+    /// @param _quoteAmount The amount of quote tokens
     /// @return uint256 - The deposit amount
     /// @return uint256 - The LPTs received
     /// @return uint256[] memory - The baseAmount and quoteAmount
-    function calcMaxDepositAmount(
-        address _curve,
-        uint256 _baseAmount,
-        uint256 _quoteAmount
-    )
+    function calcMaxDepositAmountGivenQuote(address _curve, uint256 _quoteAmount)
         public
         view
         returns (
@@ -242,14 +239,51 @@ contract Zap {
             uint256[] memory
         )
     {
+        uint256 maxBaseAmount = calcMaxBaseForDeposit(_curve, _quoteAmount);
+        address base = Curve(_curve).reserves(0);
+
         return
-            _calcMaxDepositAmount(
+            _calcDepositAmount(
                 _curve,
+                base,
+                DepositData({
+                    curBaseAmount: maxBaseAmount,
+                    curQuoteAmount: _quoteAmount,
+                    maxBaseAmount: maxBaseAmount,
+                    maxQuoteAmount: _quoteAmount
+                })
+            );
+    }
+
+    /// @notice Given a base amount, calculate the maximum deposit amount, along with the
+    ///         the number of LP tokens that will be generated, along with the maximized
+    ///         base/quote amounts
+    /// @param _curve The address of the curve
+    /// @param _baseAmount The amount of base tokens
+    /// @return uint256 - The deposit amount
+    /// @return uint256 - The LPTs received
+    /// @return uint256[] memory - The baseAmount and quoteAmount
+    function calcMaxDepositAmountGivenBase(address _curve, uint256 _baseAmount)
+        public
+        view
+        returns (
+            uint256,
+            uint256,
+            uint256[] memory
+        )
+    {
+        uint256 maxQuoteAmount = calcMaxQuoteForDeposit(_curve, _baseAmount);
+        address base = Curve(_curve).reserves(0);
+
+        return
+            _calcDepositAmount(
+                _curve,
+                base,
                 DepositData({
                     curBaseAmount: _baseAmount,
-                    curQuoteAmount: _quoteAmount,
+                    curQuoteAmount: maxQuoteAmount,
                     maxBaseAmount: _baseAmount,
-                    maxQuoteAmount: _quoteAmount
+                    maxQuoteAmount: maxQuoteAmount
                 })
             );
     }
@@ -280,133 +314,16 @@ contract Zap {
 
     // **** Internal function ****
 
-    // Stack too deep resulted in this function
-    function _ratio(uint256 ratio, uint256 a) internal pure returns (uint256) {
-        if (ratio > 1e18) {
-            return a.mul(1e18).div(ratio);
-        }
-        return a.mul(ratio).div(1e18);
-    }
-
     // Stack too deep
-    function _getCurveRatioAndBaseDecimals(address _curve) internal view returns (uint8, uint256) {
-        address base = Curve(_curve).reserves(0);
-        uint8 curveBaseDecimals = ERC20(base).decimals();
-        uint256 curveRatio =
-            IERC20(base).balanceOf(_curve).mul(10**(36 - uint256(curveBaseDecimals))).div(
-                USDC.balanceOf(_curve).mul(1e12)
-            );
-
-        return (curveBaseDecimals, curveRatio);
+    function _roundDown(uint256 a) internal pure returns (uint256) {
+        return a.mul(99999).div(100000);
     }
 
-    function _getDepositAmountsData(address _curve, DepositData memory dd)
-        internal
-        view
-        returns (DepositAmountsData memory)
-    {
-        uint256 maxBaseAmount = calcMaxBaseForDeposit(_curve, dd.curQuoteAmount);
-        uint256 maxQuoteAmount = calcMaxQuoteForDeposit(_curve, dd.curBaseAmount);
-
-        (uint8 curveBaseDecimals, uint256 curveRatio) = _getCurveRatioAndBaseDecimals(_curve);
-
-        uint256 depositAmount1;
-        uint256 depositAmount2;
-        uint256 lp1;
-        uint256[] memory outs1;
-        uint256 lp2;
-        uint256[] memory outs2;
-
-        // Stack too deep
-        {
-            uint256 usdcDepositAmount = dd.curQuoteAmount.mul(1e12);
-            uint256 baseDepositAmount = maxBaseAmount.mul(10**(18 - curveBaseDecimals));
-            depositAmount1 = usdcDepositAmount.add(baseDepositAmount.mul(1e18).div(curveRatio));
-
-            // Prune amounts to get best possible result
-            // Due to loss in precision in floating point math
-            depositAmount1 = depositAmount1.mul(99999).div(100000);
-            (lp1, outs1) = Curve(_curve).viewDeposit(depositAmount1);
-
-            // Re-using variables
-            usdcDepositAmount = maxQuoteAmount.div(1e4).mul(1e16);
-            baseDepositAmount = dd.curBaseAmount.mul(10**(18 - curveBaseDecimals));
-            depositAmount2 = usdcDepositAmount.add(baseDepositAmount.mul(1e18).div(curveRatio));
-
-            // Prune amounts to get best possible result
-            // Due to loss in precision in floating point math
-            depositAmount2 = depositAmount2.mul(99999).div(100000);
-
-            (lp2, outs2) = Curve(_curve).viewDeposit(depositAmount2);
-        }
-
-        return
-            DepositAmountsData({
-                curveRatio: curveRatio,
-                depositAmount1: depositAmount1,
-                depositAmount2: depositAmount2,
-                lp1: lp1,
-                outs1: outs1,
-                lp2: lp2,
-                outs2: outs2
-            });
-    }
-
-    function _calcMaxDepositAmount(address _curve, DepositData memory dd)
-        internal
-        view
-        returns (
-            uint256,
-            uint256,
-            uint256[] memory
-        )
-    {
-        DepositAmountsData memory dad = _getDepositAmountsData(_curve, dd);
-
-        // Both invalid, can't use max
-        // Use smaller value
-        if (
-            (dad.outs1[0] > dd.maxBaseAmount || dad.outs1[1] > dd.maxQuoteAmount) &&
-            (dad.outs2[0] > dd.maxBaseAmount || dad.outs2[1] > dd.maxQuoteAmount)
-        ) {
-            return
-                _calcMaxDepositAmount(
-                    _curve,
-                    DepositData({
-                        curBaseAmount: _ratio(dad.curveRatio, dd.curBaseAmount),
-                        curQuoteAmount: _ratio(dad.curveRatio, dd.curQuoteAmount),
-                        maxBaseAmount: dd.maxBaseAmount,
-                        maxQuoteAmount: dd.maxQuoteAmount
-                    })
-                );
-        }
-
-        // Only deposit 1 is valid
-        if (
-            dad.outs1[0] <= dd.maxBaseAmount &&
-            dad.outs1[1] <= dd.maxQuoteAmount &&
-            (dad.outs2[0] > dd.maxBaseAmount || dad.outs2[1] > dd.maxQuoteAmount)
-        ) {
-            return (dad.depositAmount1, dad.lp1, dad.outs1);
-        }
-
-        // Only deposit 2 is valid
-        if (
-            dad.outs2[0] <= dd.maxBaseAmount &&
-            dad.outs2[1] <= dd.maxQuoteAmount &&
-            (dad.outs1[0] > dd.maxBaseAmount || dad.outs1[1] > dd.maxQuoteAmount)
-        ) {
-            return (dad.depositAmount2, dad.lp2, dad.outs2);
-        }
-
-        // Both valid however, just return the largest
-        if (dad.lp1 > dad.lp2) {
-            return (dad.depositAmount1, dad.lp1, dad.outs1);
-        }
-
-        return (dad.depositAmount2, dad.lp2, dad.outs2);
-    }
-
+    /// @notice Calculate how many quote tokens needs to be swapped into base tokens to
+    ///         respect the pool's ratio
+    /// @param initialSwapAmount The initial amount to swap
+    /// @param zapData           Zap data encoded
+    /// @return uint256 - The amount of quote tokens to be swapped into base tokens
     function _calcQuoteSwapAmount(uint256 initialSwapAmount, ZapData memory zapData) internal view returns (uint256) {
         uint256 swapAmount = initialSwapAmount;
         uint256 delta = swapAmount.div(2);
@@ -429,7 +346,7 @@ contract Zap {
 
             // If user's ratio is approx curve ratio, then just swap
             // I.e. ratio converges
-            if (userRatio.div(1e12) == curveRatio.div(1e12)) {
+            if (userRatio.div(1e16) == curveRatio.div(1e16)) {
                 return swapAmount;
             }
             // Otherwise, we keep iterating
@@ -450,9 +367,14 @@ contract Zap {
             delta = delta.div(2);
         }
 
-        return swapAmount;
+        revert("Zap/not-converging");
     }
 
+    /// @notice Calculate how many base tokens needs to be swapped into quote tokens to
+    ///         respect the pool's ratio
+    /// @param initialSwapAmount The initial amount to swap
+    /// @param zapData           Zap data encoded
+    /// @return uint256 - The amount of base tokens to be swapped into quote tokens
     function _calcBaseSwapAmount(uint256 initialSwapAmount, ZapData memory zapData) internal view returns (uint256) {
         uint256 swapAmount = initialSwapAmount;
         uint256 delta = swapAmount.div(2);
@@ -475,7 +397,7 @@ contract Zap {
 
             // If user's ratio is approx curve ratio, then just swap
             // I.e. ratio converges
-            if (userRatio.div(1e12) == curveRatio.div(1e12)) {
+            if (userRatio.div(1e16) == curveRatio.div(1e16)) {
                 return swapAmount;
             }
             // Otherwise, we keep iterating
@@ -496,16 +418,29 @@ contract Zap {
             delta = delta.div(2);
         }
 
-        return swapAmount;
+        revert("Zap/not-converging");
     }
 
-    function _calcDepositAmount(address _curve, address _base)
+    /// @notice Given a DepositData structure, calculate the max depositAmount, the max
+    ///          LP tokens received, and the required amounts
+    /// @param _curve The address of the curve
+    /// @param _base  The base address in the curve
+    /// @param dd     Deposit data
+
+    /// @return uint256 - The deposit amount
+    /// @return uint256 - The LPTs received
+    /// @return uint256[] memory - The baseAmount and quoteAmount
+    function _calcDepositAmount(
+        address _curve,
+        address _base,
+        DepositData memory dd
+    )
         internal
         view
         returns (
             uint256,
             uint256,
-            uint256
+            uint256[] memory
         )
     {
         // Calculate _depositAmount
@@ -517,44 +452,29 @@ contract Zap {
 
         // Deposit amount is denomiated in USD value (based on pool LP ratio)
         // Things are 1:1 on USDC side on deposit
-        uint256 usdcAmount = USDC.balanceOf(address(this));
-        uint256 usdcDepositAmount = usdcAmount.mul(1e12);
+        uint256 usdcDepositAmount = dd.curQuoteAmount.mul(1e12);
 
         // Things will be based on ratio on deposit
-        uint256 baseAmount = IERC20(_base).balanceOf(address(this));
-        uint256 baseDepositAmount = baseAmount.mul(10**(18 - uint256(curveBaseDecimals)));
+        uint256 baseDepositAmount = dd.curBaseAmount.mul(10**(18 - uint256(curveBaseDecimals)));
 
         // Trim out decimal values
         uint256 depositAmount = usdcDepositAmount.add(baseDepositAmount.mul(1e18).div(curveRatio));
-
-        // Good morning fuck EURS
-        if (curveBaseDecimals == 2) {
-            depositAmount = depositAmount.mul(98).div(100);
-        }
+        depositAmount = _roundDown(depositAmount);
 
         // // Make sure we have enough of our inputs
-        (, uint256[] memory outs) = Curve(_curve).viewDeposit(1e18);
+        (uint256 lps, uint256[] memory outs) = Curve(_curve).viewDeposit(depositAmount);
 
-        (, outs) = Curve(_curve).viewDeposit(depositAmount);
-
-        uint256 baseDelta = outs[0] > baseAmount ? outs[0].sub(baseAmount) : 0;
-        uint256 usdcDelta = outs[1] > usdcAmount ? outs[1].sub(usdcAmount) : 0;
-        uint256 ratio;
+        uint256 baseDelta = outs[0] > dd.maxBaseAmount ? outs[0].sub(dd.curBaseAmount) : 0;
+        uint256 usdcDelta = outs[1] > dd.maxQuoteAmount ? outs[1].sub(dd.curQuoteAmount) : 0;
 
         // Make sure we can deposit
-        if (baseDelta > 0) {
-            ratio = baseDelta.mul(10**curveBaseDecimals).div(baseAmount);
-            depositAmount = depositAmount.sub(depositAmount.mul(ratio).div(10**curveBaseDecimals));
+        if (baseDelta > 0 || usdcDelta > 0) {
+            dd.curBaseAmount = _roundDown(dd.curBaseAmount.sub(baseDelta));
+            dd.curQuoteAmount = _roundDown(dd.curQuoteAmount.sub(usdcDelta));
+
+            return _calcDepositAmount(_curve, _base, dd);
         }
 
-        if (usdcDelta > 0) {
-            ratio = usdcDelta.mul(1e6).div(usdcAmount);
-            depositAmount = depositAmount.sub(depositAmount.mul(ratio).div(1e6));
-        }
-
-        // Truncate for rounding errors
-        depositAmount = depositAmount.div(1e16).mul(1e16);
-
-        return (depositAmount, baseAmount, usdcAmount);
+        return (depositAmount, lps, outs);
     }
 }

@@ -83,61 +83,44 @@ describe("Zap", function () {
       [quote, user, parseUnits("100000", quoteDecimals), curve.address],
     ]);
 
-    if (baseDecimals === 2) {
-      await zap.zapFromQuote(curve.address, parseUnits("1", quoteDecimals), await getFutureTime(), 0);
-      await zap.zapFromBase(curve.address, parseUnits("1", baseDecimals), await getFutureTime(), 0);
-    } else {
-      await zap.zapFromQuote(curve.address, parseUnits("1", quoteDecimals), await getFutureTime(), 0);
-      await zap.zapFromBase(curve.address, parseUnits("1", baseDecimals), await getFutureTime(), 0);
+    // Make sure we can zap from a range of values
+    for (let i = 1; i <= 100000; i *= 10) {
+      const outB = await zap.callStatic.zapFromBase(
+        curve.address,
+        parseUnits(i.toString(), baseDecimals),
+        await getFutureTime(),
+        0,
+      );
+
+      const outQ = await zap.callStatic.zapFromQuote(
+        curve.address,
+        parseUnits(i.toString(), quoteDecimals),
+        await getFutureTime(),
+        0,
+      );
+
+      // Always within order of magnitude
+      expect(parseFloat(formatUnits(outB))).to.be.gt(i / 2);
+      expect(parseFloat(formatUnits(outQ))).to.be.gt(i / 2);
     }
+  };
 
-    const rawA = parseUnits("200000", baseDecimals);
-    const rawB = await zap.calcMaxQuoteForDeposit(curve.address, rawA);
-    const [depositAmounts, lpsReceived, coinAmounts] = await zap.calcMaxDepositAmount(curve.address, rawA, rawB);
-    const [expectedBaseAmount, expectedQuoteAmount] = await curve.viewWithdraw(lpsReceived);
-    expectBNAproxEq(coinAmounts[0], expectedBaseAmount, expectedBaseAmount.div(95));
-    expectBNAproxEq(coinAmounts[1], expectedQuoteAmount, expectedQuoteAmount.div(95));
+  const testZapCalcDepositLogic = async (base, quote, baseDecimals, quoteDecimals, curve: Curve, oracle) => {
+    // Make sure we can zap from a range of values
+    for (let i = 1; i <= 100000; i *= 10) {
+      const baseAmount = parseUnits(i.toString(), baseDecimals);
+      const quoteAmount = parseUnits(i.toString(), quoteDecimals);
 
-    const zapAmount1 = "5000";
-    const before1 = await curve.balanceOf(userAddress);
-    await zap.zapFromQuote(curve.address, parseUnits(zapAmount1, quoteDecimals), await getFutureTime(), 0);
-    const after1 = await curve.balanceOf(userAddress);
+      const [depositAmountA, lpsA, amountsA] = await zap.calcMaxDepositAmountGivenBase(curve.address, baseAmount);
+      const [depositAmountB, lpsB, amountsB] = await zap.calcMaxDepositAmountGivenQuote(curve.address, quoteAmount);
 
-    if (baseDecimals === 2) {
-      expectBNAproxEq(after1.sub(before1), parseUnits(zapAmount1), parseUnits(zapAmount1).div(40));
-    } else {
-      expectBNAproxEq(after1.sub(before1), parseUnits(zapAmount1), parseUnits(zapAmount1).div(50));
-    }
-
-    const zapAmount2 = "5000";
-    const before2 = await curve.balanceOf(userAddress);
-    await zap.zapFromBase(curve.address, parseUnits(zapAmount2, baseDecimals), await getFutureTime(), 0);
-    const after2 = await curve.balanceOf(userAddress);
-    expect(after2.gt(before2)).to.be.true;
-
-    const maxDeposit1 = await zap.calcMaxDepositAmount(
-      curve.address,
-      parseUnits("100", baseDecimals),
-      parseUnits("10", quoteDecimals),
-    );
-    expect(maxDeposit1[2][0].lt(parseUnits("100", baseDecimals))).to.be.true;
-    expectBNAproxEq(maxDeposit1[2][1], parseUnits("10", quoteDecimals), parseUnits("1", quoteDecimals));
-
-    const maxDeposit2 = await zap.calcMaxDepositAmount(
-      curve.address,
-      parseUnits("100", baseDecimals),
-      parseUnits("1000", quoteDecimals),
-    );
-
-    if (baseDecimals === 2) {
-      expect(maxDeposit2[2][1].lt(parseUnits("1000", quoteDecimals))).to.be.true;
-
-      // EURs approximation suxs
-      expect(maxDeposit2[2][0].lt(parseUnits("100", baseDecimals))).to.be.true;
-      expect(maxDeposit2[2][0].gt(parseUnits("50", baseDecimals))).to.be.true;
-    } else {
-      expect(maxDeposit2[2][1].lt(parseUnits("1000", quoteDecimals))).to.be.true;
-      expectBNAproxEq(maxDeposit2[2][0], parseUnits("100", baseDecimals), parseUnits("2", baseDecimals));
+      if (baseDecimals === 2) {
+        expectBNAproxEq(amountsA[0], baseAmount, baseAmount.div(10));
+        expectBNAproxEq(amountsB[1], quoteAmount, quoteAmount.div(10));
+      } else {
+        expectBNAproxEq(amountsA[0], baseAmount, baseAmount.div(1000));
+        expectBNAproxEq(amountsB[1], quoteAmount, quoteAmount.div(1000));
+      }
     }
   };
 
@@ -150,6 +133,7 @@ describe("Zap", function () {
     const oracle = ORACLES.EURS.address;
 
     await testZapFunctionality(base, quote, baseDecimals, quoteDecimals, curve, oracle);
+    await testZapCalcDepositLogic(base, quote, baseDecimals, quoteDecimals, curve, oracle);
   });
 
   it("XSGD", async function () {
@@ -161,6 +145,7 @@ describe("Zap", function () {
     const oracle = ORACLES.EURS.address;
 
     await testZapFunctionality(base, quote, baseDecimals, quoteDecimals, curve, oracle);
+    await testZapCalcDepositLogic(base, quote, baseDecimals, quoteDecimals, curve, oracle);
   });
 
   it("EURS", async function () {
@@ -172,5 +157,6 @@ describe("Zap", function () {
     const oracle = ORACLES.EURS.address;
 
     await testZapFunctionality(base, quote, baseDecimals, quoteDecimals, curve, oracle);
+    await testZapCalcDepositLogic(base, quote, baseDecimals, quoteDecimals, curve, oracle);
   });
 });
