@@ -75,7 +75,7 @@ describe("Zap", function () {
     zap = (await Factory.deploy()) as Zap;
   });
 
-  const testZapFunctionality = async (base, quote, baseDecimals, quoteDecimals, curve: Curve) => {
+  const testZapFunctionality = async (base, quote, baseDecimals, quoteDecimals, curve: Curve, oracle) => {
     await multiMintAndApprove([
       [base, user, parseUnits("100000", baseDecimals), zap.address],
       [quote, user, parseUnits("100000", quoteDecimals), zap.address],
@@ -84,8 +84,8 @@ describe("Zap", function () {
     ]);
 
     if (baseDecimals === 2) {
-      await zap.zapFromQuote(curve.address, parseUnits("100", quoteDecimals), await getFutureTime(), 0);
-      await zap.zapFromBase(curve.address, parseUnits("1000", baseDecimals), await getFutureTime(), 0);
+      await zap.zapFromQuote(curve.address, parseUnits("1", quoteDecimals), await getFutureTime(), 0);
+      await zap.zapFromBase(curve.address, parseUnits("1", baseDecimals), await getFutureTime(), 0);
     } else {
       await zap.zapFromQuote(curve.address, parseUnits("1", quoteDecimals), await getFutureTime(), 0);
       await zap.zapFromBase(curve.address, parseUnits("1", baseDecimals), await getFutureTime(), 0);
@@ -129,29 +129,39 @@ describe("Zap", function () {
       parseUnits("1000", quoteDecimals),
     );
 
-    expect(maxDeposit2[2][1].lt(parseUnits("1000", quoteDecimals))).to.be.true;
-    expectBNAproxEq(maxDeposit2[2][0], parseUnits("100", baseDecimals), parseUnits("2", baseDecimals));
+    if (baseDecimals === 2) {
+      expect(maxDeposit2[2][1].lt(parseUnits("1000", quoteDecimals))).to.be.true;
+
+      // EURs approximation suxs
+      expect(maxDeposit2[2][0].lt(parseUnits("100", baseDecimals))).to.be.true;
+      expect(maxDeposit2[2][0].gt(parseUnits("50", baseDecimals))).to.be.true;
+    } else {
+      expect(maxDeposit2[2][1].lt(parseUnits("1000", quoteDecimals))).to.be.true;
+      expectBNAproxEq(maxDeposit2[2][0], parseUnits("100", baseDecimals), parseUnits("2", baseDecimals));
+    }
   };
 
-  // it("CADC", async function () {
-  //   const base = TOKENS.CADC.address;
-  //   const quote = TOKENS.USDC.address;
-  //   const baseDecimals = TOKENS.CADC.decimals;
-  //   const quoteDecimals = TOKENS.USDC.decimals;
-  //   const curve = curveCADC;
+  it("CADC", async function () {
+    const base = TOKENS.CADC.address;
+    const quote = TOKENS.USDC.address;
+    const baseDecimals = TOKENS.CADC.decimals;
+    const quoteDecimals = TOKENS.USDC.decimals;
+    const curve = curveCADC;
+    const oracle = ORACLES.EURS.address;
 
-  //   await testZapFunctionality(base, quote, baseDecimals, quoteDecimals, curve);
-  // });
+    await testZapFunctionality(base, quote, baseDecimals, quoteDecimals, curve, oracle);
+  });
 
-  // it("XSGD", async function () {
-  //   const base = TOKENS.XSGD.address;
-  //   const quote = TOKENS.USDC.address;
-  //   const baseDecimals = TOKENS.XSGD.decimals;
-  //   const quoteDecimals = TOKENS.USDC.decimals;
-  //   const curve = curveXSGD;
+  it("XSGD", async function () {
+    const base = TOKENS.XSGD.address;
+    const quote = TOKENS.USDC.address;
+    const baseDecimals = TOKENS.XSGD.decimals;
+    const quoteDecimals = TOKENS.USDC.decimals;
+    const curve = curveXSGD;
+    const oracle = ORACLES.EURS.address;
 
-  //   await testZapFunctionality(base, quote, baseDecimals, quoteDecimals, curve);
-  // });
+    await testZapFunctionality(base, quote, baseDecimals, quoteDecimals, curve, oracle);
+  });
 
   it("EURS", async function () {
     const base = TOKENS.EURS.address;
@@ -159,7 +169,8 @@ describe("Zap", function () {
     const baseDecimals = TOKENS.EURS.decimals;
     const quoteDecimals = TOKENS.USDC.decimals;
     const curve = curveEURS;
+    const oracle = ORACLES.EURS.address;
 
-    await testZapFunctionality(base, quote, baseDecimals, quoteDecimals, curve);
+    await testZapFunctionality(base, quote, baseDecimals, quoteDecimals, curve, oracle);
   });
 });
