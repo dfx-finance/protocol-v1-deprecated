@@ -22,8 +22,6 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 
 import "./Curve.sol";
 
-import "hardhat/console.sol";
-
 contract Zap {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
