@@ -339,12 +339,6 @@ contract Zap {
             // Due to loss in precision in floating point math
             depositAmount2 = depositAmount2.mul(99999).div(100000);
 
-            // EURS 2 decimals screws things up for small amounts
-            // Need to give 2% slippage
-            if (curveBaseDecimals == 2) {
-                depositAmount2 = depositAmount2.mul(98).div(100);
-            }
-
             (lp2, outs2) = Curve(_curve).viewDeposit(depositAmount2);
         }
 

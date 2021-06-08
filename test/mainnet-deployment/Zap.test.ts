@@ -133,25 +133,25 @@ describe("Zap", function () {
     expectBNAproxEq(maxDeposit2[2][0], parseUnits("100", baseDecimals), parseUnits("2", baseDecimals));
   };
 
-  it("CADC", async function () {
-    const base = TOKENS.CADC.address;
-    const quote = TOKENS.USDC.address;
-    const baseDecimals = TOKENS.CADC.decimals;
-    const quoteDecimals = TOKENS.USDC.decimals;
-    const curve = curveCADC;
+  // it("CADC", async function () {
+  //   const base = TOKENS.CADC.address;
+  //   const quote = TOKENS.USDC.address;
+  //   const baseDecimals = TOKENS.CADC.decimals;
+  //   const quoteDecimals = TOKENS.USDC.decimals;
+  //   const curve = curveCADC;
 
-    await testZapFunctionality(base, quote, baseDecimals, quoteDecimals, curve);
-  });
+  //   await testZapFunctionality(base, quote, baseDecimals, quoteDecimals, curve);
+  // });
 
-  it("XSGD", async function () {
-    const base = TOKENS.XSGD.address;
-    const quote = TOKENS.USDC.address;
-    const baseDecimals = TOKENS.XSGD.decimals;
-    const quoteDecimals = TOKENS.USDC.decimals;
-    const curve = curveXSGD;
+  // it("XSGD", async function () {
+  //   const base = TOKENS.XSGD.address;
+  //   const quote = TOKENS.USDC.address;
+  //   const baseDecimals = TOKENS.XSGD.decimals;
+  //   const quoteDecimals = TOKENS.USDC.decimals;
+  //   const curve = curveXSGD;
 
-    await testZapFunctionality(base, quote, baseDecimals, quoteDecimals, curve);
-  });
+  //   await testZapFunctionality(base, quote, baseDecimals, quoteDecimals, curve);
+  // });
 
   it("EURS", async function () {
     const base = TOKENS.EURS.address;
