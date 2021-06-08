@@ -327,7 +327,7 @@ contract Zap {
 
             // Prune amounts to get best possible result
             // Due to loss in precision in floating point math
-            depositAmount1 = depositAmount1.mul(9995).div(10000);
+            depositAmount1 = depositAmount1.mul(99999).div(100000);
             (lp1, outs1) = Curve(_curve).viewDeposit(depositAmount1);
 
             // Re-using variables
@@ -337,7 +337,7 @@ contract Zap {
 
             // Prune amounts to get best possible result
             // Due to loss in precision in floating point math
-            depositAmount2 = depositAmount2.mul(9995).div(10000);
+            depositAmount2 = depositAmount2.mul(99999).div(100000);
 
             // EURS 2 decimals screws things up for small amounts
             // Need to give 2% slippage

@@ -91,7 +91,7 @@ describe("Zap", function () {
       await zap.zapFromBase(curve.address, parseUnits("1", baseDecimals), await getFutureTime(), 0);
     }
 
-    const rawA = parseUnits("100000", baseDecimals);
+    const rawA = parseUnits("200000", baseDecimals);
     const rawB = await zap.calcMaxQuoteForDeposit(curve.address, rawA);
     const [depositAmounts, lpsReceived, coinAmounts] = await zap.calcMaxDepositAmount(curve.address, rawA, rawB);
     const [expectedBaseAmount, expectedQuoteAmount] = await curve.viewWithdraw(lpsReceived);
