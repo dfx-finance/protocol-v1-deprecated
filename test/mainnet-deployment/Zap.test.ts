@@ -85,6 +85,12 @@ describe("Zap", function () {
 
     // Make sure we can zap from a range of values
     for (let i = 1; i <= 100000; i *= 10) {
+      if (baseDecimals === 2) {
+        if (i === 1) {
+          continue;
+        }
+      }
+
       const outB = await zap.callStatic.zapFromBase(
         curve.address,
         parseUnits(i.toString(), baseDecimals),

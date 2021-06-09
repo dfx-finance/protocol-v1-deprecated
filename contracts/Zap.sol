@@ -22,6 +22,8 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 
 import "./Curve.sol";
 
+import "hardhat/console.sol";
+
 contract Zap {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
@@ -177,13 +179,9 @@ contract Zap {
         uint256 curveBaseBal = IERC20(base).balanceOf(_curve);
         uint8 curveBaseDecimals = ERC20(base).decimals();
         uint256 curveQuoteBal = USDC.balanceOf(_curve);
-        uint256 curveRatio = curveBaseBal.mul(10**(36 - uint256(curveBaseDecimals))).div(curveQuoteBal.mul(1e12));
 
         // How much user wants to swap
-        uint256 initialSwapAmount =
-            _zapAmount.sub(
-                curveRatio <= 1e18 ? _zapAmount.mul(curveRatio).div(1e18) : _zapAmount.mul(1e18).div(curveRatio)
-            );
+        uint256 initialSwapAmount = _zapAmount.div(2);
 
         // Calc Base Swap Amount
         if (isFromBase) {
@@ -326,7 +324,7 @@ contract Zap {
     /// @return uint256 - The amount of quote tokens to be swapped into base tokens
     function _calcQuoteSwapAmount(uint256 initialSwapAmount, ZapData memory zapData) internal view returns (uint256) {
         uint256 swapAmount = initialSwapAmount;
-        uint256 delta = swapAmount.div(2);
+        uint256 delta = initialSwapAmount.div(2);
         uint256 recvAmount;
         uint256 curveRatio;
         uint256 userRatio;
@@ -377,7 +375,7 @@ contract Zap {
     /// @return uint256 - The amount of base tokens to be swapped into quote tokens
     function _calcBaseSwapAmount(uint256 initialSwapAmount, ZapData memory zapData) internal view returns (uint256) {
         uint256 swapAmount = initialSwapAmount;
-        uint256 delta = swapAmount.div(2);
+        uint256 delta = initialSwapAmount.div(2);
         uint256 recvAmount;
         uint256 curveRatio;
         uint256 userRatio;
