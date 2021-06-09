@@ -22,8 +22,6 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 
 import "./Curve.sol";
 
-import "hardhat/console.sol";
-
 contract Zap {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
@@ -314,7 +312,7 @@ contract Zap {
 
     // Stack too deep
     function _roundDown(uint256 a) internal pure returns (uint256) {
-        return a.mul(99999).div(100000);
+        return a.mul(99999999).div(100000000);
     }
 
     /// @notice Calculate how many quote tokens needs to be swapped into base tokens to
