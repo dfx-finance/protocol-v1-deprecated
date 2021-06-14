@@ -37,7 +37,7 @@ jobs:
     docker:
       - image: cimg/node:14.16.1
       - image: trufflesuite/ganache-cli
-        command: ganache-cli -f https://eth-mainnet.alchemyapi.io/v2/TKLrQ9-f0AahbCEYRaPGh7EsJRVYYLh2 -l 15000000 --chainId
+        command: ganache-cli -f https://eth-mainnet.alchemyapi.io/v2/TKLrQ9-f0AahbCEYRaPGh7EsJRVYYLh2 -l 15000000
     steps:
       - checkout
       - <<: *step_restore_cache
