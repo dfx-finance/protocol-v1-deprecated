@@ -34,6 +34,7 @@ describe("Router", function () {
   let usdcToUsdAssimilator: Contract;
   let eursToUsdAssimilator: Contract;
   let xsgdToUsdAssimilator: Contract;
+  let trybToUsdAssimilator: Contract;
 
   let CurveFactory: ContractFactory;
   let RouterFactory: ContractFactory;
@@ -45,6 +46,7 @@ describe("Router", function () {
   let cadc: ERC20;
   let eurs: ERC20;
   let xsgd: ERC20;
+  let tryb: ERC20;
   let erc20: ERC20;
 
   let createCurveAndSetParams: ({
@@ -83,12 +85,14 @@ describe("Router", function () {
       usdcToUsdAssimilator,
       eursToUsdAssimilator,
       xsgdToUsdAssimilator,
+      trybToUsdAssimilator,
       CurveFactory,
       RouterFactory,
       usdc,
       cadc,
       eurs,
       xsgd,
+      tryb,
       erc20,
     } = await scaffoldTest());
   });
@@ -127,6 +131,18 @@ describe("Router", function () {
       params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
     });
 
+    const { curve: curveTRYB } = await createCurveAndSetParams({
+      name: NAME,
+      symbol: SYMBOL,
+      base: tryb.address,
+      quote: usdc.address,
+      baseWeight: parseUnits("0.4"),
+      quoteWeight: parseUnits("0.6"),
+      baseAssimilator: trybToUsdAssimilator.address,
+      quoteAssimilator: usdcToUsdAssimilator.address,
+      params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+    });
+
     const { curve: curveEURS } = await createCurveAndSetParams({
       name: NAME,
       symbol: SYMBOL,
@@ -148,6 +164,8 @@ describe("Router", function () {
       [TOKENS.XSGD.address, user1, parseUnits("100000", TOKENS.XSGD.decimals), curveXSGD.address],
       [TOKENS.USDC.address, user1, parseUnits("100000", TOKENS.USDC.decimals), curveEURS.address],
       [TOKENS.EURS.address, user1, parseUnits("100000", TOKENS.EURS.decimals), curveEURS.address],
+      [TOKENS.USDC.address, user1, parseUnits("100000", TOKENS.USDC.decimals), curveTRYB.address],
+      [TOKENS.TRYB.address, user1, parseUnits("100000", TOKENS.TRYB.decimals), curveTRYB.address],
     ]);
 
     await curveCADC
@@ -156,6 +174,11 @@ describe("Router", function () {
       .then(x => x.wait());
 
     await curveXSGD
+      .connect(user1)
+      .deposit(parseUnits("50000"), await getFutureTime())
+      .then(x => x.wait());
+
+    await curveTRYB
       .connect(user1)
       .deposit(parseUnits("50000"), await getFutureTime())
       .then(x => x.wait());
@@ -286,6 +309,19 @@ describe("Router", function () {
     });
   });
 
+  it("CADC -> TRYB targetSwap", async function () {
+    await routerViewTargetSwapAndCheck({
+      user: user2,
+      fromToken: TOKENS.CADC.address,
+      toToken: TOKENS.TRYB.address,
+      targetAmount: parseUnits("900", TOKENS.TRYB.decimals),
+      fromOracle: ORACLES.CADC.address,
+      toOracle: ORACLES.TRYB.address,
+      fromDecimals: TOKENS.CADC.decimals,
+      toDecimals: TOKENS.TRYB.decimals,
+    });
+  });
+
   it("CADC -> EURS targetSwap", async function () {
     await routerViewTargetSwapAndCheck({
       user: user2,
@@ -312,6 +348,19 @@ describe("Router", function () {
     });
   });
 
+  it("EURS -> TRYB targetSwap", async function () {
+    await routerViewTargetSwapAndCheck({
+      user: user2,
+      fromToken: TOKENS.EURS.address,
+      toToken: TOKENS.TRYB.address,
+      targetAmount: parseUnits("900", TOKENS.EURS.decimals),
+      fromOracle: ORACLES.EURS.address,
+      toOracle: ORACLES.TRYB.address,
+      fromDecimals: TOKENS.EURS.decimals,
+      toDecimals: TOKENS.TRYB.decimals,
+    });
+  });
+
   it("XSGD -> EURS targetSwap", async function () {
     await routerViewTargetSwapAndCheck({
       user: user2,
@@ -334,6 +383,32 @@ describe("Router", function () {
       fromOracle: ORACLES.XSGD.address,
       toOracle: ORACLES.CADC.address,
       fromDecimals: TOKENS.XSGD.decimals,
+      toDecimals: TOKENS.CADC.decimals,
+    });
+  });
+
+  it("TRYB -> EURS targetSwap", async function () {
+    await routerViewTargetSwapAndCheck({
+      user: user2,
+      fromToken: TOKENS.TRYB.address,
+      toToken: TOKENS.EURS.address,
+      targetAmount: parseUnits("900", TOKENS.EURS.decimals),
+      fromOracle: ORACLES.TRYB.address,
+      toOracle: ORACLES.EURS.address,
+      fromDecimals: TOKENS.TRYB.decimals,
+      toDecimals: TOKENS.EURS.decimals,
+    });
+  });
+
+  it("TRYB -> CADC targetSwap", async function () {
+    await routerViewTargetSwapAndCheck({
+      user: user2,
+      fromToken: TOKENS.TRYB.address,
+      toToken: TOKENS.CADC.address,
+      targetAmount: parseUnits("900", TOKENS.TRYB.decimals),
+      fromOracle: ORACLES.TRYB.address,
+      toOracle: ORACLES.CADC.address,
+      fromDecimals: TOKENS.TRYB.decimals,
       toDecimals: TOKENS.CADC.decimals,
     });
   });
@@ -390,6 +465,32 @@ describe("Router", function () {
     });
   });
 
+  it("USDC -> TRYB originSwap", async function () {
+    await routerOriginSwapAndCheck({
+      user: user2,
+      fromToken: TOKENS.USDC.address,
+      toToken: TOKENS.TRYB.address,
+      amount: parseUnits("1000", TOKENS.USDC.decimals),
+      fromOracle: ORACLES.USDC.address,
+      toOracle: ORACLES.TRYB.address,
+      fromDecimals: TOKENS.USDC.decimals,
+      toDecimals: TOKENS.TRYB.decimals,
+    });
+  });
+
+  it("CADC -> TRYB originSwap", async function () {
+    await routerOriginSwapAndCheck({
+      user: user2,
+      fromToken: TOKENS.CADC.address,
+      toToken: TOKENS.TRYB.address,
+      amount: parseUnits("1000", TOKENS.CADC.decimals),
+      fromOracle: ORACLES.CADC.address,
+      toOracle: ORACLES.TRYB.address,
+      fromDecimals: TOKENS.CADC.decimals,
+      toDecimals: TOKENS.TRYB.decimals,
+    });
+  });
+
   it("CADC -> EURS originSwap", async function () {
     await routerOriginSwapAndCheck({
       user: user2,
@@ -413,6 +514,19 @@ describe("Router", function () {
       toOracle: ORACLES.XSGD.address,
       fromDecimals: TOKENS.EURS.decimals,
       toDecimals: TOKENS.XSGD.decimals,
+    });
+  });
+
+  it("EURS -> TRYB originSwap", async function () {
+    await routerOriginSwapAndCheck({
+      user: user2,
+      fromToken: TOKENS.EURS.address,
+      toToken: TOKENS.TRYB.address,
+      amount: parseUnits("1000", TOKENS.EURS.decimals),
+      fromOracle: ORACLES.EURS.address,
+      toOracle: ORACLES.TRYB.address,
+      fromDecimals: TOKENS.EURS.decimals,
+      toDecimals: TOKENS.TRYB.decimals,
     });
   });
 
@@ -451,6 +565,32 @@ describe("Router", function () {
       fromOracle: ORACLES.XSGD.address,
       toOracle: ORACLES.CADC.address,
       fromDecimals: TOKENS.XSGD.decimals,
+      toDecimals: TOKENS.CADC.decimals,
+    });
+  });
+
+  it("TRYB -> EURS originSwap", async function () {
+    await routerOriginSwapAndCheck({
+      user: user2,
+      fromToken: TOKENS.TRYB.address,
+      toToken: TOKENS.EURS.address,
+      amount: parseUnits("100", TOKENS.TRYB.decimals),
+      fromOracle: ORACLES.TRYB.address,
+      toOracle: ORACLES.EURS.address,
+      fromDecimals: TOKENS.TRYB.decimals,
+      toDecimals: TOKENS.EURS.decimals,
+    });
+  });
+
+  it("TRYB -> CADC originSwap", async function () {
+    await routerOriginSwapAndCheck({
+      user: user2,
+      fromToken: TOKENS.TRYB.address,
+      toToken: TOKENS.CADC.address,
+      amount: parseUnits("1000", TOKENS.TRYB.decimals),
+      fromOracle: ORACLES.TRYB.address,
+      toOracle: ORACLES.CADC.address,
+      fromDecimals: TOKENS.TRYB.decimals,
       toDecimals: TOKENS.CADC.decimals,
     });
   });
