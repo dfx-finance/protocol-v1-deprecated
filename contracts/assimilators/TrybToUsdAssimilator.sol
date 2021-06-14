@@ -22,7 +22,7 @@ import "../lib/ABDKMath64x64.sol";
 import "../interfaces/IAssimilator.sol";
 import "../interfaces/IOracle.sol";
 
-contract XsgdToUsdAssimilator is IAssimilator {
+contract TrybToUsdAssimilator is IAssimilator {
     using ABDKMath64x64 for int128;
     using ABDKMath64x64 for uint256;
 
@@ -31,7 +31,7 @@ contract XsgdToUsdAssimilator is IAssimilator {
     IERC20 private constant usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
 
     IOracle private constant oracle = IOracle(0xb09fc5fd3f11cf9eb5e1c5dba43114e3c9f477b5);
-    IERC20 private constant xsgd = IERC20(0x2c537e5624e4af88a7ae4060c022609376c8d0eb);
+    IERC20 private constant tryb = IERC20(0x2c537e5624e4af88a7ae4060c022609376c8d0eb);
 
     // solhint-disable-next-line
     constructor() {}
@@ -41,13 +41,13 @@ contract XsgdToUsdAssimilator is IAssimilator {
         return uint256(price);
     }
 
-    // takes raw xsgd amount, transfers it in, calculates corresponding numeraire amount and returns it
+    // takes raw tryb amount, transfers it in, calculates corresponding numeraire amount and returns it
     function intakeRawAndGetBalance(uint256 _amount) external override returns (int128 amount_, int128 balance_) {
-        bool _transferSuccess = xsgd.transferFrom(msg.sender, address(this), _amount);
+        bool _transferSuccess = tryb.transferFrom(msg.sender, address(this), _amount);
 
-        require(_transferSuccess, "Curve/XSGD-transfer-from-failed");
+        require(_transferSuccess, "Curve/TRYB-transfer-from-failed");
 
-        uint256 _balance = xsgd.balanceOf(address(this));
+        uint256 _balance = tryb.balanceOf(address(this));
 
         uint256 _rate = getRate();
 
@@ -56,56 +56,56 @@ contract XsgdToUsdAssimilator is IAssimilator {
         amount_ = ((_amount * _rate) / 1e8).divu(1e6);
     }
 
-    // takes raw xsgd amount, transfers it in, calculates corresponding numeraire amount and returns it
+    // takes raw tryb amount, transfers it in, calculates corresponding numeraire amount and returns it
     function intakeRaw(uint256 _amount) external override returns (int128 amount_) {
-        bool _transferSuccess = xsgd.transferFrom(msg.sender, address(this), _amount);
+        bool _transferSuccess = tryb.transferFrom(msg.sender, address(this), _amount);
 
-        require(_transferSuccess, "Curve/XSGD-transfer-from-failed");
+        require(_transferSuccess, "Curve/TRYB-transfer-from-failed");
 
         uint256 _rate = getRate();
 
         amount_ = ((_amount * _rate) / 1e8).divu(1e6);
     }
 
-    // takes a numeraire amount, calculates the raw amount of xsgd, transfers it in and returns the corresponding raw amount
+    // takes a numeraire amount, calculates the raw amount of tryb, transfers it in and returns the corresponding raw amount
     function intakeNumeraire(int128 _amount) external override returns (uint256 amount_) {
         uint256 _rate = getRate();
 
         amount_ = (_amount.mulu(1e6) * 1e8) / _rate;
 
-        bool _transferSuccess = xsgd.transferFrom(msg.sender, address(this), amount_);
+        bool _transferSuccess = tryb.transferFrom(msg.sender, address(this), amount_);
 
-        require(_transferSuccess, "Curve/XSGD-transfer-from-failed");
+        require(_transferSuccess, "Curve/TRYB-transfer-from-failed");
     }
 
-    // takes a numeraire amount, calculates the raw amount of xsgd, transfers it in and returns the corresponding raw amount
+    // takes a numeraire amount, calculates the raw amount of tryb, transfers it in and returns the corresponding raw amount
     function intakeNumeraireLPRatio(
         uint256 _baseWeight,
         uint256 _quoteWeight,
         address _addr,
         int128 _amount
     ) external override returns (uint256 amount_) {
-        uint256 _xsgdBal = xsgd.balanceOf(_addr);
+        uint256 _trybBal = tryb.balanceOf(_addr);
 
-        if (_xsgdBal <= 0) return 0;
+        if (_trybBal <= 0) return 0;
 
         // 1e6
-        _xsgdBal = _xsgdBal.mul(1e18).div(_baseWeight);
+        _trybBal = _trybBal.mul(1e18).div(_baseWeight);
 
         // 1e6
         uint256 _usdcBal = usdc.balanceOf(_addr).mul(1e18).div(_quoteWeight);
 
         // Rate is in 1e6
-        uint256 _rate = _usdcBal.mul(1e6).div(_xsgdBal);
+        uint256 _rate = _usdcBal.mul(1e6).div(_trybBal);
 
         amount_ = (_amount.mulu(1e6) * 1e6) / _rate;
 
-        bool _transferSuccess = xsgd.transferFrom(msg.sender, address(this), amount_);
+        bool _transferSuccess = tryb.transferFrom(msg.sender, address(this), amount_);
 
-        require(_transferSuccess, "Curve/XSGD-transfer-failed");
+        require(_transferSuccess, "Curve/TRYB-transfer-failed");
     }
 
-    // takes a raw amount of xsgd and transfers it out, returns numeraire value of the raw amount
+    // takes a raw amount of tryb and transfers it out, returns numeraire value of the raw amount
     function outputRawAndGetBalance(address _dst, uint256 _amount)
         external
         override
@@ -113,41 +113,41 @@ contract XsgdToUsdAssimilator is IAssimilator {
     {
         uint256 _rate = getRate();
 
-        uint256 _xsgdAmount = ((_amount) * _rate) / 1e8;
+        uint256 _trybAmount = ((_amount) * _rate) / 1e8;
 
-        bool _transferSuccess = xsgd.transfer(_dst, _xsgdAmount);
+        bool _transferSuccess = tryb.transfer(_dst, _trybAmount);
 
-        require(_transferSuccess, "Curve/XSGD-transfer-failed");
+        require(_transferSuccess, "Curve/TRYB-transfer-failed");
 
-        uint256 _balance = xsgd.balanceOf(address(this));
+        uint256 _balance = tryb.balanceOf(address(this));
 
-        amount_ = _xsgdAmount.divu(1e6);
+        amount_ = _trybAmount.divu(1e6);
 
         balance_ = ((_balance * _rate) / 1e8).divu(1e6);
     }
 
-    // takes a raw amount of xsgd and transfers it out, returns numeraire value of the raw amount
+    // takes a raw amount of tryb and transfers it out, returns numeraire value of the raw amount
     function outputRaw(address _dst, uint256 _amount) external override returns (int128 amount_) {
         uint256 _rate = getRate();
 
-        uint256 _xsgdAmount = (_amount * _rate) / 1e8;
+        uint256 _trybAmount = (_amount * _rate) / 1e8;
 
-        bool _transferSuccess = xsgd.transfer(_dst, _xsgdAmount);
+        bool _transferSuccess = tryb.transfer(_dst, _trybAmount);
 
-        require(_transferSuccess, "Curve/XSGD-transfer-failed");
+        require(_transferSuccess, "Curve/TRYB-transfer-failed");
 
-        amount_ = _xsgdAmount.divu(1e6);
+        amount_ = _trybAmount.divu(1e6);
     }
 
-    // takes a numeraire value of xsgd, figures out the raw amount, transfers raw amount out, and returns raw amount
+    // takes a numeraire value of tryb, figures out the raw amount, transfers raw amount out, and returns raw amount
     function outputNumeraire(address _dst, int128 _amount) external override returns (uint256 amount_) {
         uint256 _rate = getRate();
 
         amount_ = (_amount.mulu(1e6) * 1e8) / _rate;
 
-        bool _transferSuccess = xsgd.transfer(_dst, amount_);
+        bool _transferSuccess = tryb.transfer(_dst, amount_);
 
-        require(_transferSuccess, "Curve/XSGD-transfer-failed");
+        require(_transferSuccess, "Curve/TRYB-transfer-failed");
     }
 
     // takes a numeraire amount and returns the raw amount
@@ -163,18 +163,18 @@ contract XsgdToUsdAssimilator is IAssimilator {
         address _addr,
         int128 _amount
     ) external view override returns (uint256 amount_) {
-        uint256 _xsgdBal = xsgd.balanceOf(_addr);
+        uint256 _trybBal = tryb.balanceOf(_addr);
 
-        if (_xsgdBal <= 0) return 0;
+        if (_trybBal <= 0) return 0;
 
         // 1e6
-        _xsgdBal = _xsgdBal.mul(1e18).div(_baseWeight);
+        _trybBal = _trybBal.mul(1e18).div(_baseWeight);
 
         // 1e6
         uint256 _usdcBal = usdc.balanceOf(_addr).mul(1e18).div(_quoteWeight);
 
         // Rate is in 1e6
-        uint256 _rate = _usdcBal.mul(1e6).div(_xsgdBal);
+        uint256 _rate = _usdcBal.mul(1e6).div(_trybBal);
 
         amount_ = (_amount.mulu(1e6) * 1e6) / _rate;
     }
@@ -186,18 +186,18 @@ contract XsgdToUsdAssimilator is IAssimilator {
         amount_ = ((_amount * _rate) / 1e8).divu(1e6);
     }
 
-    // views the numeraire value of the current balance of the reserve, in this case xsgd
+    // views the numeraire value of the current balance of the reserve, in this case tryb
     function viewNumeraireBalance(address _addr) external view override returns (int128 balance_) {
         uint256 _rate = getRate();
 
-        uint256 _balance = xsgd.balanceOf(_addr);
+        uint256 _balance = tryb.balanceOf(_addr);
 
         if (_balance <= 0) return ABDKMath64x64.fromUInt(0);
 
         balance_ = ((_balance * _rate) / 1e8).divu(1e6);
     }
 
-    // views the numeraire value of the current balance of the reserve, in this case xsgd
+    // views the numeraire value of the current balance of the reserve, in this case tryb
     function viewNumeraireAmountAndBalance(address _addr, uint256 _amount)
         external
         view
@@ -208,12 +208,12 @@ contract XsgdToUsdAssimilator is IAssimilator {
 
         amount_ = ((_amount * _rate) / 1e8).divu(1e6);
 
-        uint256 _balance = xsgd.balanceOf(_addr);
+        uint256 _balance = tryb.balanceOf(_addr);
 
         balance_ = ((_balance * _rate) / 1e8).divu(1e6);
     }
 
-    // views the numeraire value of the current balance of the reserve, in this case xsgd
+    // views the numeraire value of the current balance of the reserve, in this case tryb
     // instead of calculating with chainlink's "rate" it'll be determined by the existing
     // token ratio
     // Mainly to protect LP from losing
@@ -222,15 +222,15 @@ contract XsgdToUsdAssimilator is IAssimilator {
         uint256 _quoteWeight,
         address _addr
     ) external view override returns (int128 balance_) {
-        uint256 _xsgdBal = xsgd.balanceOf(_addr);
+        uint256 _trybBal = tryb.balanceOf(_addr);
 
-        if (_xsgdBal <= 0) return ABDKMath64x64.fromUInt(0);
+        if (_trybBal <= 0) return ABDKMath64x64.fromUInt(0);
 
         uint256 _usdcBal = usdc.balanceOf(_addr).mul(1e18).div(_quoteWeight);
 
         // Rate is in 1e6
-        uint256 _rate = _usdcBal.mul(1e18).div(_xsgdBal.mul(1e18).div(_baseWeight));
+        uint256 _rate = _usdcBal.mul(1e18).div(_trybBal.mul(1e18).div(_baseWeight));
 
-        balance_ = ((_xsgdBal * _rate) / 1e6).divu(1e18);
+        balance_ = ((_trybBal * _rate) / 1e6).divu(1e18);
     }
 }
