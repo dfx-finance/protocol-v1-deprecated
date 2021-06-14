@@ -376,8 +376,8 @@ describe("Curve", function () {
         expectBNAproxEq(originDeltaBase, originExpectedBase, originExpectedBase.div(10));
         expectBNAproxEq(originDeltaQuote, originExpectedQuote, originExpectedQuote.div(10));
       } else {
-        expectBNAproxEq(originDeltaBase, originExpectedBase, originExpectedBase.div(2000));
-        expectBNAproxEq(originDeltaQuote, originExpectedQuote, originExpectedQuote.div(2000));
+        expectBNAproxEq(originDeltaBase, originExpectedBase, originExpectedBase.div(1000));
+        expectBNAproxEq(originDeltaQuote, originExpectedQuote, originExpectedQuote.div(1000));
       }
 
       // Target Swap
@@ -1304,7 +1304,7 @@ describe("Curve", function () {
             baseAssimilator: eursToUsdAssimilator.address,
             quoteAssimilator: usdcToUsdAssimilator.address,
             params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
-            oracle: ORACLES.XSGD.address,
+            oracle: ORACLES.EURS.address,
           });
         });
       }
