@@ -6,7 +6,7 @@ import { TOKENS } from "./Constants";
 import { ERC20, Curve, CurveFactory } from "../typechain";
 import { BigNumberish, Signer } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
-import { mintCADC, mintEURS, mintUSDC, mintXSGD } from "./Utils";
+import { mintCADC, mintEURS, mintUSDC, mintXSGD, mintTRYB } from "./Utils";
 
 export const ALPHA = parseUnits("0.5");
 export const BETA = parseUnits("0.35");
@@ -35,16 +35,19 @@ export const scaffoldTest = async () => {
   const UsdcToUsdAssimilator = await ethers.getContractFactory("UsdcToUsdAssimilator");
   const EursToUsdAssimilator = await ethers.getContractFactory("EursToUsdAssimilator");
   const XsgdToUsdAssimilator = await ethers.getContractFactory("XsgdToUsdAssimilator");
+  const TrybToUsdAssimilator = await ethers.getContractFactory("TrybToUsdAssimilator");
 
   const cadcToUsdAssimilator = await CadcToUsdAssimilator.deploy();
   const usdcToUsdAssimilator = await UsdcToUsdAssimilator.deploy();
   const eursToUsdAssimilator = await EursToUsdAssimilator.deploy();
   const xsgdToUsdAssimilator = await XsgdToUsdAssimilator.deploy();
+  const trybToUsdAssimilator = await TrybToUsdAssimilator.deploy();
 
   const usdc = (await ethers.getContractAt("ERC20", TOKENS.USDC.address)) as ERC20;
   const cadc = (await ethers.getContractAt("ERC20", TOKENS.CADC.address)) as ERC20;
   const eurs = (await ethers.getContractAt("ERC20", TOKENS.EURS.address)) as ERC20;
   const xsgd = (await ethers.getContractAt("ERC20", TOKENS.XSGD.address)) as ERC20;
+  const tryb = (await ethers.getContractAt("ERC20", TOKENS.TRYB.address)) as ERC20;
 
   const erc20 = (await ethers.getContractAt("ERC20", ethers.constants.AddressZero)) as ERC20;
 
@@ -67,10 +70,12 @@ export const scaffoldTest = async () => {
     usdcToUsdAssimilator,
     eursToUsdAssimilator,
     xsgdToUsdAssimilator,
+    trybToUsdAssimilator,
     usdc,
     cadc,
     eurs,
     xsgd,
+    tryb,
     erc20,
     CurveFactory,
     RouterFactory,
@@ -194,6 +199,10 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
 
     if (tokenAddress.toLowerCase() === TOKENS.XSGD.address.toLowerCase()) {
       await mintXSGD(minterAddress, amount);
+    }
+
+    if (tokenAddress.toLowerCase() === TOKENS.TRYB.address.toLowerCase()) {
+      await mintTRYB(minterAddress, amount);
     }
 
     await erc20.attach(tokenAddress).connect(minter).approve(recipient, amount);
