@@ -1304,7 +1304,7 @@ describe("Curve", function () {
             baseAssimilator: eursToUsdAssimilator.address,
             quoteAssimilator: usdcToUsdAssimilator.address,
             params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
-            oracle: ORACLES.XSGD.address,
+            oracle: ORACLES.EURS.address,
           });
         });
       }
