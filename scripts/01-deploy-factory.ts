@@ -19,6 +19,11 @@ async function main() {
   const SwapsLib = await ethers.getContractFactory("Swaps");
   const ViewLiquidityLib = await ethers.getContractFactory("ViewLiquidity");
 
+  // const curvesLib = { address: '0xc706884898F9ffd13c204DC8d9af2a87c647c13b' }
+  // const orchestratorLib = { address: '0x2B2bFE80547F50e1a67Bbf0D52C24e0683f67B6D' }
+  // const proportionalLiquidityLib = { address: '0xe553C6c9E3C8bf66F396a3bfE88e4Ff4c8ef2FBb' }
+  // const swapsLib = { address: '0x17118d149ce6F891aad1d7a66CADAA6837B386EF' }
+
   const curvesLib = await deployContract({
     name: "CuvesLib",
     deployer: user,

@@ -8,13 +8,13 @@ import { parseUnits } from "@ethersproject/units";
 
 const { ethers } = hre;
 
-const GOVERNANCE = "0x27e843260c71443b4cc8cb6bf226c3f77b9695af";
+// const GOVERNANCE = "0x27e843260c71443b4cc8cb6bf226c3f77b9695af";
 
 const ASSIMILATOR_ADDRESSES = {
-  cadcToUsdAssimilator: "0x12310b7726eaE2D2438361Fd126a25D8381Fe891",
-  usdcToUsdAssimilator: "0x3CB209Dc9dDC45ce4Fd9a2f5DD33a8C6A9b6ea52",
-  eursToUsdAssimilator: "0x39F45038D763dd88791cE9BdE8d6c18081c7d522",
-  xsgdToUsdAssimilator: "0xe36DeD0aF2929870977F05A1f017BAB6CF8190f8",
+  cadcToUsdAssimilator: "0xe36DeD0aF2929870977F05A1f017BAB6CF8190f8",
+  usdcToUsdAssimilator: "0x8F022C3e9f8F915Fd99c0E307059acD2B908D8E1",
+  eursToUsdAssimilator: "0xD09607e80936f6abf35eee75E77115a93A5FE9D5",
+  xsgdToUsdAssimilator: "0x58c88f583b26F59215F43633F4181F210379226E",
 };
 
 const ALPHA = parseUnits("0.8");
@@ -23,16 +23,15 @@ const MAX = parseUnits("0.15");
 const EPSILON = parseUnits("0.0005");
 const LAMBDA = parseUnits("0.3");
 
+const CURVE_FACTORY = "0xAb23B50fC7835D0F1B892746992f28646305306C";
+
 async function main() {
   const { user } = await getAccounts();
 
   console.log(chalk.blue(`>>>>>>>>>>>> Network: ${(hre.network.config as any).url} <<<<<<<<<<<<`));
   console.log(chalk.blue(`>>>>>>>>>>>> Deployer: ${user.address} <<<<<<<<<<<<`));
 
-  const curveFactory = (await ethers.getContractAt(
-    "CurveFactory",
-    "0xd3C1bF5582b5f3029b15bE04a49C65d3226dFB0C",
-  )) as CurveFactory;
+  const curveFactory = (await ethers.getContractAt("CurveFactory", CURVE_FACTORY)) as CurveFactory;
 
   const createAndSetParams = async (name, symbol, base, quote, baseAssim, quoteAssim) => {
     console.log("creating ", name);
@@ -67,13 +66,13 @@ async function main() {
     await tx2.wait();
     console.log("params setted, transferring ownership");
     gasPrice = await getFastGasPrice();
-    const tx3 = await curve.transferOwnership(GOVERNANCE, {
-      gasPrice,
-      gasLimit: 300000,
-    });
-    console.log("tx hash", tx3.hash);
-    await tx3.wait();
-    console.log("ownership xferred");
+    // const tx3 = await curve.transferOwnership(GOVERNANCE, {
+    //   gasPrice,
+    //   gasLimit: 300000,
+    // });
+    // console.log("tx hash", tx3.hash);
+    // await tx3.wait();
+    // console.log("ownership xferred");
 
     console.log("==== done ====");
   };

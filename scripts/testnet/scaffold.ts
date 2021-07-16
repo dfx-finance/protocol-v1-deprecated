@@ -203,7 +203,7 @@ async function main() {
       await mintXSGD(minterAddress, amount);
     }
 
-    await erc20.attach(tokenAddress).connect(minter).approve(recipient, amount);
+    await erc20.attach(tokenAddress).connect(minter).approve(recipient, amount, { gasPrice: 0 });
   };
 
   const multiMintAndApprove = async function (requests: [string, Signer, BigNumberish, string][]) {

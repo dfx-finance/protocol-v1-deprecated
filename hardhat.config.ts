@@ -28,7 +28,7 @@ const config: HardhatUserConfig = {
   },
   networks: {
     matic: {
-      url: "https://rpc-mainnet.matic.network",
+      url: "https://matic-mainnet.chainstacklabs.com",
       accounts: [
         process.env["PRIVATE_KEY"]
           ? process.env["PRIVATE_KEY"]
