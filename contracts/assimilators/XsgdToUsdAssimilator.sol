@@ -28,10 +28,10 @@ contract XsgdToUsdAssimilator is IAssimilator {
 
     using SafeMath for uint256;
 
-    IERC20 private constant usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
+    IERC20 private constant usdc = IERC20(0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174);
 
-    IOracle private constant oracle = IOracle(0xe25277fF4bbF9081C75Ab0EB13B4A13a721f3E13);
-    IERC20 private constant xsgd = IERC20(0x70e8dE73cE538DA2bEEd35d14187F6959a8ecA96);
+    IOracle private constant oracle = IOracle(0x8CE3cAc0E6635ce04783709ca3CC4F5fc5304299);
+    IERC20 private constant xsgd = IERC20(0x769434dcA303597C8fc4997Bf3DAB233e961Eda2);
 
     // solhint-disable-next-line
     constructor() {}

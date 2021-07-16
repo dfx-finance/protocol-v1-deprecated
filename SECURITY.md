@@ -77,7 +77,7 @@ DFX Finance has a Bug Bounty program to encourage security researchers to spend 
 
 Actual payouts are determined by classifying the vulnerability based on its impact and likelihood to be exploited successfully, as well as the process working with the disclosing security researcher. The rewards represent the _maximum_ that will be paid out for a disclosure.
 
-Rewards are paid out in [USDC](https://etherscan.io/token/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48).
+Rewards are paid out in [USDC](https://etherscan.io/token/0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174).
 
 ### Scope
 

@@ -27,6 +27,14 @@ const config: HardhatUserConfig = {
     },
   },
   networks: {
+    matic: {
+      url: "https://rpc-mainnet.matic.network",
+      accounts: [
+        process.env["PRIVATE_KEY"]
+          ? process.env["PRIVATE_KEY"]
+          : "0000000000000000000000000000000000000000000000000000000000000001",
+      ],
+    },
     localhost: {
       url: "http://127.0.0.1:8545",
       timeout: 1200000,
@@ -53,7 +61,6 @@ const config: HardhatUserConfig = {
       forking: {
         enabled: true,
         url: process.env["RPC_URL"] ? process.env["RPC_URL"] : "http://127.0.0.1:8545",
-        blockNumber: 12593950,
       },
       blockGasLimit: 20000000,
       allowUnlimitedContractSize: true,

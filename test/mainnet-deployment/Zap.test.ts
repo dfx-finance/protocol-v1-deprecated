@@ -67,10 +67,6 @@ describe("Zap", function () {
 
     const owner = await unlockAccountAndGetSigner(await curveCADC.owner());
 
-    await curveCADC.connect(owner).turnOffWhitelisting({ gasPrice: 0 });
-    await curveEURS.connect(owner).turnOffWhitelisting({ gasPrice: 0 });
-    await curveXSGD.connect(owner).turnOffWhitelisting({ gasPrice: 0 });
-
     const Factory = await ethers.getContractFactory("Zap");
     zap = (await Factory.deploy()) as Zap;
   });

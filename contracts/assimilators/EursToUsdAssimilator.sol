@@ -28,10 +28,10 @@ contract EursToUsdAssimilator is IAssimilator {
 
     using SafeMath for uint256;
 
-    IERC20 private constant usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
+    IERC20 private constant usdc = IERC20(0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174);
 
-    IOracle private constant oracle = IOracle(0xb49f677943BC038e9857d61E7d053CaA2C1734C1);
-    IERC20 private constant eurs = IERC20(0xdB25f211AB05b1c97D595516F45794528a807ad8);
+    IOracle private constant oracle = IOracle(0x73366Fe0AA0Ded304479862808e02506FE556a98);
+    IERC20 private constant eurs = IERC20(0xE111178A87A3BFf0c8d18DECBa5798827539Ae99);
 
     // solhint-disable-next-line
     constructor() {}

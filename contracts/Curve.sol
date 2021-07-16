@@ -27,8 +27,6 @@ import "./ViewLiquidity.sol";
 
 import "./Storage.sol";
 
-import "./MerkleProver.sol";
-
 import "./interfaces/IFreeFromUpTo.sol";
 
 library Curves {
@@ -223,7 +221,7 @@ library Curves {
     }
 }
 
-contract Curve is Storage, MerkleProver {
+contract Curve is Storage {
     using SafeMath for uint256;
 
     event Approval(address indexed _owner, address indexed spender, uint256 value);
@@ -246,8 +244,6 @@ contract Curve is Storage, MerkleProver {
     event FrozenSet(bool isFrozen);
 
     event EmergencyAlarm(bool isEmergency);
-
-    event WhitelistingStopped();
 
     event Trade(
         address indexed trader,
@@ -283,16 +279,6 @@ contract Curve is Storage, MerkleProver {
 
     modifier deadline(uint256 _deadline) {
         require(block.timestamp < _deadline, "Curve/tx-deadline-passed");
-        _;
-    }
-
-    modifier inWhitelistingStage() {
-        require(whitelistingStage, "Curve/whitelist-stage-on-going");
-        _;
-    }
-
-    modifier notInWhitelistingStage() {
-        require(!whitelistingStage, "Curve/whitelist-stage-stopped");
         _;
     }
 
@@ -356,12 +342,6 @@ contract Curve is Storage, MerkleProver {
         )
     {
         return Orchestrator.viewCurve(curve);
-    }
-
-    function turnOffWhitelisting() external onlyOwner {
-        emit WhitelistingStopped();
-
-        whitelistingStage = false;
     }
 
     function setEmergency(bool _emergency) external onlyOwner {
@@ -449,39 +429,6 @@ contract Curve is Storage, MerkleProver {
     }
 
     /// @notice deposit into the pool with no slippage from the numeraire assets the pool supports
-    /// @param  index Index corresponding to the merkleProof
-    /// @param  account Address coorresponding to the merkleProof
-    /// @param  amount Amount coorresponding to the merkleProof, should always be 1
-    /// @param  merkleProof Merkle proof
-    /// @param  _deposit the full amount you want to deposit into the pool which will be divided up evenly amongst
-    ///                  the numeraire assets of the pool
-    /// @return (the amount of curves you receive in return for your deposit,
-    ///          the amount deposited for each numeraire)
-    function depositWithWhitelist(
-        uint256 index,
-        address account,
-        uint256 amount,
-        bytes32[] calldata merkleProof,
-        uint256 _deposit,
-        uint256 _deadline
-    ) external deadline(_deadline) transactable nonReentrant inWhitelistingStage returns (uint256, uint256[] memory) {
-        require(isWhitelisted(index, account, amount, merkleProof), "Curve/not-whitelisted");
-        require(msg.sender == account, "Curve/not-approved-user");
-
-        (uint256 curvesMinted_, uint256[] memory deposits_) =
-            ProportionalLiquidity.proportionalDeposit(curve, _deposit);
-
-        whitelistedDeposited[msg.sender] = whitelistedDeposited[msg.sender].add(curvesMinted_);
-
-        // 10k max deposit
-        if (whitelistedDeposited[msg.sender] > 10000e18) {
-            revert("Curve/exceed-whitelist-maximum-deposit");
-        }
-
-        return (curvesMinted_, deposits_);
-    }
-
-    /// @notice deposit into the pool with no slippage from the numeraire assets the pool supports
     /// @param  _deposit the full amount you want to deposit into the pool which will be divided up evenly amongst
     ///                  the numeraire assets of the pool
     /// @return (the amount of curves you receive in return for your deposit,
@@ -491,7 +438,6 @@ contract Curve is Storage, MerkleProver {
         deadline(_deadline)
         transactable
         nonReentrant
-        notInWhitelistingStage
         returns (uint256, uint256[] memory)
     {
         // (curvesMinted_,  deposits_)
@@ -533,10 +479,6 @@ contract Curve is Storage, MerkleProver {
         nonReentrant
         returns (uint256[] memory withdrawals_)
     {
-        if (whitelistingStage) {
-            whitelistedDeposited[msg.sender] = whitelistedDeposited[msg.sender].sub(_curvesToBurn);
-        }
-
         return ProportionalLiquidity.proportionalWithdraw(curve, _curvesToBurn);
     }
 

@@ -132,8 +132,6 @@ async function main() {
     const curveLpToken = (await ethers.getContractAt("ERC20", curveAddress)) as ERC20;
     const curve = (await ethers.getContractAt("Curve", curveAddress)) as Curve;
 
-    await curve.turnOffWhitelisting();
-
     return {
       curve,
       curveLpToken,

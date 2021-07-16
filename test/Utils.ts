@@ -4,23 +4,16 @@ import { BigNumber, BigNumberish, ContractReceipt, Signer } from "ethers";
 import { expect } from "chai";
 
 import EACAggregatorProxyABI from "./abi/EACAggregatorProxy.json";
-import EURSABI from "./abi/EURSABI.json";
-import FiatTokenV1ABI from "./abi/FiatTokenV1ABI.json";
-import FiatTokenV2ABI from "./abi/FiatTokenV2ABI.json";
 import { Result } from "ethers/lib/utils";
 
 const { provider } = ethers;
 const { parseUnits } = ethers.utils;
 
-const sendETH = async (address, amount = 0.1) => {
-  const signer = await provider.getSigner(0);
-  await signer.sendTransaction({
-    to: address,
-    value: parseUnits(amount.toString(), 18),
-  });
+export const setStorageAt = async (address: string, index: string, value: string): Promise<void> => {
+  await ethers.provider.send("hardhat_setStorageAt", [address, index, value]);
 };
 
-export function snapshotAndRevert() {
+export function snapshotAndRevert(): void {
   let snapshotId;
 
   beforeEach(async () => {
@@ -39,24 +32,20 @@ export const unlockAccountAndGetSigner = async (address: string): Promise<Signer
 };
 
 // eslint-disable-next-line
-export const mintFiatTokenV2 = async ({ ownerAddress, tokenAddress, recipient, amount }) => {
-  // Send owner some ETH
-  await sendETH(ownerAddress);
+export const mintMaticBridgedToken = async ({ tokenAddress, recipient, amount }) => {
+  const index = ethers.utils
+    .solidityKeccak256(
+      ["uint256", "uint256"],
+      [recipient, 0], // key, slot
+    )
+    .toString();
+  const val = ethers.utils.hexlify(ethers.utils.zeroPad(amount.toHexString(), 32));
 
-  const minter = await provider.getSigner(8);
-  const minterAddress = await minter.getAddress();
-
-  const owner = await unlockAccountAndGetSigner(ownerAddress);
-  const FiatTokenV2 = new ethers.Contract(tokenAddress, FiatTokenV2ABI, owner);
-
-  await FiatTokenV2.updateMasterMinter(minterAddress);
-  await FiatTokenV2.connect(minter).configureMinter(minterAddress, amount);
-  await FiatTokenV2.connect(minter).mint(recipient, amount);
+  await setStorageAt(tokenAddress, index, val);
 };
 
 export const mintCADC = async (recipient: string, amount: BigNumberish | number): Promise<void> => {
-  await mintFiatTokenV2({
-    ownerAddress: TOKENS.CADC.owner,
+  await mintMaticBridgedToken({
     tokenAddress: TOKENS.CADC.address,
     recipient,
     amount,
@@ -64,8 +53,7 @@ export const mintCADC = async (recipient: string, amount: BigNumberish | number)
 };
 
 export const mintUSDC = async (recipient: string, amount: BigNumberish | number): Promise<void> => {
-  await mintFiatTokenV2({
-    ownerAddress: TOKENS.USDC.owner,
+  await mintMaticBridgedToken({
     tokenAddress: TOKENS.USDC.address,
     recipient,
     amount,
@@ -73,26 +61,19 @@ export const mintUSDC = async (recipient: string, amount: BigNumberish | number)
 };
 
 export const mintXSGD = async (recipient: string, amount: BigNumberish | number): Promise<void> => {
-  // Send minter some ETH
-  await sendETH(TOKENS.XSGD.masterMinter);
-
-  const owner = await unlockAccountAndGetSigner(TOKENS.XSGD.masterMinter);
-  const XSGD = new ethers.Contract(TOKENS.XSGD.address, FiatTokenV1ABI, owner);
-
-  await XSGD.increaseMinterAllowance(TOKENS.XSGD.masterMinter, amount);
-  await XSGD.mint(recipient, amount);
+  await mintMaticBridgedToken({
+    tokenAddress: TOKENS.XSGD.address,
+    recipient,
+    amount,
+  });
 };
 
 export const mintEURS = async (recipient: string, amount: BigNumberish | number): Promise<void> => {
-  // Send minter some ETH
-  await sendETH(TOKENS.EURS.owner);
-
-  const owner = await unlockAccountAndGetSigner(TOKENS.EURS.owner);
-  const EURS = new ethers.Contract(TOKENS.EURS.address, EURSABI, owner);
-
-  // Function is payable so need value: 0
-  await EURS.createTokens(amount, { value: 0 });
-  await EURS.transfer(recipient, amount);
+  await mintMaticBridgedToken({
+    tokenAddress: TOKENS.EURS.address,
+    recipient,
+    amount,
+  });
 };
 
 export const getOracleAnswer = async (oracleAddress: string): Promise<BigNumber> => {
@@ -109,13 +90,13 @@ export const updateOracleAnswer = async (oracleAddress: string, amount: BigNumbe
   let oracle = await ethers.getContractAt(EACAggregatorProxyABI, oracleAddress);
   const owner = await unlockAccountAndGetSigner(await oracle.owner());
   oracle = oracle.connect(owner);
-  await sendETH(await owner.getAddress(), 0.1);
+  // await sendETH(await owner.getAddress(), 0.1);
 
   const NewAggregator = await ethers.getContractFactory("MockAggregator", owner);
-  const aggregator = await NewAggregator.deploy();
+  const aggregator = await NewAggregator.deploy({ gasPrice: 0 });
   await aggregator.deployed();
 
-  aggregator.setAnswer(amount);
+  aggregator.setAnswer(amount, { gasPrice: 0 });
   await oracle.proposeAggregator(aggregator.address, { gasPrice: 0 });
   await oracle.confirmAggregator(aggregator.address, { gasPrice: 0 });
 };

@@ -1310,7 +1310,7 @@ describe("Curve", function () {
       }
     });
 
-    describe("Add and remove liquidity", function () {
+    describe.only("Add and remove liquidity", function () {
       const addAndRemoveLiquidityWithSanityChecks = async ({
         amount,
         name,

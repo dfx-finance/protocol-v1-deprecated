@@ -1,5 +1,4 @@
 // Contains a bunch of partial functions to help with scaffolding
-
 import { ethers } from "hardhat";
 import { TOKENS } from "./Constants";
 
@@ -89,7 +88,6 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
     baseAssimilator,
     quoteAssimilator,
     params,
-    yesWhitelisting,
   }: {
     name: string;
     symbol: string;
@@ -110,10 +108,6 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
     );
     const curveLpToken = (await ethers.getContractAt("ERC20", curveAddress)) as ERC20;
     const curve = (await ethers.getContractAt("Curve", curveAddress)) as Curve;
-
-    if (!yesWhitelisting) {
-      await curve.turnOffWhitelisting();
-    }
 
     // Set params for the curve
     if (params) {

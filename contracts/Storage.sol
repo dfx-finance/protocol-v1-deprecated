@@ -64,6 +64,4 @@ contract Storage {
     bool public emergency = false;
     bool public whitelistingStage = true;
     bool internal notEntered = true;
-
-    mapping(address => uint256) public whitelistedDeposited;
 }

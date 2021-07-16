@@ -28,10 +28,10 @@ contract CadcToUsdAssimilator is IAssimilator {
 
     using SafeMath for uint256;
 
-    IOracle private constant oracle = IOracle(0xa34317DB73e77d453b1B8d04550c44D10e981C8e);
-    IERC20 private constant cadc = IERC20(0xcaDC0acd4B445166f12d2C07EAc6E2544FbE2Eef);
+    IOracle private constant oracle = IOracle(0xACA44ABb8B04D07D883202F99FA5E3c53ed57Fb5);
+    IERC20 private constant cadc = IERC20(0x5d146d8B1dACb1EBBA5cb005ae1059DA8a1FbF57);
 
-    IERC20 private constant usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
+    IERC20 private constant usdc = IERC20(0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174);
 
     // solhint-disable-next-line
     constructor() {}
