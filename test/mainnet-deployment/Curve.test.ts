@@ -141,6 +141,34 @@ describe("Curve Mainnet Sanity Checks", function () {
       .withdraw(await curve.connect(user).balanceOf(userAddress), await getFutureTime(), { gasPrice: 0 });
   };
 
+  it("setParams", async function () {
+    const [user] = await ethers.getSigners();
+    const ownerAddr = await curveEURS.owner();
+    await user.sendTransaction({
+      to: ownerAddr,
+      value: parseUnits("10"),
+    });
+    const owner = await unlockAccountAndGetSigner(ownerAddr);
+
+    await multiMintAndApprove([
+      [TOKENS.USDC.address, owner, parseUnits("10000000", TOKENS.USDC.decimals), curveEURS.address],
+    ]);
+
+    await curveEURS
+      .connect(owner)
+      .originSwap(
+        TOKENS.USDC.address,
+        TOKENS.EURS.address,
+        parseUnits("60000", TOKENS.USDC.decimals),
+        0,
+        ethers.constants.MaxUint256,
+      );
+
+    await curveEURS
+      .connect(owner)
+      .setParams(parseUnits("0.8"), parseUnits("0.49"), parseUnits("0.16"), parseUnits("0.0005"), parseUnits("0.3"));
+  });
+
   // it("CADC", async function () {
   //   const base = TOKENS.CADC.address;
   //   const quote = TOKENS.USDC.address;
