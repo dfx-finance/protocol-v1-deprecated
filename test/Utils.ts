@@ -72,6 +72,15 @@ export const mintUSDC = async (recipient: string, amount: BigNumberish | number)
   });
 };
 
+export const mintNZDS = async (recipient: string, amount: BigNumberish | number): Promise<void> => {
+  await mintFiatTokenV2({
+    ownerAddress: TOKENS.NZDS.owner,
+    tokenAddress: TOKENS.NZDS.address,
+    recipient,
+    amount,
+  });
+};
+
 export const mintXSGD = async (recipient: string, amount: BigNumberish | number): Promise<void> => {
   // Send minter some ETH
   await sendETH(TOKENS.XSGD.masterMinter);
@@ -108,6 +117,13 @@ export const getOracleAnswer = async (oracleAddress: string): Promise<BigNumber>
 export const updateOracleAnswer = async (oracleAddress: string, amount: BigNumberish | number): Promise<void> => {
   let oracle = await ethers.getContractAt(EACAggregatorProxyABI, oracleAddress);
   const owner = await unlockAccountAndGetSigner(await oracle.owner());
+
+  const [u] = await ethers.getSigners();
+  await u.sendTransaction({
+    to: await owner.getAddress(),
+    value: parseUnits("10"),
+  });
+
   oracle = oracle.connect(owner);
   await sendETH(await owner.getAddress(), 0.1);
 
@@ -116,8 +132,8 @@ export const updateOracleAnswer = async (oracleAddress: string, amount: BigNumbe
   await aggregator.deployed();
 
   aggregator.setAnswer(amount);
-  await oracle.proposeAggregator(aggregator.address, { gasPrice: 0 });
-  await oracle.confirmAggregator(aggregator.address, { gasPrice: 0 });
+  await oracle.proposeAggregator(aggregator.address);
+  await oracle.confirmAggregator(aggregator.address);
 };
 
 export const getLatestBlockTime = async (): Promise<number> => {
