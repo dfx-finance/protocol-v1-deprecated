@@ -209,7 +209,7 @@ describe("Curve", function () {
     });
   });
 
-  describe("Swaps", function () {
+  describe.only("Swaps", function () {
     const originAndTargetSwapAndCheckSanity = async ({
       amount,
       name,
@@ -256,8 +256,8 @@ describe("Curve", function () {
 
       // Mint tokens and approve
       await multiMintAndApprove([
-        [base, user1, parseUnits("100000000", baseDecimals), curve.address],
-        [quote, user1, parseUnits("1000000", quoteDecimals), curve.address],
+        [base, user1, parseUnits("10000000000000000", baseDecimals), curve.address],
+        [quote, user1, parseUnits("10000000000", quoteDecimals), curve.address],
       ]);
 
       // Proportional Supply
@@ -369,12 +369,12 @@ describe("Curve", function () {
 
       // Mint tokens and approve
       await multiMintAndApprove([
-        [base, user1, parseUnits("10000000000", baseDecimals), curve.address],
-        [quote, user1, parseUnits("1000000", quoteDecimals), curve.address],
+        [base, user1, parseUnits("10000000000000000", baseDecimals), curve.address],
+        [quote, user1, parseUnits("10000000000000000", quoteDecimals), curve.address],
       ]);
 
       // Proportional Supply
-      await curve.deposit(parseUnits("1000000"), await getFutureTime());
+      await curve.connect(user1).deposit(parseUnits("1000000"), await getFutureTime());
 
       // Swap
       let beforeBase = await erc20.attach(base).balanceOf(user1Address);
@@ -435,28 +435,28 @@ describe("Curve", function () {
     };
 
     const bases = [
-      TOKENS.CADC.address,
+      /*TOKENS.CADC.address,
       TOKENS.XSGD.address,
       TOKENS.EURS.address,
-      TOKENS.NZDS.address,
+      TOKENS.NZDS.address,*/
       TOKENS.TRYB.address,
     ];
     const decimals = [
-      TOKENS.CADC.decimals,
+      /*TOKENS.CADC.decimals,
       TOKENS.XSGD.decimals,
       TOKENS.EURS.decimals,
-      TOKENS.NZDS.decimals,
+      TOKENS.NZDS.decimals,*/
       TOKENS.TRYB.decimals,
     ];
     const oracles = [
-      ORACLES.CADC.address,
+      /*ORACLES.CADC.address,
       ORACLES.XSGD.address,
       ORACLES.EURS.address,
-      ORACLES.NZDS.address,
+      ORACLES.NZDS.address,*/
       ORACLES.TRYB.address,
     ];
     const weights = [["0.5", "0.5"]];
-    const baseName = ["CADC", "XSGD", "EURS", "NZDS", "TRYB"];
+    const baseName = [/*"CADC", "XSGD", "EURS", "NZDS",*/ "TRYB"];
 
     for (let i = 0; i < bases.length; i++) {
       for (let j = 0; j < weights.length; j++) {
@@ -471,7 +471,9 @@ describe("Curve", function () {
           const quoteWeight = weights[j][0];
 
           it(`${name}/USDC ${weightInInt}/${100 - weightInInt} - ${k} (${baseName[i]} -> USDC)`, async function () {
-            const assimilators = [cadcToUsdAssimilator, xsgdToUsdAssimilator, eursToUsdAssimilator];
+            const assimilators = [
+              /*cadcToUsdAssimilator, xsgdToUsdAssimilator, eursToUsdAssimilator, nzdsToUsdAssimilator,*/ trybToUsdAssimilator,
+            ];
             const baseAssimilator = assimilators[i].address;
 
             await originAndTargetSwapAndCheckSanity({
@@ -492,7 +494,9 @@ describe("Curve", function () {
           });
 
           it(`${name}/USDC ${weightInInt}/${100 - weightInInt} - ${k} (USDC -> ${baseName[i]})`, async function () {
-            const assimilators = [cadcToUsdAssimilator, xsgdToUsdAssimilator, eursToUsdAssimilator];
+            const assimilators = [
+              /*cadcToUsdAssimilator, xsgdToUsdAssimilator, eursToUsdAssimilator, nzdsToUsdAssimilator,*/ trybToUsdAssimilator,
+            ];
             const baseAssimilator = assimilators[i].address;
 
             await originAndTargetSwapAndCheckSanityInverse({
