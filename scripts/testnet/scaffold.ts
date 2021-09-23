@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 
 import { TOKENS } from "../../test/Constants";
-import { mintCADC, mintEURS, mintUSDC, mintXSGD, getFutureTime } from "../../test/Utils";
+import { mintCADC, mintEURS, mintUSDC, mintXSGD, getFutureTime, mintTRYB } from "../../test/Utils";
 
 import { CurveFactory } from "../../typechain/CurveFactory";
 import { Curve } from "../../typechain/Curve";
@@ -203,6 +203,10 @@ async function main() {
 
     if (tokenAddress.toLowerCase() === TOKENS.XSGD.address.toLowerCase()) {
       await mintXSGD(minterAddress, amount);
+    }
+
+    if (tokenAddress.toLowerCase() === TOKENS.TRYB.address.toLowerCase()) {
+      await mintTRYB(minterAddress, amount);
     }
 
     await erc20.attach(tokenAddress).connect(minter).approve(recipient, amount);

@@ -81,6 +81,15 @@ export const mintNZDS = async (recipient: string, amount: BigNumberish | number)
   });
 };
 
+export const mintTRYB = async (recipient: string, amount: BigNumberish | number): Promise<void> => {
+  await mintFiatTokenV2({
+    ownerAddress: TOKENS.TRYB.owner,
+    tokenAddress: TOKENS.TRYB.address,
+    recipient,
+    amount,
+  });
+};
+
 export const mintXSGD = async (recipient: string, amount: BigNumberish | number): Promise<void> => {
   // Send minter some ETH
   await sendETH(TOKENS.XSGD.masterMinter);

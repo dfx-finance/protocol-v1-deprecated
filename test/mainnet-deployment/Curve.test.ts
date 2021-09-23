@@ -29,6 +29,7 @@ describe("Curve Mainnet Sanity Checks", function () {
   let curveCADC: Curve;
   let curveEURS: Curve;
   let curveXSGD: Curve;
+  let curveNZDS: Curve;
 
   let router: Router;
 
@@ -57,6 +58,10 @@ describe("Curve Mainnet Sanity Checks", function () {
       "./contracts/Curve.sol:Curve",
       "0x2baB29a12a9527a179Da88F422cDaaA223A90bD5",
     )) as Curve;
+    curveNZDS = (await ethers.getContractAt(
+      "./contracts/Curve.sol:Curve",
+      "0xe9669516e09f5710023566458f329cce6437aaac",
+    )) as Curve;
   });
 
   snapshotAndRevert();
@@ -68,6 +73,17 @@ describe("Curve Mainnet Sanity Checks", function () {
     quoteDecimals: number,
     curve: Curve,
   ) => {
+    const [aUser] = await ethers.getSigners();
+    const ownerAddr = await curve.owner();
+    await aUser.sendTransaction({
+      to: ownerAddr,
+      value: parseUnits("10"),
+    });
+    const owner = await unlockAccountAndGetSigner(ownerAddr);
+    await curve
+      .connect(owner)
+      .setParams(parseUnits("0.8"), parseUnits("0.46"), parseUnits("0.19"), parseUnits("0.0005"), parseUnits("0.3"));
+
     const userAddress = "0x1407C9d09d1603A9A5b806A0C00f4D3734df15E0";
     const user = await unlockAccountAndGetSigner(userAddress);
     const userProof = {
@@ -116,7 +132,7 @@ describe("Curve Mainnet Sanity Checks", function () {
     await curve.connect(user).withdraw(await curve.connect(user).balanceOf(userAddress), await getFutureTime());
   };
 
-  it("setParams", async function () {
+  it.only("setParams", async function () {
     const [user] = await ethers.getSigners();
     const ownerAddr = await curveEURS.owner();
     await user.sendTransaction({
@@ -139,17 +155,17 @@ describe("Curve Mainnet Sanity Checks", function () {
         ethers.constants.MaxUint256,
       );
 
-    await curveEURS
-      .connect(owner)
-      .setParams(parseUnits("0.8"), parseUnits("0.46"), parseUnits("0.19"), parseUnits("0.0005"), parseUnits("0.3"));
+    // await curveEURS
+    //   .connect(owner)
+    //   .setParams(parseUnits("0.8"), parseUnits("0.46"), parseUnits("0.19"), parseUnits("0.0005"), parseUnits("0.3"));
 
     await curveCADC
       .connect(owner)
-      .setParams(parseUnits("0.8"), parseUnits("0.46"), parseUnits("0.19"), parseUnits("0.0005"), parseUnits("0.3"));
+      .setParams(parseUnits("0.8"), parseUnits("0.42"), parseUnits("0.23"), parseUnits("0.0005"), parseUnits("0.3"));
 
-    await curveXSGD
-      .connect(owner)
-      .setParams(parseUnits("0.8"), parseUnits("0.46"), parseUnits("0.19"), parseUnits("0.0005"), parseUnits("0.3"));
+    // await curveXSGD
+    //   .connect(owner)
+    // .setParams(parseUnits("0.8"), parseUnits("0.42"), parseUnits("0.23"), parseUnits("0.0005"), parseUnits("0.3"));
   });
 
   // it("CADC", async function () {
@@ -181,4 +197,14 @@ describe("Curve Mainnet Sanity Checks", function () {
 
   //   await sanityCheck(base, quote, baseDecimals, quoteDecimals, curve);
   // });
+
+  it("NZDS", async function () {
+    const base = TOKENS.NZDS.address;
+    const quote = TOKENS.USDC.address;
+    const baseDecimals = TOKENS.NZDS.decimals;
+    const quoteDecimals = TOKENS.USDC.decimals;
+    const curve = curveNZDS;
+
+    await sanityCheck(base, quote, baseDecimals, quoteDecimals, curve);
+  });
 });
