@@ -100,46 +100,57 @@ describe("Curve Mainnet Sanity Checks", function () {
         userProof.proof,
         parseUnits("9999"),
         await getFutureTime(),
-        {
-          gasPrice: 0,
-        },
       );
 
-    await curve
-      .connect(user)
-      .originSwap(base, quote, parseUnits("1", baseDecimals), 0, await getFutureTime(), { gasPrice: 0 });
-    await curve
-      .connect(user)
-      .originSwap(quote, base, parseUnits("1", quoteDecimals), 0, await getFutureTime(), { gasPrice: 0 });
-    await curve
-      .connect(user)
-      .originSwap(base, quote, parseUnits("100", baseDecimals), 0, await getFutureTime(), { gasPrice: 0 });
-    await curve
-      .connect(user)
-      .originSwap(quote, base, parseUnits("100", quoteDecimals), 0, await getFutureTime(), { gasPrice: 0 });
-    await curve
-      .connect(user)
-      .originSwap(base, quote, parseUnits("500", baseDecimals), 0, await getFutureTime(), { gasPrice: 0 });
-    await curve
-      .connect(user)
-      .originSwap(quote, base, parseUnits("500", quoteDecimals), 0, await getFutureTime(), { gasPrice: 0 });
-    await curve
-      .connect(user)
-      .originSwap(base, quote, parseUnits("1000", baseDecimals), 0, await getFutureTime(), { gasPrice: 0 });
-    await curve
-      .connect(user)
-      .originSwap(quote, base, parseUnits("1000", quoteDecimals), 0, await getFutureTime(), { gasPrice: 0 });
-    await curve
-      .connect(user)
-      .originSwap(base, quote, parseUnits("3000", baseDecimals), 0, await getFutureTime(), { gasPrice: 0 });
-    await curve
-      .connect(user)
-      .originSwap(quote, base, parseUnits("3000", quoteDecimals), 0, await getFutureTime(), { gasPrice: 0 });
+    await curve.connect(user).originSwap(base, quote, parseUnits("1", baseDecimals), 0, await getFutureTime());
+    await curve.connect(user).originSwap(quote, base, parseUnits("1", quoteDecimals), 0, await getFutureTime());
+    await curve.connect(user).originSwap(base, quote, parseUnits("100", baseDecimals), 0, await getFutureTime());
+    await curve.connect(user).originSwap(quote, base, parseUnits("100", quoteDecimals), 0, await getFutureTime());
+    await curve.connect(user).originSwap(base, quote, parseUnits("500", baseDecimals), 0, await getFutureTime());
+    await curve.connect(user).originSwap(quote, base, parseUnits("500", quoteDecimals), 0, await getFutureTime());
+    await curve.connect(user).originSwap(base, quote, parseUnits("1000", baseDecimals), 0, await getFutureTime());
+    await curve.connect(user).originSwap(quote, base, parseUnits("1000", quoteDecimals), 0, await getFutureTime());
+    await curve.connect(user).originSwap(base, quote, parseUnits("3000", baseDecimals), 0, await getFutureTime());
+    await curve.connect(user).originSwap(quote, base, parseUnits("3000", quoteDecimals), 0, await getFutureTime());
 
-    await curve
-      .connect(user)
-      .withdraw(await curve.connect(user).balanceOf(userAddress), await getFutureTime(), { gasPrice: 0 });
+    await curve.connect(user).withdraw(await curve.connect(user).balanceOf(userAddress), await getFutureTime());
   };
+
+  it("setParams", async function () {
+    const [user] = await ethers.getSigners();
+    const ownerAddr = await curveEURS.owner();
+    await user.sendTransaction({
+      to: ownerAddr,
+      value: parseUnits("10"),
+    });
+    const owner = await unlockAccountAndGetSigner(ownerAddr);
+
+    await multiMintAndApprove([
+      [TOKENS.USDC.address, owner, parseUnits("10000000", TOKENS.USDC.decimals), curveEURS.address],
+    ]);
+
+    await curveEURS
+      .connect(owner)
+      .originSwap(
+        TOKENS.USDC.address,
+        TOKENS.EURS.address,
+        parseUnits("210000", TOKENS.USDC.decimals),
+        0,
+        ethers.constants.MaxUint256,
+      );
+
+    await curveEURS
+      .connect(owner)
+      .setParams(parseUnits("0.8"), parseUnits("0.46"), parseUnits("0.19"), parseUnits("0.0005"), parseUnits("0.3"));
+
+    await curveCADC
+      .connect(owner)
+      .setParams(parseUnits("0.8"), parseUnits("0.46"), parseUnits("0.19"), parseUnits("0.0005"), parseUnits("0.3"));
+
+    await curveXSGD
+      .connect(owner)
+      .setParams(parseUnits("0.8"), parseUnits("0.46"), parseUnits("0.19"), parseUnits("0.0005"), parseUnits("0.3"));
+  });
 
   // it("CADC", async function () {
   //   const base = TOKENS.CADC.address;
