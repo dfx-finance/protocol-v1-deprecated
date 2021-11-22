@@ -31,7 +31,7 @@ contract NzdsToUsdAssimilator is IAssimilator {
     IERC20 private constant usdc = IERC20(0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174);
 
     IOracle private constant oracle = IOracle(0xa302a0B8a499fD0f00449df0a490DedE21105955);
-    IERC20 private constant nzds = IERC20();
+    IERC20 private constant nzds = IERC20(0xeaFE31Cd9e8E01C8f0073A2C974f728Fb80e9DcE);
 
     // solhint-disable-next-line
     constructor() {}

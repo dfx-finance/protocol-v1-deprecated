@@ -76,6 +76,22 @@ export const mintEURS = async (recipient: string, amount: BigNumberish | number)
   });
 };
 
+export const mintNZDS = async (recipient: string, amount: BigNumberish | number): Promise<void> => {
+  await mintMaticBridgedToken({
+    tokenAddress: TOKENS.NZDS.address,
+    recipient,
+    amount,
+  });
+};
+
+export const mintTRYB = async (recipient: string, amount: BigNumberish | number): Promise<void> => {
+  await mintMaticBridgedToken({
+    tokenAddress: TOKENS.TRYB.address,
+    recipient,
+    amount,
+  });
+};
+
 export const getOracleAnswer = async (oracleAddress: string): Promise<BigNumber> => {
   if (oracleAddress === TOKENS.USDC.address) {
     return parseUnits("1", 8);

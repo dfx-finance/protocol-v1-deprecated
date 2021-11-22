@@ -62,6 +62,7 @@ const config: HardhatUserConfig = {
         enabled: true,
         url: process.env["RPC_URL"] ? process.env["RPC_URL"] : "http://127.0.0.1:8545",
       },
+      initialBaseFeePerGas: 0,
       blockGasLimit: 20000000,
       allowUnlimitedContractSize: true,
     },

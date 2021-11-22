@@ -19,6 +19,16 @@ export const TOKENS = {
     owner: "0xfcb19e6a322b27c06842a71e8c725399f049ae3a",
     decimals: 6,
   },
+  NZDS: {
+    address: "0xeaFE31Cd9e8E01C8f0073A2C974f728Fb80e9DcE",
+    owner: "0x34f2cf46cd43e995265ba372d91aea006d3c5252",
+    decimals: 6,
+  },
+  TRYB: {
+    address: "0x4Fb71290Ac171E1d144F7221D882BECAc7196EB5",
+    owner: "0x2cb773ce3f159fa63cfb26e4becb61727b634103",
+    decimals: 6,
+  },
 };
 
 export const ORACLES = {
@@ -36,6 +46,14 @@ export const ORACLES = {
   },
   USDC: {
     address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+    decimals: 8,
+  },
+  NZDS: {
+    address: "0xa302a0B8a499fD0f00449df0a490DedE21105955",
+    decimals: 8,
+  },
+  TRYB: {
+    address: "0xd78325DcA0F90F0FFe53cCeA1B02Bb12E1bf8FdB",
     decimals: 8,
   },
 };

@@ -31,7 +31,7 @@ contract TrybToUsdAssimilator is IAssimilator {
     IERC20 private constant usdc = IERC20(0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174);
 
     IOracle private constant oracle = IOracle(0xd78325DcA0F90F0FFe53cCeA1B02Bb12E1bf8FdB);
-    IERC20 private constant tryb = IERC20();
+    IERC20 private constant tryb = IERC20(0x4Fb71290Ac171E1d144F7221D882BECAc7196EB5);
 
     // solhint-disable-next-line
     constructor() {}
