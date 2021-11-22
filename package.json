@@ -45,7 +45,7 @@
     "eslint-config-prettier": "^7.2.0",
     "ethereum-waffle": "^3.2.1",
     "ethers": "^5.0.26",
-    "hardhat": "^2.4.1",
+    "hardhat": "^2.6.8",
     "hardhat-typechain": "^0.3.5",
     "husky": "^5.0.8",
     "ora": "^5.4.0",
