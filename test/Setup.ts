@@ -42,11 +42,15 @@ export const scaffoldTest = async () => {
   const usdcToUsdAssimilator = await UsdcToUsdAssimilator.deploy();
   const eursToUsdAssimilator = await EursToUsdAssimilator.deploy();
   const xsgdToUsdAssimilator = await XsgdToUsdAssimilator.deploy();
+  const xidrToUsdAssimilator = await XidrToUsdAssimilator.deploy();
+  const nzdsToUsdAssimilator = await NzdsToUsdAssimilator.deploy();
 
   const usdc = (await ethers.getContractAt("ERC20", TOKENS.USDC.address)) as ERC20;
   const cadc = (await ethers.getContractAt("ERC20", TOKENS.CADC.address)) as ERC20;
   const eurs = (await ethers.getContractAt("ERC20", TOKENS.EURS.address)) as ERC20;
   const xsgd = (await ethers.getContractAt("ERC20", TOKENS.XSGD.address)) as ERC20;
+  const xidr = (await ethers.getContractAt("ERC20", TOKENS.XIDR.address)) as ERC20;
+  const nzds = (await ethers.getContractAt("ERC20", TOKENS.NZDS.address)) as ERC20;
 
   const erc20 = (await ethers.getContractAt("ERC20", ethers.constants.AddressZero)) as ERC20;
 
