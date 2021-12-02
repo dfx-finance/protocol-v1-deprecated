@@ -26,7 +26,7 @@ export const TOKENS = {
   },
   XIDR: {
     address: "0xebF2096E01455108bAdCbAF86cE30b6e5A72aa52",
-    owner: "0x3f02a96cE54f043efAd2C35DDB0c42CC5777df13",
+    masterMinter: "0x3f02a96cE54f043efAd2C35DDB0c42CC5777df13",
     decimals: 6,
   },
 };
