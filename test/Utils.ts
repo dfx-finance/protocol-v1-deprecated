@@ -83,7 +83,7 @@ export const mintNZDS = async (recipient: string, amount: BigNumberish | number)
 
 export const mintXIDR = async (recipient: string, amount: BigNumberish | number): Promise<void> => {
   await mintFiatTokenV2({
-    ownerAddress: TOKENS.XIDR.owner,
+    ownerAddress: TOKENS.XIDR.address,
     tokenAddress: TOKENS.XIDR.address,
     recipient,
     amount,
@@ -110,6 +110,7 @@ export const mintEURS = async (recipient: string, amount: BigNumberish | number)
 
   // Function is payable so need value: 0
   await EURS.createTokens(amount, { value: 0 });
+  console.log("prob here");
   await EURS.transfer(recipient, amount);
 };
 

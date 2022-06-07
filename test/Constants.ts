@@ -11,7 +11,7 @@ export const TOKENS = {
   },
   CADC: {
     address: "0xcadc0acd4b445166f12d2c07eac6e2544fbe2eef",
-    owner: "0xa0f5c8e8bcbdf066643c2ea8484cba7a3aff01f9",
+    owner: "0x3e30d340c83d068d632e11b5a30507ce973d7700",
     decimals: 18,
   },
   USDC: {

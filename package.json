@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "hh:run": "hardhat run",
-    "hh:node": "hardhat node",
+    "hh:node": "hardhat node --hostname 127.0.0.1",
     "compile": "hardhat compile",
     "clean": "hardhat clean",
     "test": "hardhat test",

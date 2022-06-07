@@ -205,7 +205,7 @@ library CurveMath {
         int128 _nGLiq,
         int128 _omega,
         int128 _psi
-    ) internal pure {
+    ) internal view {
         if (_totalShells == 0 || 0 == _totalShells + _newShells) return;
 
         int128 _prevUtilPerShell = _oGLiq.sub(_omega).div(_totalShells);
@@ -213,7 +213,6 @@ library CurveMath {
         int128 _nextUtilPerShell = _nGLiq.sub(_psi).div(_totalShells.add(_newShells));
 
         int128 _diff = _nextUtilPerShell - _prevUtilPerShell;
-
         require(0 < _diff || _diff >= MAX_DIFF, "Curve/liquidity-invariant-violation");
     }
 

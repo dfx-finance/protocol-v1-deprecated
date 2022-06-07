@@ -138,7 +138,6 @@ describe("Router", function () {
       quoteAssimilator: usdcToUsdAssimilator.address,
       params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
     });
-
     // Supply liquidity to the pools
     // Mint tokens and approve
     await multiMintAndApprove([
@@ -150,6 +149,7 @@ describe("Router", function () {
       [TOKENS.EURS.address, user1, parseUnits("100000", TOKENS.EURS.decimals), curveEURS.address],
     ]);
 
+    console.log("here");
     await curveCADC
       .connect(user1)
       .deposit(parseUnits("50000"), await getFutureTime())

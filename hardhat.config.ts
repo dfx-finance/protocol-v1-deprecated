@@ -30,11 +30,11 @@ const config: HardhatUserConfig = {
     localhost: {
       url: "http://127.0.0.1:8545",
       timeout: 1200000,
-      accounts: [
-        process.env["PRIVATE_KEY"]
-          ? process.env["PRIVATE_KEY"]
-          : "0000000000000000000000000000000000000000000000000000000000000001",
-      ],
+      // accounts: [
+      //   process.env["PRIVATE_KEY"]
+      //     ? process.env["PRIVATE_KEY"]
+      //     : "0000000000000000000000000000000000000000000000000000000000000001",
+      // ],
     },
     remote: {
       url: process.env["REMOTE_URL"] ? process.env["REMOTE_URL"] : "http://127.0.0.1:8545",
@@ -45,7 +45,7 @@ const config: HardhatUserConfig = {
       ],
     },
     hardhat: {
-      chainId: 1,
+      chainId: 1337,
       accounts: {
         mnemonic: "myth like bonus scare over problem client lizard pioneer submit female collect",
         accountsBalance: "100000000000000000000000",
@@ -53,6 +53,7 @@ const config: HardhatUserConfig = {
       forking: {
         enabled: true,
         url: process.env["RPC_URL"] ? process.env["RPC_URL"] : "http://127.0.0.1:8545",
+        blockNumber: 14_622_621
       },
       blockGasLimit: 20000000,
       allowUnlimitedContractSize: true,
