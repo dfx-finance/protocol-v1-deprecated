@@ -29,6 +29,12 @@ export const TOKENS = {
     masterMinter: "0x3f02a96cE54f043efAd2C35DDB0c42CC5777df13",
     decimals: 6,
   },
+  TRYB: {
+    address: "0x2C537E5624e4af88A7ae4060C022609376C8D0EB",
+    owner: "0x2cb773ce3f159fa63cfb26e4becb61727b634103",
+    // masterMinter : "0x56c747a9a8c828274249e55d3cb3172b075c740a",
+    decimals: 6,
+  },
 };
 
 export const ORACLES = {
@@ -54,6 +60,10 @@ export const ORACLES = {
   },
   XIDR: {
     address: "0x91b99C9b75aF469a71eE1AB528e8da994A5D7030",
+    decimals: 8,
+  },
+  TRYB: {
+    address: "0xB09fC5fD3f11Cf9eb5E1C5Dba43114e3C9f477b5",
     decimals: 8,
   },
 };

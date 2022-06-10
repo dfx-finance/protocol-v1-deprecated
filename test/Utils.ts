@@ -101,6 +101,25 @@ export const mintXSGD = async (recipient: string, amount: BigNumberish | number)
   await XSGD.mint(recipient, amount);
 };
 
+// export const mintTRYB = async (recipient: string, amount: BigNumberish | number): Promise<void> => {
+//   // Send minter some ETH
+//   await sendETH(TOKENS.TRYB.masterMinter);
+
+//   const owner = await unlockAccountAndGetSigner(TOKENS.TRYB.masterMinter);
+//   const TRYB = new ethers.Contract(TOKENS.TRYB.address, FiatTokenV1ABI, owner);
+
+//   await TRYB.increaseMinterAllowance(TOKENS.TRYB.masterMinter, amount);
+//   await TRYB.mint(recipient, amount);
+// };
+export const mintTRYB = async (recipient: string, amount: BigNumberish | number): Promise<void> => {
+  await mintFiatTokenV2({
+    ownerAddress: TOKENS.TRYB.owner,
+    tokenAddress: TOKENS.TRYB.address,
+    recipient,
+    amount,
+  });
+};
+
 export const mintEURS = async (recipient: string, amount: BigNumberish | number): Promise<void> => {
   // Send minter some ETH
   await sendETH(TOKENS.EURS.owner);
