@@ -79,6 +79,9 @@ async function poolStats(
   const trybValueUsd = formatUnits(rawLiq[1][0], 18);
   const usdcValueUsd = formatUnits(rawLiq[1][1], 18);
   const trybRatio = Number(trybValueUsd) / Number(totalValueUsd);
+  console.log(`total value locked : ${totalValueUsd}`);
+  console.log(`tryb value locked : ${trybValueUsd}`);
+  console.log(`usdc value locked : ${usdcValueUsd}`);
   console.log("\nTotal LPT:", totalSupply);
   console.log("Pool TRYB ratio:", trybRatio);
 }
@@ -121,12 +124,12 @@ async function main() {
   await Promise.all([
     await Mint.usdc(
       user0.address,
-      parseUnits("10000000", Chains[chainId].Tokens.usdc.decimals),
+      parseUnits("10000000000", Chains[chainId].Tokens.usdc.decimals),
       chainId
     ),
     await Mint[forexToken](
       user0.address,
-      parseUnits("20000000", Chains[chainId].Tokens[forexToken].decimals),
+      parseUnits("10000000000", Chains[chainId].Tokens[forexToken].decimals),
       chainId
     ),
    ]);
@@ -143,33 +146,39 @@ async function main() {
   /*** Add LP ***/
   const forexTokenInfo = Chains[chainId].Tokens[forexToken];
 
-  // 1. Attempt to add too much LP and fail
+  console.log(`prior to any action, pool stats`);
   await poolStats(usdc, forexTokenContract, pool);
+  // 1. Attempt to add too much LP and fail
+  console.log("adding liquidity of 20000")
   await addLp(forexToken, pool, "20000");
+  await poolStats(usdc, forexTokenContract, pool);
 
   // // 2. Attempt to progressively add LP and succeed
-  // await addLp(forexToken, pool, "10000");
-  // await addLp(forexToken, pool, "12000");
-  // await addLp(forexToken, pool, "13000");
-  // await addLp(forexToken, pool, "14000");
-  // await addLp(forexToken, pool, "15000");
+
+  await addLp(forexToken, pool, "100000000");
+  await poolStats(usdc, forexTokenContract, pool);
+  await addLp(forexToken, pool, "10000");
+  await addLp(forexToken, pool, "12000");
+  await addLp(forexToken, pool, "13000");
+  await addLp(forexToken, pool, "14000");
+  await addLp(forexToken, pool, "15000");
 
   // // 3. Swap and add LP and succeed
-  // await swap(forexTokenContract, usdc, forexTokenInfo, pool, "2000000");
-  // await addLp(forexToken, pool, "15000");
+  await swap(forexTokenContract, usdc, forexTokenInfo, pool, "2000000");
+  await addLp(forexToken, pool, "15000");
 
   // 4. Swap larger amounts
-  // await poolStats(usdc, forexTokenContract, pool);
-  // await swap(forexTokenContract, usdc, forexTokenInfo, pool, "150000");
-  // await poolStats(usdc, forexTokenContract, pool);
-  // await addLp(forexToken, pool, "10000");
-  // await poolStats(usdc, forexTokenContract, pool);
-  // await addLp(forexToken, pool, "12000");
-  // await poolStats(usdc, forexTokenContract, pool);
-  // await addLp(forexToken, pool, "13000");
-  // await addLp(forexToken, pool, "14000");
-  // await addLp(forexToken, pool, "15000");
-  // await addLp(forexToken, pool, "17000");
+  await poolStats(usdc, forexTokenContract, pool);
+  await swap(forexTokenContract, usdc, forexTokenInfo, pool, "150000");
+  await poolStats(usdc, forexTokenContract, pool);
+  await addLp(forexToken, pool, "10000");
+  await poolStats(usdc, forexTokenContract, pool);
+  await addLp(forexToken, pool, "12000");
+  await poolStats(usdc, forexTokenContract, pool);
+  await addLp(forexToken, pool, "13000");
+  await addLp(forexToken, pool, "14000");
+  await addLp(forexToken, pool, "15000");
+  await addLp(forexToken, pool, "17000");
 
   console.log("Done!");
 }
