@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ethers } from "hardhat";
 import { Signer, Contract, ContractFactory, BigNumber, BigNumberish } from "ethers";
-import { formatUnits } from "ethers/lib/utils";
+import { formatEther, formatUnits } from "ethers/lib/utils";
 import chai from "chai";
 import chaiBigNumber from "chai-bignumber";
 
@@ -14,6 +14,7 @@ import { ORACLES, TOKENS } from "../Constants";
 import { getFutureTime, expectBNAproxEq, getOracleAnswer } from "../Utils";
 
 import { scaffoldTest, scaffoldHelpers } from "../Setup";
+import { parse } from "path";
 
 chai.use(chaiBigNumber(BigNumber));
 
@@ -87,58 +88,74 @@ describe("TRYB-USDC", function () {
         [TOKENS.USDC.address, user2, parseUnits("30000000000", TOKENS.USDC.decimals), curvenTRYB.address],
         [TOKENS.TRYB.address, user2, parseUnits("30000000000", TOKENS.TRYB.decimals), curvenTRYB.address],
       ]);
+    
 
-    console.log("tryb token balances");
+    await poolStats(usdc, tryb, curvenTRYB);
+    console.log(`before deposit, lp supply is ${await getTotalSupply(curvenTRYB)}`);
+    console.log("deposit 5000000");
+    await deposit("5000000", user1, curvenTRYB);
+    await poolStats(usdc, tryb, curvenTRYB);
+    console.log(`user1 lp balance is ${await getLPBalance(user1, curvenTRYB)}`);
+    console.log(`after deposit, lp supply is ${await getTotalSupply(curvenTRYB)}`);
+    console.log("user withdraws all deposited amount");
+    await curvenTRYB.connect(user1).withdraw(parseUnits(await getLPBalance(user1, curvenTRYB),18),await getFutureTime());
+    await poolStats(usdc, tryb, curvenTRYB);
+    console.log(`after withdrawl, lp supply is ${await getTotalSupply(curvenTRYB)}`); 
     console.log(`user 1 usdc balance is ${await getUSDCBalance(user1)}`);
     console.log(`user1 tryb balance is ${await getTRYBBalace(user1)}`);
     console.log(`pool usdc balance is ${await getUSDCBalanceOfPool(curvenTRYB.address)}`);
     console.log(`pool tryb balance is ${await getTRYBBalaceOfPool(curvenTRYB.address)}`);
+//     console.log("tryb token balances");
+//     console.log(`user 1 usdc balance is ${await getUSDCBalance(user1)}`);
+//     console.log(`user1 tryb balance is ${await getTRYBBalace(user1)}`);
+//     console.log(`pool usdc balance is ${await getUSDCBalanceOfPool(curvenTRYB.address)}`);
+//     console.log(`pool tryb balance is ${await getTRYBBalaceOfPool(curvenTRYB.address)}`);
 
-    console.log("original mainnet forked curve state");
+//     console.log("original mainnet forked curve state");
 
-    await poolStats(usdc, tryb, curvenTRYB);
-    console.log(`user 1 usdc balance is ${await getUSDCBalance(user1)}`);
-    console.log(`user1 tryb balance is ${await getTRYBBalace(user1)}`);
-    console.log(`pool usdc balance is ${await getUSDCBalanceOfPool(curvenTRYB.address)}`);
-    console.log(`pool tryb balance is ${await getTRYBBalaceOfPool(curvenTRYB.address)}`);
+//     await poolStats(usdc, tryb, curvenTRYB);
+//     console.log(`user 1 usdc balance is ${await getUSDCBalance(user1)}`);
+//     console.log(`user1 tryb balance is ${await getTRYBBalace(user1)}`);
+//     console.log(`pool usdc balance is ${await getUSDCBalanceOfPool(curvenTRYB.address)}`);
+//     console.log(`pool tryb balance is ${await getTRYBBalaceOfPool(curvenTRYB.address)}`);
 
-    // now trying 0.1m usdc swap
-    await curvenTRYB.originSwap(TOKENS.TRYB.address, TOKENS.USDC.address,parseUnits("2000000", TOKENS.TRYB.decimals),parseUnits("80000", TOKENS.USDC.decimals),await getFutureTime());
-    console.log("----------------- after 0.1m usdc swap, pool stats\n");
-    await poolStats(usdc, tryb, curvenTRYB);
-    console.log(`user 1 usdc balance is ${await getUSDCBalance(user1)}`);
-    console.log(`user1 tryb balance is ${await getTRYBBalace(user1)}`);
-    console.log(`pool usdc balance is ${await getUSDCBalanceOfPool(curvenTRYB.address)}`);
-    console.log(`pool tryb balance is ${await getTRYBBalaceOfPool(curvenTRYB.address)}`);
+//     // now trying 0.1m usdc swap
+//     await curvenTRYB.originSwap(TOKENS.TRYB.address, TOKENS.USDC.address,parseUnits("2000000", TOKENS.TRYB.decimals),parseUnits("80000", TOKENS.USDC.decimals),await getFutureTime());
+//     console.log("----------------- after 0.1m usdc swap, pool stats\n");
+//     await poolStats(usdc, tryb, curvenTRYB);
+//     console.log(`user 1 usdc balance is ${await getUSDCBalance(user1)}`);
+//     console.log(`user1 tryb balance is ${await getTRYBBalace(user1)}`);
+//     console.log(`pool usdc balance is ${await getUSDCBalanceOfPool(curvenTRYB.address)}`);
+//     console.log(`pool tryb balance is ${await getTRYBBalaceOfPool(curvenTRYB.address)}`);
 
-    await poolStats(usdc, tryb, curvenTRYB);
-    await deposit("20000", user1,curvenTRYB);
-    await poolStats(usdc, tryb, curvenTRYB);
+//     await poolStats(usdc, tryb, curvenTRYB);
+//     await deposit("20000", user1,curvenTRYB);
+//     await poolStats(usdc, tryb, curvenTRYB);
 
-    await poolStats(usdc, tryb, curvenTRYB);
-    await deposit("1000000", user1,curvenTRYB);
-    await poolStats(usdc, tryb, curvenTRYB);
-
-    
-    await poolStats(usdc, tryb, curvenTRYB);
-    await deposit("5000000", user1,curvenTRYB);
-    await poolStats(usdc, tryb, curvenTRYB);
-
-    
-    await poolStats(usdc, tryb, curvenTRYB);
-    await deposit("5000000", user2,curvenTRYB);
-    await poolStats(usdc, tryb, curvenTRYB);
-
-
+//     await poolStats(usdc, tryb, curvenTRYB);
+//     await deposit("1000000", user1,curvenTRYB);
+//     await poolStats(usdc, tryb, curvenTRYB);
 
     
-    await poolStats(usdc, tryb, curvenTRYB);
-    await deposit("20000000", user1,curvenTRYB);
-    await poolStats(usdc, tryb, curvenTRYB);
+//     await poolStats(usdc, tryb, curvenTRYB);
+//     await deposit("5000000", user1,curvenTRYB);
+//     await poolStats(usdc, tryb, curvenTRYB);
+
     
-    await poolStats(usdc, tryb, curvenTRYB);
-    await deposit("100000000", user1,curvenTRYB);
-    await poolStats(usdc, tryb, curvenTRYB);
+//     await poolStats(usdc, tryb, curvenTRYB);
+//     await deposit("5000000", user2,curvenTRYB);
+//     await poolStats(usdc, tryb, curvenTRYB);
+
+
+
+    
+//     await poolStats(usdc, tryb, curvenTRYB);
+//     await deposit("20000000", user1,curvenTRYB);
+//     await poolStats(usdc, tryb, curvenTRYB);
+    
+//     await poolStats(usdc, tryb, curvenTRYB);
+//     await deposit("100000000", user1,curvenTRYB);
+//     await poolStats(usdc, tryb, curvenTRYB);
   });
 
   async function deposit(amount : string, user : Signer,curvenTRYB : Curve ) {
@@ -151,13 +168,10 @@ describe("TRYB-USDC", function () {
     console.log(`before deposit, user's try balance : ${userTRYBBalanceBefore}`);
     console.log(`before deposit, pool usdc balance is ${poolUSDCBanaceBefore}`);
     console.log(`before deposit, pool tryb balance is ${poolTRYBBalanceBefore}`);
-    console.log(`\n`);
     await curvenTRYB
       .connect(user)
       .deposit(parseUnits(amount), await getFutureTime())
       .then(x => x.wait());
-    console.log(`\n`);
-
     let userUSDCBalanceAfter = await getUSDCBalance(user);
     let userTRYBBalanceAfter = await getTRYBBalace(user);
     let poolUSDCBanaceAfter = await getUSDCBalanceOfPool(curvenTRYB.address);
@@ -192,6 +206,18 @@ describe("TRYB-USDC", function () {
     let _user_n_bal = await tryb.balanceOf(address);
     let user_n_bal = formatUnits(_user_n_bal,TOKENS.TRYB.decimals);
     return user_n_bal;
+  }
+
+  const getLPBalance =async (user:Signer , curvenTRYB : Curve) => {
+      let _user_bal = await curvenTRYB.balanceOf(await user.getAddress());
+      let user_bal = formatUnits(_user_bal, 18);
+      return user_bal;
+  }
+
+  const getTotalSupply =async (curvenTRYB:Curve) => {
+      let _ts = await curvenTRYB.totalSupply();
+      let ts = formatUnits(_ts,18);
+      return ts;
   }
 
   const poolStats = async (
@@ -257,15 +283,15 @@ describe("TRYB-USDC", function () {
   };
 
   it("TRYB -> USDC targetSwap", async function () {
-    // await routerViewTargetSwapAndCheck({
-    //   user: user2,
-    //   fromToken: TOKENS.TRYB.address,
-    //   toToken: TOKENS.USDC.address,
-    //   targetAmount: parseUnits("900", TOKENS.USDC.decimals),
-    //   fromOracle: ORACLES.TRYB.address,
-    //   toOracle: ORACLES.USDC.address,
-    //   fromDecimals: TOKENS.TRYB.decimals,
-    //   toDecimals: TOKENS.USDC.decimals,
-    // });
+    await routerViewTargetSwapAndCheck({
+      user: user2,
+      fromToken: TOKENS.TRYB.address,
+      toToken: TOKENS.USDC.address,
+      targetAmount: parseUnits("900", TOKENS.USDC.decimals),
+      fromOracle: ORACLES.TRYB.address,
+      toOracle: ORACLES.USDC.address,
+      fromDecimals: TOKENS.TRYB.decimals,
+      toDecimals: TOKENS.USDC.decimals,
+    });
   });
 });
