@@ -151,21 +151,32 @@ describe("CADC-USDC", function(){
         // let afterSwapCADCBalance = await getCADCBalance(await user2.getAddress());
         // let afterSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
 
-        // swap 200k cadc into usdc
-        await cadcCurve.connect(user2).originSwap(TOKENS.CADC.address,TOKENS.USDC.address,parseUnits("200000", TOKENS.CADC.decimals),0,await getFutureTime());
-        let afterSwapCADCBalance = await getCADCBalance(await user2.getAddress());
-        let afterSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
+        // // swap 200k cadc into usdc
+        // await cadcCurve.connect(user2).originSwap(TOKENS.CADC.address,TOKENS.USDC.address,parseUnits("200000", TOKENS.CADC.decimals),0,await getFutureTime());
+        // let afterSwapCADCBalance = await getCADCBalance(await user2.getAddress());
+        // let afterSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
+
+        // // swap back usdc to cadc
+        // await cadcCurve.connect(user2).originSwap(TOKENS.USDC.address, TOKENS.CADC.address,parseUnits(afterSwapUSDCBalance, TOKENS.USDC.decimals),0, await getFutureTime());
+        // let afterReverseSwapCADCBalance = await getCADCBalance(await user2.getAddress());
+        // let afterReverseSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
+
+        // only swap 227114 usdc into cadc
+
+
 
         // swap back usdc to cadc
-        await cadcCurve.connect(user2).originSwap(TOKENS.USDC.address, TOKENS.CADC.address,parseUnits(afterSwapUSDCBalance, TOKENS.USDC.decimals),0, await getFutureTime());
+        usdc.connect(user1).transfer(await user2.getAddress(),parseUnits("227114.74615", TOKENS.USDC.decimals));
+        await cadcCurve.connect(user2).originSwap(TOKENS.USDC.address, TOKENS.CADC.address,parseUnits("227114.74615", TOKENS.USDC.decimals),0, await getFutureTime());
         let afterReverseSwapCADCBalance = await getCADCBalance(await user2.getAddress());
         let afterReverseSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
+        
 
 
         await getPoolStats(cadcCurve);
 
         console.log(originalCADCBalance,"     ", originalUSDCBalance);
-        console.log(afterSwapCADCBalance,"     ", afterSwapUSDCBalance);
+        // console.log(afterSwapCADCBalance,"     ", afterSwapUSDCBalance);
         console.log(afterReverseSwapCADCBalance,"     ", afterReverseSwapUSDCBalance);
 
     })
