@@ -136,10 +136,16 @@ describe("CADC-USDC", function(){
         let originalCADCBalance = await getCADCBalance(await user2.getAddress());
         let originalUSDCBalance = await getUSDCBalance(await user2.getAddress());
         
-        // // swap 300k cadc into usdc
-        // await cadcCurve.connect(user2).originSwap(TOKENS.CADC.address,TOKENS.USDC.address,parseUnits("300000", TOKENS.CADC.decimals),0,await getFutureTime());
-        // let afterSwapCADCBalance = await getCADCBalance(await user2.getAddress());
-        // let afterSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
+        // swap 300k cadc into usdc
+        await cadcCurve.connect(user2).originSwap(TOKENS.CADC.address,TOKENS.USDC.address,parseUnits("300000", TOKENS.CADC.decimals),0,await getFutureTime());
+        let afterSwapCADCBalance = await getCADCBalance(await user2.getAddress());
+        let afterSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
+
+        // swap back usdc to cadc
+        await cadcCurve.connect(user2).originSwap(TOKENS.USDC.address, TOKENS.CADC.address,parseUnits(afterSwapUSDCBalance, TOKENS.USDC.decimals),0, await getFutureTime());
+        let afterReverseSwapCADCBalance = await getCADCBalance(await user2.getAddress());
+        let afterReverseSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
+
 
         // // swap 60k cadc into usdc
         // await cadcCurve.connect(user2).originSwap(TOKENS.CADC.address,TOKENS.USDC.address,parseUnits("60000", TOKENS.CADC.decimals),0,await getFutureTime());
@@ -165,18 +171,18 @@ describe("CADC-USDC", function(){
 
 
 
-        // swap back usdc to cadc
-        usdc.connect(user1).transfer(await user2.getAddress(),parseUnits("227114.74615", TOKENS.USDC.decimals));
-        await cadcCurve.connect(user2).originSwap(TOKENS.USDC.address, TOKENS.CADC.address,parseUnits("227114.74615", TOKENS.USDC.decimals),0, await getFutureTime());
-        let afterReverseSwapCADCBalance = await getCADCBalance(await user2.getAddress());
-        let afterReverseSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
+        // // swap back usdc to cadc
+        // usdc.connect(user1).transfer(await user2.getAddress(),parseUnits("227114.74615", TOKENS.USDC.decimals));
+        // await cadcCurve.connect(user2).originSwap(TOKENS.USDC.address, TOKENS.CADC.address,parseUnits("227114.74615", TOKENS.USDC.decimals),0, await getFutureTime());
+        // let afterReverseSwapCADCBalance = await getCADCBalance(await user2.getAddress());
+        // let afterReverseSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
         
 
 
         await getPoolStats(cadcCurve);
 
         console.log(originalCADCBalance,"     ", originalUSDCBalance);
-        // console.log(afterSwapCADCBalance,"     ", afterSwapUSDCBalance);
+        console.log(afterSwapCADCBalance,"     ", afterSwapUSDCBalance);
         console.log(afterReverseSwapCADCBalance,"     ", afterReverseSwapUSDCBalance);
 
     })
