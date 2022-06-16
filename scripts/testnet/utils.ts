@@ -15,17 +15,12 @@ export const sendEth = async (address: string, amount = 0.1): Promise<void> => {
   });
 };
 
-export const unlockAccountAndGetSigner = async (
-  address: string
-): Promise<Signer> => {
+export const unlockAccountAndGetSigner = async (address: string): Promise<Signer> => {
   await provider.send("hardhat_impersonateAccount", [address]);
   return provider.getSigner(address);
 };
 
-export const turnOffWhitelisting = async (
-  curveAddress: string,
-  ownerAddress: string
-): Promise<void> => {
+export const turnOffWhitelisting = async (curveAddress: string, ownerAddress: string): Promise<void> => {
   await sendEth(ownerAddress, 1);
   const signer = await unlockAccountAndGetSigner(ownerAddress);
   const curve = Curve__factory.connect(curveAddress, signer);

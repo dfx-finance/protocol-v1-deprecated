@@ -1,4 +1,4 @@
-import { PoolInfo } from "."
+import { PoolInfo } from ".";
 
 export const ethereum: PoolInfo[] = [
   {
@@ -49,7 +49,7 @@ export const ethereum: PoolInfo[] = [
     stakingRewards: "0xddb720069fdfe7be2e2883a1c06be0f353f7c4c8",
     oracle: "0xB09fC5fD3f11Cf9eb5E1C5Dba43114e3C9f477b5",
   },
-] 
+];
 
 export const polygon: PoolInfo[] = [
   {
@@ -97,11 +97,11 @@ export const polygon: PoolInfo[] = [
     stakingRewardsMultiLegacy: "0xfcbb946cbc0434a541433e97e835072f54a438f6",
     oracle: "0xd78325DcA0F90F0FFe53cCeA1B02Bb12E1bf8FdB",
   },
-] 
+];
 
 export const DfxPools = {
   1: ethereum,
   1337: ethereum,
   137: polygon,
   1338: polygon,
-}
+};

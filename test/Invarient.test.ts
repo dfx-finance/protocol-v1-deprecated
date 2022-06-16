@@ -105,7 +105,6 @@ describe("Router", function () {
     }));
   });
   beforeEach(async function () {
-
     ({ curve: curvenNZDS } = await createCurveAndSetParams({
       name: NAME,
       symbol: SYMBOL,
@@ -129,25 +128,20 @@ describe("Router", function () {
       .deposit(parseUnits("118420"), await getFutureTime())
       .then(x => x.wait());
     await poolStats(usdc, nzds, curvenNZDS);
-
   });
 
-  const poolStats = async (
-    usdc: Contract,
-    forexTokenContract: Contract,
-    pool: Contract
-  ) => {
+  const poolStats = async (usdc: Contract, forexTokenContract: Contract, pool: Contract) => {
     const rawTotalSupply = await pool.totalSupply();
     const totalSupply = formatUnits(rawTotalSupply);
-  
-    const rawLiq = await pool.liquidity()
+
+    const rawLiq = await pool.liquidity();
     const totalValueUsd = formatUnits(rawLiq[0], 18);
     const trybValueUsd = formatUnits(rawLiq[1][0], 18);
     const usdcValueUsd = formatUnits(rawLiq[1][1], 18);
     const trybRatio = Number(trybValueUsd) / Number(totalValueUsd);
     console.log("\nTotal LPT:", totalSupply);
     console.log("Pool TRYB ratio:", trybRatio);
-  }
+  };
 
   const routerOriginSwapAndCheck = async ({
     user,
@@ -208,9 +202,9 @@ describe("Router", function () {
     await poolStats(usdc, nzds, curvenNZDS);
 
     await curvenNZDS
-    .connect(user1)
-    .deposit(parseUnits("2000000000"), await getFutureTime())
-    .then(x => x.wait());
+      .connect(user1)
+      .deposit(parseUnits("2000000000"), await getFutureTime())
+      .then(x => x.wait());
     await poolStats(usdc, nzds, curvenNZDS);
   });
 });

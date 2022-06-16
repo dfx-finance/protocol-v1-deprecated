@@ -13,8 +13,7 @@ const { provider } = ethers;
 const { parseUnits, formatUnits } = ethers.utils;
 
 const isEth = (chainId: ValidChainId) => chainId === 1 || chainId === 1337;
-const isPolygon = (chainId: ValidChainId) =>
-  chainId === 137 || chainId === 1338;
+const isPolygon = (chainId: ValidChainId) => chainId === 137 || chainId === 1338;
 
 interface MintFiatTokenV2 {
   ownerAddress: string;
@@ -42,11 +41,7 @@ export const mintFiatTokenV2 = async ({
   await FiatTokenV2.connect(minter).mint(recipient, amount);
 };
 
-export const setStorageAt = async (
-  address: string,
-  index: string,
-  value: string
-): Promise<void> => {
+export const setStorageAt = async (address: string, index: string, value: string): Promise<void> => {
   await ethers.provider.send("hardhat_setStorageAt", [address, index, value]);
 };
 interface MintMaticBridgedToken {
@@ -62,21 +57,15 @@ export const mintMaticBridgedToken = async ({
   const index = ethers.utils
     .solidityKeccak256(
       ["uint256", "uint256"],
-      [recipient, 0] // key, slot
+      [recipient, 0], // key, slot
     )
     .toString();
-  const val = ethers.utils.hexlify(
-    ethers.utils.zeroPad(amount.toHexString(), 32)
-  );
+  const val = ethers.utils.hexlify(ethers.utils.zeroPad(amount.toHexString(), 32));
 
   await setStorageAt(tokenAddress, index, val);
 };
 
-export const mintUsdc = async (
-  recipient: string,
-  amount: BigNumberish,
-  chainId: ValidChainId
-): Promise<void> => {
+export const mintUsdc = async (recipient: string, amount: BigNumberish, chainId: ValidChainId): Promise<void> => {
   if (isEth(chainId)) {
     await mintFiatTokenV2({
       ownerAddress: Chains[chainId].Tokens.usdc.owner,
@@ -91,16 +80,10 @@ export const mintUsdc = async (
       amount: BigNumber.from(amount),
     });
   }
-  console.log(
-    `Minted ${formatUnits(amount, Chains[chainId].Tokens.usdc.decimals)} USDC`
-  );
+  console.log(`Minted ${formatUnits(amount, Chains[chainId].Tokens.usdc.decimals)} USDC`);
 };
 
-export const mintCadc = async (
-  recipient: string,
-  amount: BigNumberish,
-  chainId: ValidChainId
-): Promise<void> => {
+export const mintCadc = async (recipient: string, amount: BigNumberish, chainId: ValidChainId): Promise<void> => {
   if (isEth(chainId)) {
     await mintFiatTokenV2({
       ownerAddress: Chains[chainId].Tokens.cadc.owner,
@@ -115,83 +98,45 @@ export const mintCadc = async (
       amount: BigNumber.from(amount),
     });
   }
-  console.log(
-    `Minted ${formatUnits(amount, Chains[chainId].Tokens.cadc.decimals)} CADC`
-  );
+  console.log(`Minted ${formatUnits(amount, Chains[chainId].Tokens.cadc.decimals)} CADC`);
 };
 
-export const mintXsgd = async (
-  recipient: string,
-  amount: BigNumberish,
-  chainId: ValidChainId
-): Promise<void> => {
+export const mintXsgd = async (recipient: string, amount: BigNumberish, chainId: ValidChainId): Promise<void> => {
   if (isEth(chainId)) {
     // Send minter some ETH
     await sendEth(Chains[chainId].Tokens.xsgd.masterMinter);
-    const owner = await unlockAccountAndGetSigner(
-      Chains[chainId].Tokens.xsgd.masterMinter
-    );
-    const xsgd = new ethers.Contract(
-      Chains[chainId].Tokens.xsgd.address,
-      FiatTokenV1ABI,
-      owner
-    );
-    await xsgd.increaseMinterAllowance(
-      Chains[chainId].Tokens.xsgd.masterMinter,
-      amount
-    );
+    const owner = await unlockAccountAndGetSigner(Chains[chainId].Tokens.xsgd.masterMinter);
+    const xsgd = new ethers.Contract(Chains[chainId].Tokens.xsgd.address, FiatTokenV1ABI, owner);
+    await xsgd.increaseMinterAllowance(Chains[chainId].Tokens.xsgd.masterMinter, amount);
     await xsgd.mint(recipient, amount);
 
-    console.log(
-      `Minted ${formatUnits(amount, Chains[chainId].Tokens.xsgd.decimals)} XSGD`
-    );
+    console.log(`Minted ${formatUnits(amount, Chains[chainId].Tokens.xsgd.decimals)} XSGD`);
   } else if (isPolygon(chainId)) {
     await mintMaticBridgedToken({
       tokenAddress: Chains[chainId].Tokens.xsgd.address,
       recipient,
       amount: BigNumber.from(amount),
     });
-    console.log(
-      `Minted ${formatUnits(amount, Chains[chainId].Tokens.xsgd.decimals)} XSGD`
-    );
+    console.log(`Minted ${formatUnits(amount, Chains[chainId].Tokens.xsgd.decimals)} XSGD`);
   }
 };
 
-export const mintXidr = async (
-  recipient: string,
-  amount: BigNumberish,
-  chainId: ValidChainId
-): Promise<void> => {
+export const mintXidr = async (recipient: string, amount: BigNumberish, chainId: ValidChainId): Promise<void> => {
   if (isEth(chainId)) {
     // Send minter some ETH
     await sendEth(Chains[1].Tokens.xidr.masterMinter);
-    const owner = await unlockAccountAndGetSigner(
-      Chains[1].Tokens.xidr.masterMinter
-    );
-    const xidr = new ethers.Contract(
-      Chains[1].Tokens.xidr.address,
-      FiatTokenV1ABI,
-      owner
-    );
-    await xidr.increaseMinterAllowance(
-      Chains[1].Tokens.xidr.masterMinter,
-      amount
-    );
+    const owner = await unlockAccountAndGetSigner(Chains[1].Tokens.xidr.masterMinter);
+    const xidr = new ethers.Contract(Chains[1].Tokens.xidr.address, FiatTokenV1ABI, owner);
+    await xidr.increaseMinterAllowance(Chains[1].Tokens.xidr.masterMinter, amount);
     await xidr.mint(recipient, amount);
 
-    console.log(
-      `Minted ${formatUnits(amount, Chains[1].Tokens.xidr.decimals)} XIDR`
-    );
+    console.log(`Minted ${formatUnits(amount, Chains[1].Tokens.xidr.decimals)} XIDR`);
   } else if (isPolygon(chainId)) {
     console.log("Cannot mint XIDR on Polygon yet.");
   }
 };
 
-export const mintDfx = async (
-  recipient: string,
-  amount: BigNumberish,
-  chainId: ValidChainId
-): Promise<void> => {
+export const mintDfx = async (recipient: string, amount: BigNumberish, chainId: ValidChainId): Promise<void> => {
   if (isEth(chainId)) {
     const ownerAddress = Chains[chainId].Tokens.dfx.owner;
     const tokenAddress = Chains[chainId].Tokens.dfx.address;
@@ -203,9 +148,7 @@ export const mintDfx = async (
     const dfx = new ethers.Contract(tokenAddress, DfxAbi, owner);
 
     await dfx.connect(owner).mint(recipient, amount);
-    console.log(
-      `Minted ${formatUnits(amount, Chains[chainId].Tokens.dfx.decimals)} DFX`
-    );
+    console.log(`Minted ${formatUnits(amount, Chains[chainId].Tokens.dfx.decimals)} DFX`);
   } else if (isPolygon(chainId)) {
     await mintMaticBridgedToken({
       tokenAddress: Chains[chainId].Tokens.dfx.address,
@@ -213,17 +156,11 @@ export const mintDfx = async (
       amount: BigNumber.from(amount),
     });
 
-    console.log(
-      `Minted ${formatUnits(amount, Chains[chainId].Tokens.dfx.decimals)} DFX`
-    );
+    console.log(`Minted ${formatUnits(amount, Chains[chainId].Tokens.dfx.decimals)} DFX`);
   }
 };
 
-export const mintTel = async (
-  recipient: string,
-  amount: BigNumberish,
-  chainId: ValidChainId
-): Promise<void> => {
+export const mintTel = async (recipient: string, amount: BigNumberish, chainId: ValidChainId): Promise<void> => {
   if (isEth(chainId)) {
     console.log("Cannot mint TEL on Ethereum yet");
   } else if (isPolygon(chainId)) {
@@ -233,17 +170,11 @@ export const mintTel = async (
       amount: BigNumber.from(amount),
     });
 
-    console.log(
-      `Minted ${formatUnits(amount, Chains[chainId].Tokens.tel.decimals)} TEL`
-    );
+    console.log(`Minted ${formatUnits(amount, Chains[chainId].Tokens.tel.decimals)} TEL`);
   }
 };
 
-export const mintNzds = async (
-  recipient: string,
-  amount: BigNumberish,
-  chainId: ValidChainId
-): Promise<void> => {
+export const mintNzds = async (recipient: string, amount: BigNumberish, chainId: ValidChainId): Promise<void> => {
   if (chainId === 1 || chainId === 1337) {
     await mintFiatTokenV2({
       ownerAddress: Chains[chainId].Tokens.nzds.owner,
@@ -251,26 +182,18 @@ export const mintNzds = async (
       recipient,
       amount,
     });
-    console.log(
-      `Minted ${formatUnits(amount, Chains[chainId].Tokens.nzds.decimals)} NZDS`
-    );
+    console.log(`Minted ${formatUnits(amount, Chains[chainId].Tokens.nzds.decimals)} NZDS`);
   } else if (isPolygon(chainId)) {
     await mintMaticBridgedToken({
       tokenAddress: Chains[chainId].Tokens.nzds.address,
       recipient,
       amount: BigNumber.from(amount),
     });
-    console.log(
-      `Minted ${formatUnits(amount, Chains[chainId].Tokens.nzds.decimals)} NZDS`
-    );
+    console.log(`Minted ${formatUnits(amount, Chains[chainId].Tokens.nzds.decimals)} NZDS`);
   }
 };
 
-export const mintTryb = async (
-  recipient: string,
-  amount: BigNumberish,
-  chainId: ValidChainId
-): Promise<void> => {
+export const mintTryb = async (recipient: string, amount: BigNumberish, chainId: ValidChainId): Promise<void> => {
   if (chainId === 1 || chainId === 1337) {
     await mintFiatTokenV2({
       ownerAddress: Chains[chainId].Tokens.tryb.owner,
@@ -278,18 +201,14 @@ export const mintTryb = async (
       recipient,
       amount,
     });
-    console.log(
-      `Minted ${formatUnits(amount, Chains[chainId].Tokens.nzds.decimals)} TRYB`
-    );
+    console.log(`Minted ${formatUnits(amount, Chains[chainId].Tokens.nzds.decimals)} TRYB`);
   } else if (isPolygon(chainId)) {
     await mintMaticBridgedToken({
       tokenAddress: Chains[chainId].Tokens.tryb.address,
       recipient,
       amount: BigNumber.from(amount),
     });
-    console.log(
-      `Minted ${formatUnits(amount, Chains[chainId].Tokens.nzds.decimals)} TRYB`
-    );
+    console.log(`Minted ${formatUnits(amount, Chains[chainId].Tokens.nzds.decimals)} TRYB`);
   }
 };
 
@@ -299,45 +218,17 @@ export const mint = async (chainId: ValidChainId): Promise<void> => {
   const [user0] = await ethers.getSigners();
   const address = await user0.getAddress();
 
-  await mintDfx(
-    address,
-    parseUnits("2000000", Chains[chainId].Tokens.dfx.decimals),
-    chainId
-  );
+  await mintDfx(address, parseUnits("2000000", Chains[chainId].Tokens.dfx.decimals), chainId);
 
-  await mintUsdc(
-    address,
-    parseUnits("2000000", Chains[chainId].Tokens.usdc.decimals),
-    chainId
-  );
+  await mintUsdc(address, parseUnits("2000000", Chains[chainId].Tokens.usdc.decimals), chainId);
 
-  await mintCadc(
-    address,
-    parseUnits("2000000", Chains[chainId].Tokens.cadc.decimals),
-    chainId
-  );
+  await mintCadc(address, parseUnits("2000000", Chains[chainId].Tokens.cadc.decimals), chainId);
 
-  await mintXsgd(
-    address,
-    parseUnits("2000000", Chains[chainId].Tokens.xsgd.decimals),
-    chainId
-  );
+  await mintXsgd(address, parseUnits("2000000", Chains[chainId].Tokens.xsgd.decimals), chainId);
 
-  await mintNzds(
-    address,
-    parseUnits("2000000", Chains[chainId].Tokens.nzds.decimals),
-    chainId
-  );
-  await mintTryb(
-    address,
-    parseUnits("2000000", Chains[chainId].Tokens.tryb.decimals),
-    chainId
-  );
-  await mintXidr(
-    address,
-    parseUnits("2000000", Chains[1].Tokens.xidr.decimals),
-    chainId
-  );
+  await mintNzds(address, parseUnits("2000000", Chains[chainId].Tokens.nzds.decimals), chainId);
+  await mintTryb(address, parseUnits("2000000", Chains[chainId].Tokens.tryb.decimals), chainId);
+  await mintXidr(address, parseUnits("2000000", Chains[1].Tokens.xidr.decimals), chainId);
 
   console.log("Minting complete!");
 };

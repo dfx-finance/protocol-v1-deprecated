@@ -9,6 +9,7 @@ import "./lib/UnsafeMath64x64.sol";
 import "./lib/ABDKMath64x64.sol";
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "hardhat/console.sol";
 
 library Swaps {
     using ABDKMath64x64 for int128;
@@ -81,6 +82,9 @@ library Swaps {
         _amt = CurveMath.calculateTrade(curve, _oGLiq, _nGLiq, _oBals, _nBals, _amt, _t.ix);
 
         _amt = _amt.us_mul(ONE - curve.epsilon);
+        console.logInt(_amt);
+        console.logInt(curve.epsilon);
+        console.logInt(ONE - curve.epsilon);
 
         tAmt_ = Assimilators.viewRawAmount(_t.addr, _amt.abs());
     }
@@ -199,6 +203,8 @@ library Swaps {
             else {
                 int128 _bal;
                 (amt_, _bal) = Assimilators.intakeRawAndGetBalance(_assim, _amt);
+                console.logInt(amt_);
+                console.logInt(_bal);
 
                 oBals_[i] = _bal.sub(amt_);
                 nBals_[i] = _bal;

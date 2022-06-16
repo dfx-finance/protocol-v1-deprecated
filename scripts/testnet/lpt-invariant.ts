@@ -22,12 +22,8 @@ const { parseUnits } = ethers.utils;
 /*** Helper functions ***/
 // Add LP to DFX pool
 async function addLp(forexToken: string, pool: Contract, amount: string) {
-  console.log(
-    `Adding liquidity to DFX ${forexToken.toUpperCase()}/USDC pool...`
-  );
-  await pool
-    .deposit(parseUnits(amount), getDeadlineEpochTime("10"))
-    .then((x: any) => x.wait());
+  console.log(`Adding liquidity to DFX ${forexToken.toUpperCase()}/USDC pool...`);
+  await pool.deposit(parseUnits(amount), getDeadlineEpochTime("10")).then((x: any) => x.wait());
 }
 
 // Swap from forex token to USDC using DFX pool
@@ -36,17 +32,14 @@ async function swap(
   forexTokenContract: Contract,
   forexTokenInfo: TokenInfo,
   pool: Contract,
-  amount: string
+  amount: string,
 ) {
   const [user0] = await ethers.getSigners();
 
   const usdcBalance0 = await usdc.balanceOf(user0.address);
   const trybBalance0 = await forexTokenContract.balanceOf(user0.address);
   console.log("Pre-swap balance (USDC):", formatUnits(usdcBalance0, 6));
-  console.log(
-    "Pre-swap balance (TRYB):",
-    formatUnits(trybBalance0, forexTokenInfo.decimals)
-  );
+  console.log("Pre-swap balance (TRYB):", formatUnits(trybBalance0, forexTokenInfo.decimals));
 
   // Swap from forexToken to USDC
   await pool.originSwap(
@@ -54,27 +47,20 @@ async function swap(
     usdc.address,
     parseUnits(amount, forexTokenInfo.decimals),
     0,
-    getDeadlineEpochTime("10")
+    getDeadlineEpochTime("10"),
   );
 
   const usdcBalance1 = await usdc.balanceOf(user0.address);
   const trybBalance1 = await forexTokenContract.balanceOf(user0.address);
   console.log("Post-swap balance (USDC):", formatUnits(usdcBalance1, 6));
-  console.log(
-    "Post-swap balance (TRYB):",
-    formatUnits(trybBalance1, forexTokenInfo.decimals)
-  );
+  console.log("Post-swap balance (TRYB):", formatUnits(trybBalance1, forexTokenInfo.decimals));
 }
 
-async function poolStats(
-  usdc: Contract,
-  forexTokenContract: Contract,
-  pool: Contract
-) {
+async function poolStats(usdc: Contract, forexTokenContract: Contract, pool: Contract) {
   const rawTotalSupply = await pool.totalSupply();
   const totalSupply = formatUnits(rawTotalSupply);
 
-  const rawLiq = await pool.liquidity()
+  const rawLiq = await pool.liquidity();
   const totalValueUsd = formatUnits(rawLiq[0], 18);
   const trybValueUsd = formatUnits(rawLiq[1][0], 18);
   const usdcValueUsd = formatUnits(rawLiq[1][1], 18);
@@ -109,38 +95,26 @@ async function main() {
   console.log(chainId);
   const [pool, usdc, forexTokenContract] = await Promise.all([
     ethers.getContractAt("Curve", poolAddr) as Promise<Curve>,
-    ethers.getContractAt(
-      "ERC20",
-      Addresses[chainId].tokens.usdc
-    ) as Promise<ERC20>,
-    ethers.getContractAt(
-      "ERC20",
-      Addresses[chainId].tokens[forexToken]
-    ) as Promise<ERC20>,
+    ethers.getContractAt("ERC20", Addresses[chainId].tokens.usdc) as Promise<ERC20>,
+    ethers.getContractAt("ERC20", Addresses[chainId].tokens[forexToken]) as Promise<ERC20>,
   ]);
 
   // Mint
   console.log(`\nMinting ${forexToken.toUpperCase()} and USDC...`);
   await Promise.all([
-    await Mint.usdc(
-      user0.address,
-      parseUnits("10000000000", Chains[chainId].Tokens.usdc.decimals),
-      chainId
-    ),
+    await Mint.usdc(user0.address, parseUnits("10000000000", Chains[chainId].Tokens.usdc.decimals), chainId),
     await Mint[forexToken](
       user0.address,
       parseUnits("10000000000", Chains[chainId].Tokens[forexToken].decimals),
-      chainId
+      chainId,
     ),
-   ]);
+  ]);
 
   // Approve
   console.log(`Approving ${forexToken.toUpperCase()} and USDC...`);
   await Promise.all([
     usdc.connect(user0).approve(poolAddr, ethers.constants.MaxUint256),
-    forexTokenContract
-      .connect(user0)
-      .approve(poolAddr, ethers.constants.MaxUint256),
+    forexTokenContract.connect(user0).approve(poolAddr, ethers.constants.MaxUint256),
   ]);
 
   /*** Add LP ***/
@@ -149,7 +123,7 @@ async function main() {
   console.log(`prior to any action, pool stats`);
   await poolStats(usdc, forexTokenContract, pool);
   // 1. Attempt to add too much LP and fail
-  console.log("adding liquidity of 20000")
+  console.log("adding liquidity of 20000");
   await addLp(forexToken, pool, "20000");
   await poolStats(usdc, forexTokenContract, pool);
 
@@ -185,7 +159,7 @@ async function main() {
 
 main()
   .then(() => process.exit(0))
-  .catch((error) => {
+  .catch(error => {
     console.error(error);
     process.exit(1);
   });

@@ -428,9 +428,27 @@ describe("Curve", function () {
       }
     };
 
-    const bases = [TOKENS.CADC.address, TOKENS.XSGD.address, TOKENS.EURS.address, TOKENS.NZDS.address, TOKENS.XIDR.address];
-    const decimals = [TOKENS.CADC.decimals, TOKENS.XSGD.decimals, TOKENS.EURS.decimals, TOKENS.NZDS.decimals, TOKENS.XIDR.decimals];
-    const oracles = [ORACLES.CADC.address, ORACLES.XSGD.address, ORACLES.EURS.address, ORACLES.NZDS.address, ORACLES.XIDR.address];
+    const bases = [
+      TOKENS.CADC.address,
+      TOKENS.XSGD.address,
+      TOKENS.EURS.address,
+      TOKENS.NZDS.address,
+      TOKENS.XIDR.address,
+    ];
+    const decimals = [
+      TOKENS.CADC.decimals,
+      TOKENS.XSGD.decimals,
+      TOKENS.EURS.decimals,
+      TOKENS.NZDS.decimals,
+      TOKENS.XIDR.decimals,
+    ];
+    const oracles = [
+      ORACLES.CADC.address,
+      ORACLES.XSGD.address,
+      ORACLES.EURS.address,
+      ORACLES.NZDS.address,
+      ORACLES.XIDR.address,
+    ];
     const weights = [["0.5", "0.5"]];
     const baseName = ["CADC", "XSGD", "EURS", "NZDS", "XIDR"];
 
@@ -447,7 +465,12 @@ describe("Curve", function () {
           const quoteWeight = weights[j][0];
 
           it(`${name}/USDC ${weightInInt}/${100 - weightInInt} - ${k} (${baseName[i]} -> USDC)`, async function () {
-            const assimilators = [cadcToUsdAssimilator, xsgdToUsdAssimilator, eursToUsdAssimilator, xidrToUsdAssimilator];
+            const assimilators = [
+              cadcToUsdAssimilator,
+              xsgdToUsdAssimilator,
+              eursToUsdAssimilator,
+              xidrToUsdAssimilator,
+            ];
             const baseAssimilator = assimilators[i].address;
 
             await originAndTargetSwapAndCheckSanity({
@@ -468,7 +491,12 @@ describe("Curve", function () {
           });
 
           it(`${name}/USDC ${weightInInt}/${100 - weightInInt} - ${k} (USDC -> ${baseName[i]})`, async function () {
-            const assimilators = [cadcToUsdAssimilator, xsgdToUsdAssimilator, eursToUsdAssimilator, xidrToUsdAssimilator];
+            const assimilators = [
+              cadcToUsdAssimilator,
+              xsgdToUsdAssimilator,
+              eursToUsdAssimilator,
+              xidrToUsdAssimilator,
+            ];
             const baseAssimilator = assimilators[i].address;
 
             await originAndTargetSwapAndCheckSanityInverse({
