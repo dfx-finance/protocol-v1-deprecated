@@ -59,6 +59,7 @@ library Swaps {
         _amt = CurveMath.calculateTrade(curve, _oGLiq, _nGLiq, _oBals, _nBals, _amt, _t.ix);
 
         _amt = _amt.us_mul(ONE - curve.epsilon);
+        console.logInt(_amt);
 
         tAmt_ = Assimilators.outputNumeraire(_t.addr, _recipient, _amt);
 
@@ -82,9 +83,6 @@ library Swaps {
         _amt = CurveMath.calculateTrade(curve, _oGLiq, _nGLiq, _oBals, _nBals, _amt, _t.ix);
 
         _amt = _amt.us_mul(ONE - curve.epsilon);
-        console.logInt(_amt);
-        console.logInt(curve.epsilon);
-        console.logInt(ONE - curve.epsilon);
 
         tAmt_ = Assimilators.viewRawAmount(_t.addr, _amt.abs());
     }
@@ -203,8 +201,6 @@ library Swaps {
             else {
                 int128 _bal;
                 (amt_, _bal) = Assimilators.intakeRawAndGetBalance(_assim, _amt);
-                console.logInt(amt_);
-                console.logInt(_bal);
 
                 oBals_[i] = _bal.sub(amt_);
                 nBals_[i] = _bal;

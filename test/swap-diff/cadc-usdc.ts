@@ -164,7 +164,7 @@ describe("CADC-USDC", function () {
 
     // mint 300k cadc to user2
     await multiMintAndApprove([
-      [TOKENS.CADC.address, user2, parseUnits("300000", TOKENS.CADC.decimals), cadcCurve.address],
+      [TOKENS.CADC.address, user2, parseUnits("3000", TOKENS.CADC.decimals), cadcCurve.address],
     ]);
 
     // deposit 600k worth of cadc & 400k worth of usdc to the curve
@@ -189,7 +189,7 @@ describe("CADC-USDC", function () {
       .originSwap(
         TOKENS.CADC.address,
         TOKENS.USDC.address,
-        parseUnits("300000", TOKENS.CADC.decimals),
+        parseUnits("3000", TOKENS.CADC.decimals),
         0,
         await getFutureTime(),
       );
