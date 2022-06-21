@@ -18,6 +18,7 @@ pragma solidity ^0.7.3;
 import "@openzeppelin/contracts/utils/Address.sol";
 import "./interfaces/IAssimilator.sol";
 import "./lib/ABDKMath64x64.sol";
+import  "hardhat/console.sol";
 
 library Assimilators {
     using ABDKMath64x64 for int128;
@@ -150,5 +151,10 @@ library Assimilators {
         bytes memory data = abi.encodeWithSelector(iAsmltr.outputNumeraire.selector, _dst, _amt.abs());
 
         amt_ = abi.decode(delegate(_assim, data), (uint256));
+    }
+
+    function setFactoryAndEpsilon(address _assim, int128 _eps, address _factory) internal {
+        bytes memory data = abi.encodeWithSelector(iAsmltr.setFactoryAndEpsilon.selector, _eps, _factory);
+        delegate(_assim, data),();
     }
 }

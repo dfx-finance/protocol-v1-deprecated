@@ -9,6 +9,9 @@ import "./lib/UnsafeMath64x64.sol";
 import "./lib/ABDKMath64x64.sol";
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
+import "./CurveFactory.sol";
 
 library Swaps {
     using ABDKMath64x64 for int128;
@@ -45,7 +48,8 @@ library Swaps {
         address _origin,
         address _target,
         uint256 _originAmount,
-        address _recipient
+        address _recipient,
+        address _curveFactory
     ) external returns (uint256 tAmt_) {
         (Storage.Assimilator memory _o, Storage.Assimilator memory _t) = getOriginAndTarget(curve, _origin, _target);
 
@@ -57,8 +61,9 @@ library Swaps {
 
         _amt = CurveMath.calculateTrade(curve, _oGLiq, _nGLiq, _oBals, _nBals, _amt, _t.ix);
 
-        _amt = _amt.us_mul(ONE - curve.epsilon);
+        // _amt = _amt.us_mul(ONE - curve.epsilon);
 
+        Assimilators.setFactoryAndEpsilon(_t.addr, curve.epsilon, _curveFactory);
         tAmt_ = Assimilators.outputNumeraire(_t.addr, _recipient, _amt);
 
         emit Trade(msg.sender, _origin, _target, _originAmount, tAmt_);

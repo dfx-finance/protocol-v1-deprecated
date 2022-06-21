@@ -19,12 +19,15 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
 import "../lib/ABDKMath64x64.sol";
+import "../lib/UnsafeMath64x64.sol";
 import "../interfaces/IAssimilator.sol";
 import "../interfaces/IOracle.sol";
+import "../interfaces/ICurveFactory.sol";
 
 contract XidrToUsdAssimilator is IAssimilator {
     using ABDKMath64x64 for int128;
     using ABDKMath64x64 for uint256;
+    using UnsafeMath64x64 for int128;
 
     using SafeMath for uint256;
 
@@ -32,6 +35,11 @@ contract XidrToUsdAssimilator is IAssimilator {
 
     IOracle private constant oracle = IOracle(0x91b99C9b75aF469a71eE1AB528e8da994A5D7030);
     IERC20 private constant xidr = IERC20(0xebF2096E01455108bAdCbAF86cE30b6e5A72aa52);
+
+    int128 public constant ONE = 0x10000000000000000;
+
+    int128 public epsilon;
+    address public factory;
 
     // solhint-disable-next-line
     constructor() {}
@@ -141,9 +149,8 @@ contract XidrToUsdAssimilator is IAssimilator {
 
     // takes a numeraire value of xidr, figures out the raw amount, transfers raw amount out, and returns raw amount
     function outputNumeraire(address _dst, int128 _amount) external override returns (uint256 amount_) {
-        uint256 _rate = getRate();
-
-        amount_ = (_amount.mulu(1e6) * 1e8) / _rate;
+        
+        amount_ = transferFee(_amount);
 
         bool _transferSuccess = xidr.transfer(_dst, amount_);
 
@@ -232,5 +239,24 @@ contract XidrToUsdAssimilator is IAssimilator {
         uint256 _rate = _usdcBal.mul(1e18).div(_xidrBal.mul(1e18).div(_baseWeight));
 
         balance_ = ((_xidrBal * _rate) / 1e6).divu(1e18);
+    }
+
+    function transferFee (int128 _amount) internal returns(uint256 amount_) {
+        int128 protocolFee = ICurveFactory(factory).getProtocolFee();
+        address treasury = ICurveFactory(factory).getProtocolTreasury();
+        uint256 _rate = getRate();
+        int128 _protocolAmount = _amount.us_mul(protocolFee).us_div(100);
+        _amount = _amount.us_mul(ONE - epsilon);
+        uint256 protocolAmount = (_protocolAmount.mulu(1e6) * 1e8) / _rate;
+        amount_ = (_amount.mulu(1e6) * 1e8) / _rate;
+        bool success_ = xidr.transfer(treasury, protocolAmount);
+        require(success_, "xidr-usdc fee transfer failed");
+    }
+
+    function setFactoryAndEpsilon(int128 _epsilon, address _factory) external override{
+        if(epsilon != _epsilon)
+            epsilon = _epsilon;
+        if(factory != _factory)
+            factory = _factory;
     }
 }

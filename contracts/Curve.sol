@@ -226,6 +226,8 @@ library Curves {
 contract Curve is Storage, MerkleProver {
     using SafeMath for uint256;
 
+    address private curveFactory;
+
     event Approval(address indexed _owner, address indexed spender, uint256 value);
 
     event ParametersSet(uint256 alpha, uint256 beta, uint256 delta, uint256 epsilon, uint256 lambda);
@@ -300,11 +302,13 @@ contract Curve is Storage, MerkleProver {
         string memory _name,
         string memory _symbol,
         address[] memory _assets,
-        uint256[] memory _assetWeights
+        uint256[] memory _assetWeights,
+        address _factory
     ) {
         owner = msg.sender;
         name = _name;
         symbol = _symbol;
+        curveFactory = _factory;
         emit OwnershipTransfered(address(0), msg.sender);
 
         Orchestrator.initialize(curve, numeraires, reserves, derivatives, _assets, _assetWeights);
@@ -398,7 +402,7 @@ contract Curve is Storage, MerkleProver {
         uint256 _minTargetAmount,
         uint256 _deadline
     ) external deadline(_deadline) transactable nonReentrant returns (uint256 targetAmount_) {
-        targetAmount_ = Swaps.originSwap(curve, _origin, _target, _originAmount, msg.sender);
+        targetAmount_ = Swaps.originSwap(curve, _origin, _target, _originAmount, msg.sender,curveFactory);
 
         require(targetAmount_ >= _minTargetAmount, "Curve/below-min-target-amount");
     }

@@ -21,12 +21,44 @@ import "./Curve.sol";
 
 import "./interfaces/IFreeFromUpTo.sol";
 
+import "./interfaces/ICurveFactory.sol";
+
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract CurveFactory is Ownable {
+import  "hardhat/console.sol";
+
+
+
+
+contract CurveFactory is ICurveFactory, Ownable {
+
+    // add protocol fee
+    int128 public totoalFeePercentage = 100;
+    int128 public protocolFee;
+    address public protocolTreasury;
+
     event NewCurve(address indexed caller, bytes32 indexed id, address indexed curve);
 
     mapping(bytes32 => address) public curves;
+
+    constructor(int128 _protocolFee, address _treasury) Ownable() {
+        require(totoalFeePercentage >= _protocolFee, "protocol fee can't be over 100%");
+        require(_treasury != address(0), "invalid treasury address");
+        protocolFee = uint8(_protocolFee);
+        protocolTreasury = _treasury;
+    }
+
+    function getProtocolFee() virtual external view override returns (int128) {
+        console.logString("get protocol fee addr is");
+        console.log(address(this));
+        return protocolFee;
+    }
+
+    function getProtocolTreasury() virtual external view override returns(address) {
+        console.logString("get protocol treasury addr is");
+        console.log(address(this));
+        return protocolTreasury;
+    }
 
     function getCurve(address _baseCurrency, address _quoteCurrency) external view returns (address) {
         bytes32 curveId = keccak256(abi.encode(_baseCurrency, _quoteCurrency));
@@ -68,7 +100,7 @@ contract CurveFactory is Ownable {
         _assetWeights[1] = _quoteWeight;
 
         // New curve
-        Curve curve = new Curve(_name, _symbol, _assets, _assetWeights);
+        Curve curve = new Curve(_name, _symbol, _assets, _assetWeights, address(this));
         curve.transferOwnership(msg.sender);
         curves[curveId] = address(curve);
 

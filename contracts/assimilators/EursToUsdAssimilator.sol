@@ -19,12 +19,15 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
 import "../lib/ABDKMath64x64.sol";
+import "../lib/UnsafeMath64x64.sol";
 import "../interfaces/IAssimilator.sol";
 import "../interfaces/IOracle.sol";
+import "../interfaces/ICurveFactory.sol";
 
 contract EursToUsdAssimilator is IAssimilator {
     using ABDKMath64x64 for int128;
     using ABDKMath64x64 for uint256;
+    using UnsafeMath64x64 for int128;
 
     using SafeMath for uint256;
 
@@ -32,6 +35,11 @@ contract EursToUsdAssimilator is IAssimilator {
 
     IOracle private constant oracle = IOracle(0xb49f677943BC038e9857d61E7d053CaA2C1734C1);
     IERC20 private constant eurs = IERC20(0xdB25f211AB05b1c97D595516F45794528a807ad8);
+
+    int128 public constant ONE = 0x10000000000000000;
+
+    int128 public epsilon;
+    address public factory;
 
     // solhint-disable-next-line
     constructor() {}
@@ -141,9 +149,8 @@ contract EursToUsdAssimilator is IAssimilator {
 
     // takes a numeraire value of eurs, figures out the raw amount, transfers raw amount out, and returns raw amount
     function outputNumeraire(address _dst, int128 _amount) external override returns (uint256 amount_) {
-        uint256 _rate = getRate();
-
-        amount_ = (_amount.mulu(1e2) * 1e8) / _rate;
+        
+        amount_ = transferFee(_amount);
 
         bool _transferSuccess = eurs.transfer(_dst, amount_);
 
@@ -231,5 +238,24 @@ contract EursToUsdAssimilator is IAssimilator {
         uint256 _rate = _usdcBal.mul(1e18).div(_eursBal.mul(1e18).div(_baseWeight));
 
         balance_ = ((_eursBal * _rate) / 1e6).divu(1e18);
+    }
+
+    function transferFee (int128 _amount) internal returns(uint256 amount_) {
+        int128 protocolFee = ICurveFactory(factory).getProtocolFee();
+        address treasury = ICurveFactory(factory).getProtocolTreasury();
+        uint256 _rate = getRate();
+        int128 _protocolAmount = _amount.us_mul(protocolFee).us_div(100);
+        _amount = _amount.us_mul(ONE - epsilon);
+        uint256 protocolAmount = (_protocolAmount.mulu(1e2) * 1e8) / _rate;
+        amount_ = (_amount.mulu(1e2) * 1e8) / _rate;
+        bool success_ = eurs.transfer(treasury, protocolAmount);
+        require(success_, "eurs-usdc fee transfer failed");
+    }
+
+    function setFactoryAndEpsilon(int128 _epsilon, address _factory) external override{
+        if(epsilon != _epsilon)
+            epsilon = _epsilon;
+        if(factory != _factory)
+            factory = _factory;
     }
 }

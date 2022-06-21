@@ -154,6 +154,7 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
     quoteAssimilator,
     params,
     yesWhitelisting,
+    factoryAddress,
   }: {
     name: string;
     symbol: string;
@@ -165,6 +166,7 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
     quoteAssimilator: string;
     params: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
     yesWhitelisting?: boolean;
+    factoryAddress : String;
   }) {
     const { curve, curveLpToken } = await createCurve({
       name,

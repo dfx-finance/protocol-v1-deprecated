@@ -29,8 +29,8 @@ const EPSILON = parseUnits("0.0004");
 const LAMBDA = parseUnits("0.3");
 
 describe("CADC-USDC", function(){
-    let [user1, user2]: Signer[] = [];
-    let [user1Address, user2Address]: string[] = [];
+    let [user1, user2, treasury]: Signer[] = [];
+    let [user1Address, user2Address,treasuryAddress]: string[] = [];
   
     let usdcToUsdAssimilator: Contract;
     let cadcToUsdAssimilator: Contract;
@@ -55,6 +55,7 @@ describe("CADC-USDC", function(){
       baseAssimilator,
       quoteAssimilator,
       params,
+      factoryAddress,
     }: {
       name: string;
       symbol: string;
@@ -65,6 +66,7 @@ describe("CADC-USDC", function(){
       baseAssimilator: string;
       quoteAssimilator: string;
       params: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
+      factoryAddress : String;
     }) => Promise<{
       curve: Curve;
       curveLpToken: ERC20;
@@ -74,8 +76,8 @@ describe("CADC-USDC", function(){
     
     before(async () => {
         ({
-          users: [user1, user2],
-          userAddresses: [user1Address, user2Address],
+          users: [user1, user2,treasury],
+          userAddresses: [user1Address, user2Address,treasuryAddress],
           usdcToUsdAssimilator,
           cadcToUsdAssimilator,
           CurveFactory,
@@ -87,7 +89,8 @@ describe("CADC-USDC", function(){
       });
 
     beforeEach(async () => {
-    curveFactory = (await CurveFactory.deploy()) as CurveFactory;
+    console.log(`treasury address is ${treasuryAddress}`);
+    curveFactory = (await CurveFactory.deploy(50,treasuryAddress)) as CurveFactory;
     router = (await RouterFactory.deploy(curveFactory.address)) as Router;
 
     ({ createCurveAndSetParams, multiMintAndApprove } = await scaffoldHelpers({
@@ -107,6 +110,7 @@ describe("CADC-USDC", function(){
         baseAssimilator: cadcToUsdAssimilator.address,
         quoteAssimilator: usdcToUsdAssimilator.address,
         params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+        factoryAddress : curveFactory.address,
         });
 
         await multiMintAndApprove([
@@ -199,6 +203,10 @@ describe("CADC-USDC", function(){
         console.log(originalCADCBalance,"     ", originalUSDCBalance);
         console.log(afterSwapCADCBalance,"     ", afterSwapUSDCBalance);
         console.log(afterReverseSwapCADCBalance,"     ", afterReverseSwapUSDCBalance);
+
+        console.log("treasury balance for usdc & cadc");
+        console.log(await getUSDCBalance(await treasury.getAddress()));
+        console.log(await getCADCBalance(await treasury.getAddress()));
 
     })
 
