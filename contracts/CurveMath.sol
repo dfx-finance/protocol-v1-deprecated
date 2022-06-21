@@ -109,20 +109,28 @@ library CurveMath {
         int128[] memory _weights = curve.weights;
 
         int128 _omega = calculateFee(_oGLiq, _oBals, curve, _weights);
+        console.logString("omega is");
+        console.logInt(_omega);
         int128 _psi;
 
         for (uint256 i = 0; i < 32; i++) {
             _psi = calculateFee(_nGLiq, _nBals, curve, _weights);
+            console.logString("psi is");
+            console.logInt(_psi);
 
             int128 prevAmount;
             {
                 prevAmount = outputAmt_;
                 // outputAmt_ = _omega < _psi ? -(_inputAmt + _omega - _psi) : -(_inputAmt + _lambda.mul(_omega - _psi));
                 outputAmt_ = _omega < _psi ? -(_inputAmt + _omega - _psi) : -(_inputAmt +_omega - _psi);
+                console.logString("output amount in a block is");
+                console.logInt(outputAmt_);
             }
 
             if (outputAmt_ / 1e13 == prevAmount / 1e13) {
                 _nGLiq = _oGLiq + _inputAmt + outputAmt_;
+                console.logString("if clause _nGLiq is ");
+                console.logInt(_nGLiq);
 
                 _nBals[_outputIndex] = _oBals[_outputIndex] + outputAmt_;
 
@@ -133,6 +141,8 @@ library CurveMath {
                 return outputAmt_;
             } else {
                 _nGLiq = _oGLiq + _inputAmt + outputAmt_;
+                console.logString("else clause _nGLiq is ");
+                console.logInt(_nGLiq);
 
                 _nBals[_outputIndex] = _oBals[_outputIndex].add(outputAmt_);
             }
