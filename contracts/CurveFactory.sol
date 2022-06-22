@@ -42,7 +42,7 @@ contract CurveFactory is Ownable {
         uint256 _quoteWeight,
         address _baseAssimilator,
         address _quoteAssimilator
-    ) public onlyOwner returns (Curve) {
+    ) public returns (Curve) {
         bytes32 curveId = keccak256(abi.encode(_baseCurrency, _quoteCurrency));
         if (curves[curveId] != address(0)) revert("CurveFactory/currency-pair-already-exists");
 

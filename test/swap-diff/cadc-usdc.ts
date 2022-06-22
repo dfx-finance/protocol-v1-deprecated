@@ -55,6 +55,7 @@ describe("CADC-USDC", function () {
     baseAssimilator,
     quoteAssimilator,
     params,
+    signer
   }: {
     name: string;
     symbol: string;
@@ -65,6 +66,7 @@ describe("CADC-USDC", function () {
     baseAssimilator: string;
     quoteAssimilator: string;
     params: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
+    signer?: Signer
   }) => Promise<{
     curve: Curve;
     curveLpToken: ERC20;
@@ -117,6 +119,7 @@ describe("CADC-USDC", function () {
       baseAssimilator: cadcToUsdAssimilator.address,
       quoteAssimilator: usdcToUsdAssimilator.address,
       params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+      signer: user2
     });
 
     await multiMintAndApprove([

@@ -105,6 +105,7 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
     quoteAssimilator,
     params,
     yesWhitelisting,
+    signer,
   }: {
     name: string;
     symbol: string;
@@ -116,15 +117,19 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
     quoteAssimilator: string;
     params?: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
     yesWhitelisting?: boolean;
+    signer?: Signer;
   }): Promise<{ curve: Curve; curveLpToken: ERC20 }> {
-    await curveFactory.newCurve(name, symbol, base, quote, baseWeight, quoteWeight, baseAssimilator, quoteAssimilator);
+    if(signer) await curveFactory.connect(signer).newCurve(name, symbol, base, quote, baseWeight, quoteWeight, baseAssimilator, quoteAssimilator);
+    else await curveFactory.newCurve(name, symbol, base, quote, baseWeight, quoteWeight, baseAssimilator, quoteAssimilator);
 
     // Get curve address
     const curveAddress = await curveFactory.curves(
       ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["address", "address"], [base, quote])),
     );
     const curveLpToken = (await ethers.getContractAt("ERC20", curveAddress)) as ERC20;
-    const curve = (await ethers.getContractAt("Curve", curveAddress)) as Curve;
+    let curve;
+    if(signer) curve = ((await ethers.getContractAt("Curve", curveAddress)) as Curve).connect(signer);
+    else curve = (await ethers.getContractAt("Curve", curveAddress)) as Curve;
 
     if (!yesWhitelisting) {
       await curve.turnOffWhitelisting();
@@ -154,6 +159,7 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
     quoteAssimilator,
     params,
     yesWhitelisting,
+    signer,
   }: {
     name: string;
     symbol: string;
@@ -165,6 +171,7 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
     quoteAssimilator: string;
     params: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
     yesWhitelisting?: boolean;
+    signer?: Signer;
   }) {
     const { curve, curveLpToken } = await createCurve({
       name,
@@ -176,6 +183,7 @@ export const scaffoldHelpers = async ({ curveFactory, erc20 }: { curveFactory: C
       baseAssimilator,
       quoteAssimilator,
       yesWhitelisting,
+      signer
     });
 
     const tx = await curve.setParams(...params);
