@@ -32,8 +32,6 @@ contract UsdcToUsdAssimilator is IAssimilator {
     IOracle private constant oracle = IOracle(0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6);
     IERC20 private constant usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
 
-    address public factory;
-
     // solhint-disable-next-line
     constructor() {}
 
@@ -192,22 +190,14 @@ contract UsdcToUsdAssimilator is IAssimilator {
         balance_ = ((_balance * _rate) / 1e8).divu(1e6);
     }
 
-    function transferFee (int128 _amount) external override returns(bool transferSuccess_) {
+    function transferFee (int128 _amount, address _treasury) external override returns(bool transferSuccess_) {
         console.logString("usdc amount is ");
         console.logInt(_amount);
         uint256 _rate = getRate();
-        address treasury = ICurveFactory(factory).getProtocolTreasury();
-        console.logString("usdc transfer fee, treasury is");
-        console.log(treasury);
         uint256 amount = (_amount.abs().mulu(1e6)*1e8)/_rate;
         console.logString("total fee amount usdc is ");
         console.logUint(amount);
-        transferSuccess_ = usdc.transfer(treasury, amount);
+        transferSuccess_ = usdc.transfer(_treasury, amount);
         require(transferSuccess_, "usdc-usdc fee transfer failed");
-    }
-
-    function setFactory(address _factory) external override{
-        if(factory != _factory)
-            factory = _factory;
     }
 }

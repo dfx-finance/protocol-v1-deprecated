@@ -36,8 +36,6 @@ contract XsgdToUsdAssimilator is IAssimilator {
     IOracle private constant oracle = IOracle(0xe25277fF4bbF9081C75Ab0EB13B4A13a721f3E13);
     IERC20 private constant xsgd = IERC20(0x70e8dE73cE538DA2bEEd35d14187F6959a8ecA96);
 
-    address public factory;
-
     // solhint-disable-next-line
     constructor() {}
 
@@ -240,16 +238,10 @@ contract XsgdToUsdAssimilator is IAssimilator {
         balance_ = ((_xsgdBal * _rate) / 1e6).divu(1e18);
     }
 
-    function transferFee (int128 _amount) external override returns(bool transferSuccess_) {
+    function transferFee (int128 _amount, address _treasury) external override returns(bool transferSuccess_) {
         uint256 _rate = getRate();
-        address treasury = ICurveFactory(factory).getProtocolTreasury();
         uint256 amount = (_amount.mulu(1e6)*1e8)/_rate;
-        transferSuccess_ = xsgd.transfer(treasury, amount);
+        transferSuccess_ = xsgd.transfer(_treasury, amount);
         require(transferSuccess_, "xsgd-usdc fee transfer failed");
-    }
-
-    function setFactory(address _factory) external override{
-        if(factory != _factory)
-            factory = _factory;
     }
 }

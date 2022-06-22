@@ -36,8 +36,6 @@ contract TrybToUsdAssimilator is IAssimilator {
     IOracle private constant oracle = IOracle(0xB09fC5fD3f11Cf9eb5E1C5Dba43114e3C9f477b5);
     IERC20 private constant tryb = IERC20(0x2C537E5624e4af88A7ae4060C022609376C8D0EB);
 
-    address public factory;
-
     // solhint-disable-next-line
     constructor() {}
 
@@ -240,16 +238,10 @@ contract TrybToUsdAssimilator is IAssimilator {
         balance_ = ((_xsgdBal * _rate) / 1e6).divu(1e18);
     }
 
-    function transferFee (int128 _amount) external override returns(bool transferSuccess_) {
+    function transferFee (int128 _amount, address _treasury) external override returns(bool transferSuccess_) {
         uint256 _rate = getRate();
-        address treasury = ICurveFactory(factory).getProtocolTreasury();
         uint256 amount = (_amount.mulu(1e6)*1e8)/_rate;
-        transferSuccess_ = tryb.transfer(treasury, amount);
+        transferSuccess_ = tryb.transfer(_treasury, amount);
         require(transferSuccess_, "tryb-usdc fee transfer failed");
-    }
-
-    function setFactory(address _factory) external override{
-        if(factory != _factory)
-            factory = _factory;
     }
 }

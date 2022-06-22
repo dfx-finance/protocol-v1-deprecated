@@ -36,7 +36,9 @@ contract CurveFactory is ICurveFactory, Ownable {
     int128 public totoalFeePercentage = 100;
     int128 public protocolFee;
     address public protocolTreasury;
-
+    
+    event TreasuryUpdated(address indexed newTreasury); 
+    event ProtocolFeeUpdated(address indexed treasury, int128 indexed fee);
     event NewCurve(address indexed caller, bytes32 indexed id, address indexed curve);
 
     mapping(bytes32 => address) public curves;
@@ -49,15 +51,25 @@ contract CurveFactory is ICurveFactory, Ownable {
     }
 
     function getProtocolFee() virtual external view override returns (int128) {
-        console.logString("get protocol fee addr is");
-        console.log(address(this));
         return protocolFee;
     }
 
     function getProtocolTreasury() virtual external view override returns(address) {
-        console.logString("get protocol treasury addr is");
-        console.log(address(this));
         return protocolTreasury;
+    }
+
+    function updateProtocolTreasury (address _newTreasury) external onlyOwner {
+        require(_newTreasury != protocolTreasury, "same treasury address!");
+        require(_newTreasury != address(0), "invalid treasury address!");
+        protocolTreasury = _newTreasury;
+        emit TreasuryUpdated(protocolTreasury);
+    }
+
+    function updateProtocolFee (int128 _newFee) external onlyOwner {
+        require(totoalFeePercentage >= _newFee, "protocol fee can't be over 100%");
+        require(_newFee != protocolFee, "same protocol fee!");
+        protocolFee = _newFee;
+        emit ProtocolFeeUpdated(protocolTreasury, protocolFee);
     }
 
     function getCurve(address _baseCurrency, address _quoteCurrency) external view returns (address) {

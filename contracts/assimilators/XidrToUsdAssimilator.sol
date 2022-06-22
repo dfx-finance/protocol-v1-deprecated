@@ -36,8 +36,6 @@ contract XidrToUsdAssimilator is IAssimilator {
     IOracle private constant oracle = IOracle(0x91b99C9b75aF469a71eE1AB528e8da994A5D7030);
     IERC20 private constant xidr = IERC20(0xebF2096E01455108bAdCbAF86cE30b6e5A72aa52);
 
-    address public factory;
-
     // solhint-disable-next-line
     constructor() {}
 
@@ -240,16 +238,10 @@ contract XidrToUsdAssimilator is IAssimilator {
         balance_ = ((_xidrBal * _rate) / 1e6).divu(1e18);
     }
 
-    function transferFee (int128 _amount) external override returns(bool transferSuccess_) {
+    function transferFee (int128 _amount, address _treasury) external override returns(bool transferSuccess_) {
         uint256 _rate = getRate();
-        address treasury = ICurveFactory(factory).getProtocolTreasury();
         uint256 amount = (_amount.mulu(1e6)*1e8)/_rate;
-        transferSuccess_ = xidr.transfer(treasury, amount);
+        transferSuccess_ = xidr.transfer(_treasury, amount);
         require(transferSuccess_, "xidr-usdc fee transfer failed");
-    }
-
-    function setFactory(address _factory) external override{
-        if(factory != _factory)
-            factory = _factory;
     }
 }

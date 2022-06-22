@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 pragma solidity ^0.7.3;
+pragma experimental ABIEncoderV2;
 
 import "./lib/ABDKMath64x64.sol";
 
@@ -30,6 +31,8 @@ import "./Storage.sol";
 import "./MerkleProver.sol";
 
 import "./interfaces/IFreeFromUpTo.sol";
+
+import "./SwapData.sol";
 
 library Curves {
     using ABDKMath64x64 for int128;
@@ -402,7 +405,14 @@ contract Curve is Storage, MerkleProver {
         uint256 _minTargetAmount,
         uint256 _deadline
     ) external deadline(_deadline) transactable nonReentrant returns (uint256 targetAmount_) {
-        targetAmount_ = Swaps.originSwap(curve, _origin, _target, _originAmount, msg.sender,curveFactory);
+        OriginSwapData memory _swapData; 
+        _swapData._origin = _origin;
+        _swapData._target = _target;
+        _swapData._originAmount = _originAmount;
+        _swapData._recipient = msg.sender;
+        _swapData._curveFactory = curveFactory;
+        targetAmount_ = Swaps.originSwap(curve, _swapData);
+        // targetAmount_ = Swaps.originSwap(curve, _origin, _target, _originAmount, msg.sender,curveFactory);
 
         require(targetAmount_ >= _minTargetAmount, "Curve/below-min-target-amount");
     }
@@ -434,7 +444,14 @@ contract Curve is Storage, MerkleProver {
         uint256 _targetAmount,
         uint256 _deadline
     ) external deadline(_deadline) transactable nonReentrant returns (uint256 originAmount_) {
-        originAmount_ = Swaps.targetSwap(curve, _origin, _target, _targetAmount, msg.sender);
+        TargetSwapData memory _swapData;
+        _swapData._origin=_origin;
+        _swapData._target=_target;
+        _swapData._targetAmount=_targetAmount;
+        _swapData._recipient=msg.sender;
+        _swapData._curveFactory=curveFactory;
+        originAmount_ = Swaps.targetSwap(curve,_swapData);
+        // originAmount_ = Swaps.targetSwap(curve, _origin, _target, _targetAmount, msg.sender,curveFactory);
 
         require(originAmount_ <= _maxOriginAmount, "Curve/above-max-origin-amount");
     }

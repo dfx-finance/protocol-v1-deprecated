@@ -36,8 +36,6 @@ contract NzdsToUsdAssimilator is IAssimilator {
     IOracle private constant oracle = IOracle(0x3977CFc9e4f29C184D4675f4EB8e0013236e5f3e);
     IERC20 private constant nzds = IERC20(0xDa446fAd08277B4D2591536F204E018f32B6831c);
 
-    address public factory;
-
     // solhint-disable-next-line
     constructor() {}
 
@@ -240,16 +238,10 @@ contract NzdsToUsdAssimilator is IAssimilator {
         balance_ = ((_nzdsBal * _rate) / 1e6).divu(1e18);
     }
 
-    function transferFee (int128 _amount) external override returns(bool transferSuccess_) {
+    function transferFee (int128 _amount, address _treasury) external override returns(bool transferSuccess_) {
         uint256 _rate = getRate();
-        address treasury = ICurveFactory(factory).getProtocolTreasury();
         uint256 amount = (_amount.mulu(1e6)*1e8)/_rate;
-        transferSuccess_ = nzds.transfer(treasury, amount);
+        transferSuccess_ = nzds.transfer(_treasury, amount);
         require(transferSuccess_, "nzds-usdc fee transfer failed");
-    }
-
-    function setFactory(address _factory) external override{
-        if(factory != _factory)
-            factory = _factory;
     }
 }

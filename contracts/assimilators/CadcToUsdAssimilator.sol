@@ -36,8 +36,6 @@ contract CadcToUsdAssimilator is IAssimilator {
     IERC20 private constant cadc = IERC20(0xcaDC0acd4B445166f12d2C07EAc6E2544FbE2Eef);
 
     IERC20 private constant usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
-
-    address public factory;
     
     // solhint-disable-next-line
     constructor() {}
@@ -233,16 +231,10 @@ contract CadcToUsdAssimilator is IAssimilator {
         balance_ = ((_cadcBal * _rate) / 1e6).divu(1e18);
     }
 
-    function transferFee (int128 _amount) external override returns(bool transferSuccess_) {
+    function transferFee (int128 _amount, address _treasury) external override returns(bool transferSuccess_) {
         uint256 _rate = getRate();
-        address treasury = ICurveFactory(factory).getProtocolTreasury();
         uint256 amount = (_amount.mulu(1e18)*1e8)/_rate;
-        transferSuccess_ = cadc.transfer(treasury, amount);
+        transferSuccess_ = cadc.transfer(_treasury, amount);
         require(transferSuccess_, "cadc-usdc fee transfer failed");
-    }
-
-    function setFactory( address _factory) external override{
-        if(factory != _factory)
-            factory = _factory;
     }
 }
