@@ -29,6 +29,11 @@ export const TOKENS = {
     masterMinter: "0x3f02a96cE54f043efAd2C35DDB0c42CC5777df13",
     decimals: 6,
   },
+  EUROC: {
+    address: "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c",
+    masterMinter: "0x02398771Fd1db790Ef2b656ca3BcB3075f27A72c",
+    decimals: 6,
+  },
 };
 
 export const ORACLES = {
@@ -54,6 +59,10 @@ export const ORACLES = {
   },
   XIDR: {
     address: "0x91b99C9b75aF469a71eE1AB528e8da994A5D7030",
+    decimals: 8,
+  },
+  EUROC: {
+    address: "0xb49f677943BC038e9857d61E7d053CaA2C1734C1",
     decimals: 8,
   },
 };

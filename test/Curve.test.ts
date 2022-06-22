@@ -38,6 +38,7 @@ describe("Curve", function () {
   let xsgdToUsdAssimilator: Contract;
   let xidrToUsdAssimilator: Contract;
   let nzdsToUsdAssimilator: Contract;
+  let eurocToUsdAssimilator: Contract;
 
   let CurveFactory: ContractFactory;
   let RouterFactory: ContractFactory;
@@ -51,6 +52,7 @@ describe("Curve", function () {
   let xsgd: ERC20;
   let xidr: ERC20;
   let nzds: ERC20;
+  let euroc: ERC20;
   let erc20: ERC20;
 
   let createCurveAndSetParams: ({
@@ -102,6 +104,7 @@ describe("Curve", function () {
       xsgdToUsdAssimilator,
       xidrToUsdAssimilator,
       nzdsToUsdAssimilator,
+      eurocToUsdAssimilator,
       CurveFactory,
       RouterFactory,
       usdc,
@@ -110,6 +113,7 @@ describe("Curve", function () {
       xsgd,
       xidr,
       nzds,
+      euroc,
       erc20,
     } = await scaffoldTest());
   });
@@ -200,6 +204,10 @@ describe("Curve", function () {
 
     it.only("NZDS", async function () {
       await checkInvariant(TOKENS.NZDS.address, nzdsToUsdAssimilator.address, TOKENS.NZDS.decimals);
+    });
+
+    it.only("EUROC", async function () {
+      await checkInvariant(TOKENS.EUROC.address, eurocToUsdAssimilator.address, TOKENS.EUROC.decimals);
     });
   });
 
@@ -428,11 +436,11 @@ describe("Curve", function () {
       }
     };
 
-    const bases = [TOKENS.CADC.address, TOKENS.XSGD.address, TOKENS.EURS.address, TOKENS.NZDS.address, TOKENS.XIDR.address];
-    const decimals = [TOKENS.CADC.decimals, TOKENS.XSGD.decimals, TOKENS.EURS.decimals, TOKENS.NZDS.decimals, TOKENS.XIDR.decimals];
-    const oracles = [ORACLES.CADC.address, ORACLES.XSGD.address, ORACLES.EURS.address, ORACLES.NZDS.address, ORACLES.XIDR.address];
+    const bases = [TOKENS.CADC.address, TOKENS.XSGD.address, TOKENS.EURS.address, TOKENS.NZDS.address, TOKENS.XIDR.address, TOKENS.EUROC.address];
+    const decimals = [TOKENS.CADC.decimals, TOKENS.XSGD.decimals, TOKENS.EURS.decimals, TOKENS.NZDS.decimals, TOKENS.XIDR.decimals, TOKENS.EUROC.decimals];
+    const oracles = [ORACLES.CADC.address, ORACLES.XSGD.address, ORACLES.EURS.address, ORACLES.NZDS.address, ORACLES.XIDR.address, ORACLES.EUROC.address];
     const weights = [["0.5", "0.5"]];
-    const baseName = ["CADC", "XSGD", "EURS", "NZDS", "XIDR"];
+    const baseName = ["CADC", "XSGD", "EURS", "NZDS", "XIDR", "EUROC"];
 
     for (let i = 0; i < bases.length; i++) {
       for (let j = 0; j < weights.length; j++) {
@@ -694,6 +702,26 @@ describe("Curve", function () {
             quoteAssimilator: usdcToUsdAssimilator.address,
             params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
             oracle: ORACLES.NZDS.address,
+          });
+        });
+      }
+
+      for (let i = 1; i <= 10000; i *= 100) {
+        it.only(`EUROC/USDC 50/50 - ${i}`, async function () {
+          await viewLPDepositWithSanityChecks({
+            amount: i.toString(),
+            name: NAME,
+            symbol: SYMBOL,
+            base: euroc.address,
+            quote: usdc.address,
+            baseWeight: parseUnits("0.5"),
+            quoteWeight: parseUnits("0.5"),
+            baseDecimals: TOKENS.EUROC.decimals,
+            quoteDecimals: TOKENS.USDC.decimals,
+            baseAssimilator: eurocToUsdAssimilator.address,
+            quoteAssimilator: usdcToUsdAssimilator.address,
+            params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+            oracle: ORACLES.EUROC.address,
           });
         });
       }
@@ -1123,6 +1151,26 @@ describe("Curve", function () {
           });
         });
       }
+
+      for (let i = 1; i <= 10000; i *= 100) {
+        it.only("EUROC/USDC 50/50 - " + i.toString(), async function () {
+          await addAndRemoveLiquidityWithSanityChecks({
+            amount: "1",
+            name: NAME,
+            symbol: SYMBOL,
+            base: euroc.address,
+            quote: usdc.address,
+            baseWeight: parseUnits("0.5"),
+            quoteWeight: parseUnits("0.5"),
+            baseDecimals: TOKENS.EUROC.decimals,
+            quoteDecimals: TOKENS.USDC.decimals,
+            baseAssimilator: eurocToUsdAssimilator.address,
+            quoteAssimilator: usdcToUsdAssimilator.address,
+            params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+            oracle: ORACLES.EUROC.address,
+          });
+        });
+      }
     });
   });
 
@@ -1314,6 +1362,25 @@ describe("Curve", function () {
           });
         });
       }
+      for (let i = 1; i <= 10000; i *= 100) {
+        it.only(`EUROC/USDC 50/50 - ${i}`, async function () {
+          await viewDepositWithSanityChecks({
+            amount: i.toString(),
+            name: NAME,
+            symbol: SYMBOL,
+            base: euroc.address,
+            quote: usdc.address,
+            baseWeight: parseUnits("0.5"),
+            quoteWeight: parseUnits("0.5"),
+            baseDecimals: TOKENS.EUROC.decimals,
+            quoteDecimals: TOKENS.USDC.decimals,
+            baseAssimilator: eurocToUsdAssimilator.address,
+            quoteAssimilator: usdcToUsdAssimilator.address,
+            params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+            oracle: ORACLES.EUROC.address,
+          });
+        });
+      }
     });
 
     describe("viewWithdraw", function () {
@@ -1500,6 +1567,26 @@ describe("Curve", function () {
             quoteAssimilator: usdcToUsdAssimilator.address,
             params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
             oracle: ORACLES.NZDS.address,
+          });
+        });
+      }
+
+      for (let i = 1; i <= 10000; i *= 100) {
+        it.only("EUROC/USDC 50/50 - " + i.toString(), async function () {
+          await viewWithdrawWithSanityChecks({
+            amount: "10000",
+            name: NAME,
+            symbol: SYMBOL,
+            base: euroc.address,
+            quote: usdc.address,
+            baseWeight: parseUnits("0.5"),
+            quoteWeight: parseUnits("0.5"),
+            baseDecimals: TOKENS.EUROC.decimals,
+            quoteDecimals: TOKENS.USDC.decimals,
+            baseAssimilator: eurocToUsdAssimilator.address,
+            quoteAssimilator: usdcToUsdAssimilator.address,
+            params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+            oracle: ORACLES.EUROC.address,
           });
         });
       }
@@ -1771,6 +1858,26 @@ describe("Curve", function () {
             quoteAssimilator: nzdsToUsdAssimilator.address,
             params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
             oracle: ORACLES.NZDS.address,
+          });
+        });
+      }
+
+      for (let i = 1; i <= 10000; i *= 100) {
+        it("EUROC/USDC 50/50 - " + i.toString(), async function () {
+          await addAndRemoveLiquidityWithSanityChecks({
+            amount: "1",
+            name: NAME,
+            symbol: SYMBOL,
+            base: euroc.address,
+            quote: usdc.address,
+            baseWeight: parseUnits("0.5"),
+            quoteWeight: parseUnits("0.5"),
+            baseDecimals: TOKENS.EUROC.decimals,
+            quoteDecimals: TOKENS.USDC.decimals,
+            baseAssimilator: eursToUsdAssimilator.address,
+            quoteAssimilator: eurocToUsdAssimilator.address,
+            params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+            oracle: ORACLES.EUROC.address,
           });
         });
       }

@@ -72,6 +72,15 @@ export const mintUSDC = async (recipient: string, amount: BigNumberish | number)
   });
 };
 
+export const mintEUROC = async (recipient: string, amount: BigNumberish | number): Promise<void> => {
+  await mintFiatTokenV2({
+    ownerAddress: TOKENS.EUROC.masterMinter,
+    tokenAddress: TOKENS.EUROC.address,
+    recipient,
+    amount,
+  });
+};
+
 export const mintNZDS = async (recipient: string, amount: BigNumberish | number): Promise<void> => {
   await mintFiatTokenV2({
     ownerAddress: TOKENS.NZDS.owner,
@@ -83,7 +92,7 @@ export const mintNZDS = async (recipient: string, amount: BigNumberish | number)
 
 export const mintXIDR = async (recipient: string, amount: BigNumberish | number): Promise<void> => {
   await mintFiatTokenV2({
-    ownerAddress: TOKENS.XIDR.owner,
+    ownerAddress: TOKENS.XIDR.masterMinter,
     tokenAddress: TOKENS.XIDR.address,
     recipient,
     amount,
