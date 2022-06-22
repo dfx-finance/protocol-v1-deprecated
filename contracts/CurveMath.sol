@@ -105,7 +105,7 @@ library CurveMath {
     ) internal view returns (int128 outputAmt_) {
         outputAmt_ = -_inputAmt;
 
-        int128 _lambda = curve.lambda;
+        // int128 _lambda = curve.lambda;
         int128[] memory _weights = curve.weights;
 
         int128 _omega = calculateFee(_oGLiq, _oBals, curve, _weights);
