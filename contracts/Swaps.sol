@@ -30,6 +30,15 @@ library Swaps {
 
     int128 public constant ONE = 0x10000000000000000;
 
+    struct SwapInfo {
+        int128 totalAmount;
+        int128 totalFee;
+        ICurveFactory curveFactory;
+        int128 amountToUser;
+        int128 amountToTreasury;
+        int128 protocolFeePercentage;
+    }
+
     function getOriginAndTarget(
         Storage.Curve storage curve,
         address _o,
@@ -62,12 +71,26 @@ library Swaps {
 
         _amt = CurveMath.calculateTrade(curve, _oGLiq, _nGLiq, _oBals, _nBals, _amt, _t.ix);
 
+        SwapInfo memory _swapInfo;
+        _swapInfo.totalAmount = _amt;
+        _swapInfo.curveFactory = ICurveFactory(_curveFactory);
+        _swapInfo.amountToUser = _amt.us_mul(ONE - curve.epsilon);
+        _swapInfo.totalFee = _amt - _amt.us_mul(ONE - curve.epsilon);
+        _swapInfo.protocolFeePercentage = _swapInfo.curveFactory.getProtocolFee();
+        // _swapInfo.amountToUser = _amt - _swapInfo.totalFee.us_div(100).mul(_swapInfo.protocolFeePercentage);
+        _swapInfo.amountToTreasury = _swapInfo.totalFee.us_div(100).mul(_swapInfo.protocolFeePercentage) ;
+        console.logString("struct vars");
+        console.logInt(_swapInfo.totalAmount);
+        console.logInt(_swapInfo.amountToUser);
+        console.logInt(_swapInfo.amountToTreasury);
+        console.logInt(_swapInfo.totalFee);
+        // set factory contract 
+        Assimilators.setFactory(_t.addr, _curveFactory);
+        // transfer fee here
+        // Assimilators.transferFee(_t.addr, _swapInfo.amountToTreasury);
         // _amt = _amt.us_mul(ONE - curve.epsilon);
-
-        Assimilators.setFactoryAndEpsilon(_t.addr, curve.epsilon, _curveFactory);
-        console.logString("swaps right after set epsilon");
-        console.logInt(curve.epsilon);
-        tAmt_ = Assimilators.outputNumeraire(_t.addr, _recipient, _amt);
+        // tAmt_ = Assimilators.outputNumeraire(_t.addr, _recipient, _amt);
+        tAmt_ = Assimilators.outputNumeraire(_t.addr, _recipient, _swapInfo.amountToUser);
 
         emit Trade(msg.sender, _origin, _target, _originAmount, tAmt_);
     }

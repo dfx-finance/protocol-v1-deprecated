@@ -32,9 +32,6 @@ contract UsdcToUsdAssimilator is IAssimilator {
     IOracle private constant oracle = IOracle(0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6);
     IERC20 private constant usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
 
-    int128 public constant ONE = 0x10000000000000000;
-
-    int128 public epsilon;
     address public factory;
 
     // solhint-disable-next-line
@@ -126,9 +123,13 @@ contract UsdcToUsdAssimilator is IAssimilator {
 
     function outputNumeraire(address _dst, int128 _amount) external override returns (uint256 amount_) {
         
-        amount_ = transferFee(_amount);
+        uint256 _rate = getRate();
+
+        amount_ = (_amount.mulu(1e6) * 1e8) / _rate;
 
         bool _success = usdc.transfer(_dst, amount_);
+        console.logString("total output numerarie amount usdc is");
+        console.logUint(amount_);
 
         require(_success, "Curve/USDC-transfer-failed");
     }
@@ -191,46 +192,21 @@ contract UsdcToUsdAssimilator is IAssimilator {
         balance_ = ((_balance * _rate) / 1e8).divu(1e6);
     }
 
-    function transferFee (int128 _amount) internal returns(uint256 amount_) {
-        console.logString("transfer fee factory");
-        console.log(factory);
-        int128 protocolFee = ICurveFactory(factory).getProtocolFee();
-        address treasury = ICurveFactory(factory).getProtocolTreasury();
-        console.logString("transfer fee fee, tre");
-        console.logInt(protocolFee);
-        console.log(treasury);
-        uint256 _rate = getRate();
-        console.logString("getRate usdc assim");
-        console.logUint(_rate);
-        console.logString("epsilon usdc assim");
-        console.logInt(epsilon);
-        console.logString("amount usdc assim");
+    function transferFee (int128 _amount) external override returns(bool transferSuccess_) {
+        console.logString("usdc amount is ");
         console.logInt(_amount);
-        // console.logInt(epsilon*(protocolFee));
-        // int256 temp = int256(_amount) * int256(epsilon) * int256(protocolFee);
-        // console.logInt(type(int128).max);
-        // console.logInt(temp);
-        // // console.logInt(int256(_amount*epsilon*protocolFee));
-        // // int128 _protocolAmount = _amount.us_mul(epsilon.us_mul(protocolFee)).us_div(100);
-        // int128 _protocolAmount = _amount.us_mul(epsilon.us_mul(protocolFee)).us_div(100);
-        console.logInt(int256(_amount) * int256(epsilon) * int256(protocolFee)/int256(100));
-        int128 _protocolAmount = int128(int256(_amount) * int256(epsilon) * int256(protocolFee)/int256(100));
-        console.logString("protocol fee prev");
-        console.logInt(_protocolAmount);
-        _amount = _amount.us_mul(ONE - epsilon.us_mul(100 - protocolFee).us_div(100));
-        uint256 protocolAmount = (_protocolAmount.mulu(1e6) * 1e8) / _rate;
-        amount_ = (_amount.mulu(1e6) * 1e8) / _rate;
-        console.logString("protocol fee amount from usdc assim");
-        console.logUint(protocolAmount);
-        bool success_ = usdc.transfer(treasury, protocolAmount);
-        require(success_, "usdc-usdc fee transfer failed");
+        uint256 _rate = getRate();
+        address treasury = ICurveFactory(factory).getProtocolTreasury();
+        console.logString("usdc transfer fee, treasury is");
+        console.log(treasury);
+        uint256 amount = (_amount.abs().mulu(1e6)*1e8)/_rate;
+        console.logString("total fee amount usdc is ");
+        console.logUint(amount);
+        transferSuccess_ = usdc.transfer(treasury, amount);
+        require(transferSuccess_, "usdc-usdc fee transfer failed");
     }
 
-    function setFactoryAndEpsilon(int128 _epsilon, address _factory) external override{
-        console.logString(" usdc assim set factory addr is ");
-        console.log(_factory);
-        if(epsilon != _epsilon)
-            epsilon = _epsilon;
+    function setFactory(address _factory) external override{
         if(factory != _factory)
             factory = _factory;
     }

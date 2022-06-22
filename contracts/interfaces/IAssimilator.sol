@@ -58,5 +58,7 @@ interface IAssimilator {
 
     function viewNumeraireAmountAndBalance(address, uint256) external view returns (int128, int128);
 
-    function setFactoryAndEpsilon(int128,address) external;
+    function setFactory(address) external;
+
+    function transferFee (int128) external returns(bool);
 }

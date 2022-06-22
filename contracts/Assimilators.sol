@@ -153,8 +153,13 @@ library Assimilators {
         amt_ = abi.decode(delegate(_assim, data), (uint256));
     }
 
-    function setFactoryAndEpsilon(address _assim, int128 _eps, address _factory) internal {
-        bytes memory data = abi.encodeWithSelector(iAsmltr.setFactoryAndEpsilon.selector, _eps, _factory);
+    function setFactory(address _assim, address _factory) internal {
+        bytes memory data = abi.encodeWithSelector(iAsmltr.setFactory.selector, _factory);
+        delegate(_assim, data);
+    }
+
+    function transferFee(address _assim, int128 _amt) internal {
+        bytes memory data = abi.encodeWithSelector(iAsmltr.transferFee.selector, _amt);
         delegate(_assim, data);
     }
 }

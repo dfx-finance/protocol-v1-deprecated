@@ -245,14 +245,17 @@ library CurveMath {
 
         for (uint256 i = 0; i < _length; i++) {
             int128 _nIdeal = _nGLiq.mul(_weights[i]);
+            console.logString("_nideal muled");
 
             if (_nBals[i] > _nIdeal) {
                 int128 _upperAlpha = ONE + _alpha;
 
                 int128 _nHalt = _nIdeal.mul(_upperAlpha);
+                console.logString("_upperAlpha muled");
 
                 if (_nBals[i] > _nHalt) {
                     int128 _oHalt = _oGLiq.mul(_weights[i]).mul(_upperAlpha);
+                console.logString("_weights, uppper alpha muled");
 
                     if (_oBals[i] < _oHalt) revert("Curve/upper-halt");
                     if (_nBals[i] - _nHalt > _oBals[i] - _oHalt) revert("Curve/upper-halt");
@@ -261,10 +264,13 @@ library CurveMath {
                 int128 _lowerAlpha = ONE - _alpha;
 
                 int128 _nHalt = _nIdeal.mul(_lowerAlpha);
+                console.logString("_lowerAlpha muled");
 
                 if (_nBals[i] < _nHalt) {
                     int128 _oHalt = _oGLiq.mul(_weights[i]);
+                    console.logString("_weights muled");
                     _oHalt = _oHalt.mul(_lowerAlpha);
+                    console.logString("_lower alpha muled");
 
                     if (_oBals[i] > _oHalt) revert("Curve/lower-halt");
                     if (_nHalt - _nBals[i] > _oHalt - _oBals[i]) revert("Curve/lower-halt");
