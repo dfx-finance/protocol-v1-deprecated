@@ -29,8 +29,8 @@ const EPSILON = parseUnits("0.0004");
 const LAMBDA = parseUnits("0.3");
 
 describe("CADC-USDC", function(){
-    let [user1, user2]: Signer[] = [];
-    let [user1Address, user2Address,]: string[] = [];
+    let [user1, user2, treasury]: Signer[] = [];
+    let [user1Address, user2Address,treasuryAddress]: string[] = [];
   
     let usdcToUsdAssimilator: Contract;
     let cadcToUsdAssimilator: Contract;
@@ -76,8 +76,8 @@ describe("CADC-USDC", function(){
     
     before(async () => {
         ({
-          users: [user1, user2],
-          userAddresses: [user1Address, user2Address],
+          users: [user1, user2,treasury],
+          userAddresses: [user1Address, user2Address,treasuryAddress],
           usdcToUsdAssimilator,
           cadcToUsdAssimilator,
           CurveFactory,
@@ -89,9 +89,7 @@ describe("CADC-USDC", function(){
       });
 
     beforeEach(async () => {
-    console.log(user2Address);
-    console.log(`treasury address is ${user2Address}`);
-    curveFactory = (await CurveFactory.deploy(50,user2Address)) as CurveFactory;
+    curveFactory = (await CurveFactory.deploy(50,treasuryAddress)) as CurveFactory;
     router = (await RouterFactory.deploy(curveFactory.address)) as Router;
 
     ({ createCurveAndSetParams, multiMintAndApprove } = await scaffoldHelpers({
@@ -119,32 +117,45 @@ describe("CADC-USDC", function(){
         [TOKENS.CADC.address, user1, parseUnits("300000000", TOKENS.CADC.decimals), cadcCurve.address],
         ]);
 
+        // mint 300k cadc to user2
+        await multiMintAndApprove([
+        [TOKENS.USDC.address, user2, parseUnits("300000000", TOKENS.USDC.decimals), cadcCurve.address],
+        [TOKENS.CADC.address, user2, parseUnits("300000", TOKENS.CADC.decimals), cadcCurve.address],
+        ]);
+
+        usdc.connect(user2).transfer(await user1.getAddress(),parseUnits("300000000", TOKENS.USDC.decimals));
+
+        console.log("original treasury balance for usdc & cadc");
+        console.log(await getUSDCBalance(await treasury.getAddress()));
+        console.log(await getCADCBalance(await treasury.getAddress()));
+        
         await getPoolStats(cadcCurve);
+        
         // deposit 6M worth of cadc & 4M worth of usdc to the curve
         await cadcCurve.connect(user1).deposit(parseUnits("10000000"), await getFutureTime());
- 
+
         let originalCADCBalance = await getCADCBalance(await user2.getAddress());
         let originalUSDCBalance = await getUSDCBalance(await user2.getAddress());
-
-
-        // swap 60k cadc into usdc
-        await cadcCurve.connect(user1).originSwap(TOKENS.CADC.address,TOKENS.USDC.address,parseUnits("60000", TOKENS.CADC.decimals),0,await getFutureTime());
-        let afterSwapCADCBalance = await getCADCBalance(await user1.getAddress());
-        let afterSwapUSDCBalance = await getUSDCBalance(await user1.getAddress());
+        
+        // swap 300k cadc into usdcthat
+        await cadcCurve.connect(user2).originSwap(TOKENS.CADC.address,TOKENS.USDC.address,parseUnits("300000", TOKENS.CADC.decimals),0,await getFutureTime());
+        let afterSwapCADCBalance = await getCADCBalance(await user2.getAddress());
+        let afterSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
 
         // swap back usdc to cadc
-        await cadcCurve.connect(user1).originSwap(TOKENS.USDC.address, TOKENS.CADC.address,parseUnits(afterSwapUSDCBalance, TOKENS.USDC.decimals),0, await getFutureTime());
-        let afterReverseSwapCADCBalance = await getCADCBalance(await user1.getAddress());
-        let afterReverseSwapUSDCBalance = await getUSDCBalance(await user1.getAddress());
+        await cadcCurve.connect(user2).originSwap(TOKENS.USDC.address, TOKENS.CADC.address,parseUnits(afterSwapUSDCBalance, TOKENS.USDC.decimals),0, await getFutureTime());
+        let afterReverseSwapCADCBalance = await getCADCBalance(await user2.getAddress());
+        let afterReverseSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
 
+        // await getPoolStats(cadcCurve);
 
         console.log(originalCADCBalance,"     ", originalUSDCBalance);
         console.log(afterSwapCADCBalance,"     ", afterSwapUSDCBalance);
         console.log(afterReverseSwapCADCBalance,"     ", afterReverseSwapUSDCBalance);
 
         console.log("treasury balance for usdc & cadc");
-        console.log(await getUSDCBalance(await user2.getAddress()));
-        console.log(await getCADCBalance(await user2.getAddress()));
+        console.log(await getUSDCBalance(await treasury.getAddress()));
+        console.log(await getCADCBalance(await treasury.getAddress()));
 
     })
 
@@ -163,7 +174,7 @@ describe("CADC-USDC", function(){
         console.log(stats);
     }
 
-    it("cadc-usdc swap",async () => {
+    it("protocol fee",async () => {
         
     })
 })

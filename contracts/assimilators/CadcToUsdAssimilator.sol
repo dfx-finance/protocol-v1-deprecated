@@ -23,6 +23,7 @@ import "../lib/UnsafeMath64x64.sol";
 import "../interfaces/IAssimilator.sol";
 import "../interfaces/IOracle.sol";
 import "../interfaces/ICurveFactory.sol";
+import  "hardhat/console.sol";
 
 contract CadcToUsdAssimilator is IAssimilator {
     using ABDKMath64x64 for int128;
@@ -237,15 +238,18 @@ contract CadcToUsdAssimilator is IAssimilator {
         int128 protocolFee = ICurveFactory(factory).getProtocolFee();
         address treasury = ICurveFactory(factory).getProtocolTreasury();
         uint256 _rate = getRate();
-        int128 _protocolAmount = _amount.us_mul(protocolFee).us_div(100);
-        _amount = _amount.us_mul(ONE - epsilon);
+        int128 _protocolAmount = _amount.us_mul(epsilon.us_mul(protocolFee)).us_div(100);
+        _amount = _amount.us_mul(ONE - epsilon.us_mul(100 - protocolFee).us_div(100));
         uint256 protocolAmount = (_protocolAmount.mulu(1e18) * 1e8) / _rate;
         amount_ = (_amount.mulu(1e18) * 1e8) / _rate;
+        console.logString("protocol fee amount from cadc assim");
+        console.logUint(protocolAmount);
         bool success_ = cadc.transfer(treasury, protocolAmount);
         require(success_, "cadc-usdc fee transfer failed");
     }
 
     function setFactoryAndEpsilon(int128 _epsilon, address _factory) external override{
+        console.logString("set factory from cadc assim called");
         if(epsilon != _epsilon)
             epsilon = _epsilon;
         if(factory != _factory)

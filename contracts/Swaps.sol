@@ -12,6 +12,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./CurveFactory.sol";
+import  "hardhat/console.sol";
 
 library Swaps {
     using ABDKMath64x64 for int128;
@@ -64,6 +65,8 @@ library Swaps {
         // _amt = _amt.us_mul(ONE - curve.epsilon);
 
         Assimilators.setFactoryAndEpsilon(_t.addr, curve.epsilon, _curveFactory);
+        console.logString("swaps right after set epsilon");
+        console.logInt(curve.epsilon);
         tAmt_ = Assimilators.outputNumeraire(_t.addr, _recipient, _amt);
 
         emit Trade(msg.sender, _origin, _target, _originAmount, tAmt_);

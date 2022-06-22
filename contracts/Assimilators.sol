@@ -155,6 +155,6 @@ library Assimilators {
 
     function setFactoryAndEpsilon(address _assim, int128 _eps, address _factory) internal {
         bytes memory data = abi.encodeWithSelector(iAsmltr.setFactoryAndEpsilon.selector, _eps, _factory);
-        delegate(_assim, data),();
+        delegate(_assim, data);
     }
 }

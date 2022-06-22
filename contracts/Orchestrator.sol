@@ -23,6 +23,7 @@ import "./lib/ABDKMath64x64.sol";
 import "./Storage.sol";
 
 import "./CurveMath.sol";
+import  "hardhat/console.sol";
 
 library Orchestrator {
     using SafeERC20 for IERC20;
@@ -62,6 +63,9 @@ library Orchestrator {
 
         int128 _omega = getFee(curve);
 
+        console.logString("original fee");
+        console.logInt(_omega);
+
         curve.alpha = (_alpha + 1).divu(1e18);
 
         curve.beta = (_beta + 1).divu(1e18);
@@ -73,6 +77,9 @@ library Orchestrator {
         curve.lambda = (_lambda + 1).divu(1e18);
 
         int128 _psi = getFee(curve);
+
+        console.logString("new fee _psi");
+        console.logInt(_psi);
 
         require(_omega >= _psi, "Curve/parameters-increase-fee");
 
