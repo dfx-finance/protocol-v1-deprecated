@@ -105,32 +105,32 @@ library CurveMath {
     ) internal view returns (int128 outputAmt_) {
         outputAmt_ = -_inputAmt;
 
-        // int128 _lambda = curve.lambda;
+        int128 _lambda = curve.lambda;
         int128[] memory _weights = curve.weights;
 
         int128 _omega = calculateFee(_oGLiq, _oBals, curve, _weights);
-        console.logString("omega is");
-        console.logInt(_omega);
+        // console.logString("omega is");
+        // console.logInt(_omega);
         int128 _psi;
 
         for (uint256 i = 0; i < 32; i++) {
             _psi = calculateFee(_nGLiq, _nBals, curve, _weights);
-            console.logString("psi is");
-            console.logInt(_psi);
+            // console.logString("psi is");
+            // console.logInt(_psi);
 
             int128 prevAmount;
             {
                 prevAmount = outputAmt_;
-                // outputAmt_ = _omega < _psi ? -(_inputAmt + _omega - _psi) : -(_inputAmt + _lambda.mul(_omega - _psi));
-                outputAmt_ = _omega < _psi ? -(_inputAmt + _omega - _psi) : -(_inputAmt +_omega - _psi);
-                console.logString("output amount in a block is");
-                console.logInt(outputAmt_);
+                outputAmt_ = _omega < _psi ? -(_inputAmt + _omega - _psi) : -(_inputAmt + _lambda.mul(_omega - _psi));
+                // outputAmt_ = _omega < _psi ? -(_inputAmt + _omega - _psi) : -(_inputAmt +_omega - _psi);
+                // console.logString("output amount in a block is");
+                // console.logInt(outputAmt_);
             }
 
             if (outputAmt_ / 1e13 == prevAmount / 1e13) {
                 _nGLiq = _oGLiq + _inputAmt + outputAmt_;
-                console.logString("if clause _nGLiq is ");
-                console.logInt(_nGLiq);
+                // console.logString("if clause _nGLiq is ");
+                // console.logInt(_nGLiq);
 
                 _nBals[_outputIndex] = _oBals[_outputIndex] + outputAmt_;
 
@@ -141,8 +141,8 @@ library CurveMath {
                 return outputAmt_;
             } else {
                 _nGLiq = _oGLiq + _inputAmt + outputAmt_;
-                console.logString("else clause _nGLiq is ");
-                console.logInt(_nGLiq);
+                // console.logString("else clause _nGLiq is ");
+                // console.logInt(_nGLiq);
 
                 _nBals[_outputIndex] = _oBals[_outputIndex].add(outputAmt_);
             }
@@ -226,9 +226,6 @@ library CurveMath {
 
         int128 _diff = _nextUtilPerShell - _prevUtilPerShell;
 
-        console.logInt(_oGLiq);
-        console.logInt(_nGLiq);
-        console.logInt(_diff);
         require(0 < _diff || _diff >= MAX_DIFF, "Curve/liquidity-invariant-violation");
     }
 
@@ -245,17 +242,14 @@ library CurveMath {
 
         for (uint256 i = 0; i < _length; i++) {
             int128 _nIdeal = _nGLiq.mul(_weights[i]);
-            console.logString("_nideal muled");
 
             if (_nBals[i] > _nIdeal) {
                 int128 _upperAlpha = ONE + _alpha;
 
                 int128 _nHalt = _nIdeal.mul(_upperAlpha);
-                console.logString("_upperAlpha muled");
 
                 if (_nBals[i] > _nHalt) {
                     int128 _oHalt = _oGLiq.mul(_weights[i]).mul(_upperAlpha);
-                console.logString("_weights, uppper alpha muled");
 
                     if (_oBals[i] < _oHalt) revert("Curve/upper-halt");
                     if (_nBals[i] - _nHalt > _oBals[i] - _oHalt) revert("Curve/upper-halt");
@@ -264,13 +258,10 @@ library CurveMath {
                 int128 _lowerAlpha = ONE - _alpha;
 
                 int128 _nHalt = _nIdeal.mul(_lowerAlpha);
-                console.logString("_lowerAlpha muled");
 
                 if (_nBals[i] < _nHalt) {
                     int128 _oHalt = _oGLiq.mul(_weights[i]);
-                    console.logString("_weights muled");
                     _oHalt = _oHalt.mul(_lowerAlpha);
-                    console.logString("_lower alpha muled");
 
                     if (_oBals[i] > _oHalt) revert("Curve/lower-halt");
                     if (_nHalt - _nBals[i] > _oHalt - _oBals[i]) revert("Curve/lower-halt");
