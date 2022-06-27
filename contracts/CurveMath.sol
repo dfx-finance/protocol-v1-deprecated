@@ -19,7 +19,6 @@ import "./Storage.sol";
 
 import "./lib/UnsafeMath64x64.sol";
 import "./lib/ABDKMath64x64.sol";
-import "hardhat/console.sol";
 
 library CurveMath {
     int128 private constant ONE = 0x10000000000000000;
@@ -109,14 +108,10 @@ library CurveMath {
         int128[] memory _weights = curve.weights;
 
         int128 _omega = calculateFee(_oGLiq, _oBals, curve, _weights);
-        // console.logString("omega is");
-        // console.logInt(_omega);
         int128 _psi;
 
         for (uint256 i = 0; i < 32; i++) {
             _psi = calculateFee(_nGLiq, _nBals, curve, _weights);
-            // console.logString("psi is");
-            // console.logInt(_psi);
 
             int128 prevAmount;
             {
@@ -127,26 +122,15 @@ library CurveMath {
 
             if (outputAmt_ / 1e13 == prevAmount / 1e13) {
                 _nGLiq = _oGLiq + _inputAmt + outputAmt_;
-                // console.logString("if clause _nGLiq is ");
-                // console.logInt(_nGLiq);
 
                 _nBals[_outputIndex] = _oBals[_outputIndex] + outputAmt_;
 
                 enforceHalts(curve, _oGLiq, _nGLiq, _oBals, _nBals, _weights);
 
                 enforceSwapInvariant(_oGLiq, _omega, _nGLiq, _psi);
-                console.log("psi:");
-                console.logInt(outputAmt_);
-                console.logInt(_inputAmt);
-                console.logInt(outputAmt_/1e13);
-                console.logInt(_inputAmt/1e13);
-                console.logInt(-outputAmt_ - _inputAmt);
-                console.logInt(_nGLiq - _oGLiq);
                 return outputAmt_;
             } else {
                 _nGLiq = _oGLiq + _inputAmt + outputAmt_;
-                // console.logString("else clause _nGLiq is ");
-                // console.logInt(_nGLiq);
 
                 _nBals[_outputIndex] = _oBals[_outputIndex].add(outputAmt_);
             }

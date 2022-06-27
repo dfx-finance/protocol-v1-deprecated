@@ -23,7 +23,6 @@ import "../lib/UnsafeMath64x64.sol";
 import "../interfaces/IAssimilator.sol";
 import "../interfaces/IOracle.sol";
 import "../interfaces/ICurveFactory.sol";
-import  "hardhat/console.sol";
 
 contract CadcToUsdAssimilator is IAssimilator {
     using ABDKMath64x64 for int128;

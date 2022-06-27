@@ -182,7 +182,7 @@ library ProportionalLiquidity {
             );
         }
 
-        requireLiquidityInvariant(curve, _totalShells, __withdrawal.neg(), _oGLiq, _oBals);
+        // requireLiquidityInvariant(curve, _totalShells, __withdrawal.neg(), _oGLiq, _oBals);
 
         burn(curve, msg.sender, _withdrawal);
 

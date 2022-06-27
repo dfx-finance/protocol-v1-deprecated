@@ -22,7 +22,6 @@ import "../lib/UnsafeMath64x64.sol";
 import "../interfaces/IAssimilator.sol";
 import "../interfaces/IOracle.sol";
 import "../interfaces/ICurveFactory.sol";
-import  "hardhat/console.sol";
 
 contract UsdcToUsdAssimilator is IAssimilator {
     using ABDKMath64x64 for int128;
@@ -126,8 +125,6 @@ contract UsdcToUsdAssimilator is IAssimilator {
         amount_ = (_amount.mulu(1e6) * 1e8) / _rate;
 
         bool _success = usdc.transfer(_dst, amount_);
-        console.logString("total output numerarie amount usdc is");
-        console.logUint(amount_);
 
         require(_success, "Curve/USDC-transfer-failed");
     }
@@ -191,12 +188,8 @@ contract UsdcToUsdAssimilator is IAssimilator {
     }
 
     function transferFee (int128 _amount, address _treasury) external override returns(bool transferSuccess_) {
-        console.logString("usdc amount is ");
-        console.logInt(_amount);
         uint256 _rate = getRate();
         uint256 amount = (_amount.abs().mulu(1e6)*1e8)/_rate;
-        console.logString("total fee amount usdc is ");
-        console.logUint(amount);
         transferSuccess_ = usdc.transfer(_treasury, amount);
         require(transferSuccess_, "usdc-usdc fee transfer failed");
     }
