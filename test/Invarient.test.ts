@@ -149,6 +149,13 @@ describe("Router", function () {
     console.log("Pool TRYB ratio:", trybRatio);
   }
 
+  const tokenStats = async (
+    user: Signer
+  ) => {
+    console.log('USDC: ', (await usdc.balanceOf(await user.getAddress())).toString());
+    console.log('NZDS: ', (await nzds.balanceOf(await user.getAddress())).toString());
+  }
+
   const routerOriginSwapAndCheck = async ({
     user,
     fromToken,
@@ -168,30 +175,9 @@ describe("Router", function () {
     fromDecimals: number;
     toDecimals: number;
   }) => {
-    const userAddress = await user.getAddress();
     await mintAndApprove(fromToken, user, amount, router.address);
-    const beforeAmnt = await erc20.attach(toToken).balanceOf(userAddress);
-
-    const viewExpected = await router.connect(user).viewOriginSwap(TOKENS.USDC.address, fromToken, toToken, amount);
 
     await router.connect(user).originSwap(TOKENS.USDC.address, fromToken, toToken, amount, 0, await getFutureTime());
-    const afterAmnt = await erc20.attach(toToken).balanceOf(userAddress);
-
-    // Get oracle rates
-    const FROM_RATE8 = await getOracleAnswer(fromOracle);
-    const TO_RATE8 = await getOracleAnswer(toOracle);
-
-    const obtained = afterAmnt.sub(beforeAmnt);
-    let expected = amount.mul(FROM_RATE8).div(TO_RATE8);
-
-    if (fromDecimals - toDecimals < 0) {
-      expected = expected.mul(parseUnits("1", toDecimals - fromDecimals));
-    } else {
-      expected = expected.div(parseUnits("1", fromDecimals - toDecimals));
-    }
-
-    // expectBNAproxEq(obtained, expected, parseUnits("2", toDecimals));
-    // expectBNAproxEq(obtained, viewExpected, parseUnits("1", toDecimals));
   };
 
   it("CADC -> USDC targetSwap", async function () {
@@ -212,5 +198,50 @@ describe("Router", function () {
     .deposit(parseUnits("2000000000"), await getFutureTime())
     .then(x => x.wait());
     await poolStats(usdc, nzds, curvenNZDS);
+
+
+    await routerOriginSwapAndCheck({
+      user: user2,
+      fromToken: TOKENS.NZDS.address,
+      toToken: TOKENS.USDC.address,
+      amount: parseUnits("2600000", TOKENS.NZDS.decimals),
+      fromOracle: ORACLES.NZDS.address,
+      toOracle: ORACLES.USDC.address,
+      fromDecimals: TOKENS.NZDS.decimals,
+      toDecimals: TOKENS.USDC.decimals,
+    });
+    await poolStats(usdc, nzds, curvenNZDS);
+
+    await routerOriginSwapAndCheck({
+      user: user2,
+      fromToken: TOKENS.NZDS.address,
+      toToken: TOKENS.USDC.address,
+      amount: parseUnits("14500000", TOKENS.NZDS.decimals),
+      fromOracle: ORACLES.NZDS.address,
+      toOracle: ORACLES.USDC.address,
+      fromDecimals: TOKENS.NZDS.decimals,
+      toDecimals: TOKENS.USDC.decimals,
+    });
+    await poolStats(usdc, nzds, curvenNZDS);
+
+    await routerOriginSwapAndCheck({
+      user: user2,
+      fromToken: TOKENS.USDC.address,
+      toToken: TOKENS.NZDS.address,
+      amount: parseUnits("954500000", TOKENS.USDC.decimals),
+      fromOracle: ORACLES.USDC.address,
+      toOracle: ORACLES.NZDS.address,
+      fromDecimals: TOKENS.USDC.decimals,
+      toDecimals: TOKENS.NZDS.decimals,
+    });
+    await poolStats(usdc, nzds, curvenNZDS);
+
+    await tokenStats(user1);
+    await curvenNZDS
+    .connect(user1)
+    .withdraw(parseUnits("2000000000"), await getFutureTime())
+    .then(x => x.wait());
+    await poolStats(usdc, nzds, curvenNZDS);
+    await tokenStats(user1);
   });
 });
