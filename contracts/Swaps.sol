@@ -14,7 +14,6 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./CurveFactory.sol";
 import "./SwapData.sol";
-import "hardhat/console.sol";
 
 library Swaps {
     using ABDKMath64x64 for int128;
@@ -74,20 +73,15 @@ library Swaps {
             getOriginSwapData(curve, _o.ix, _t.ix, _o.addr, _swapData._originAmount);
 
         _swapInfo.totalAmount = _amt;
-        console.logInt(_swapInfo.totalAmount);
 
         _amt = CurveMath.calculateTrade(curve, _oGLiq, _nGLiq, _oBals, _nBals, _amt, _t.ix);
 
         _swapInfo.curveFactory = ICurveFactory(_swapData._curveFactory);
         _swapInfo.amountToUser = _amt.us_mul(ONE - curve.epsilon);
-        console.logInt(_swapInfo.amountToUser);
         _swapInfo.totalFee = _swapInfo.totalAmount + _swapInfo.amountToUser;
-        console.logInt(_swapInfo.totalFee);
         _swapInfo.protocolFeePercentage = _swapInfo.curveFactory.getProtocolFee();
-        console.logInt(_swapInfo.protocolFeePercentage);
         _swapInfo.treasury = _swapInfo.curveFactory.getProtocolTreasury();
         _swapInfo.amountToTreasury = _swapInfo.totalFee.muli(_swapInfo.protocolFeePercentage).divi(100);
-        console.logInt(_swapInfo.amountToTreasury);
         Assimilators.transferFee(_t.addr, _swapInfo.amountToTreasury, _swapInfo.treasury);
         tAmt_ = Assimilators.outputNumeraire(_t.addr, _swapData._recipient, _swapInfo.amountToUser);
 
