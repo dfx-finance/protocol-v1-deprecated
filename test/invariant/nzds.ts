@@ -5,7 +5,7 @@ import { formatUnits } from "ethers/lib/utils";
 import chai from "chai";
 import chaiBigNumber from "chai-bignumber";
 
-import {CurveFactory} from '../../typechain/CurveFactory'
+import { CurveFactory } from "../../typechain/CurveFactory";
 import { Curve } from "../../typechain/Curve";
 import { ERC20 } from "../../typechain/ERC20";
 import { Router } from "../../typechain/Router";
@@ -104,7 +104,6 @@ describe("NZDS-USDC", function () {
     }));
   });
   beforeEach(async function () {
-
     const { curve: curvenNZDS } = await createCurveAndSetParams({
       name: NAME,
       symbol: SYMBOL,
@@ -129,9 +128,9 @@ describe("NZDS-USDC", function () {
     // Supply liquidity to the pools
     // Mint tokens and approve
     await multiMintAndApprove([
-        [TOKENS.USDC.address, user2, parseUnits("300000000", TOKENS.USDC.decimals), curvenNZDS.address],
-        [TOKENS.NZDS.address, user2, parseUnits("300000000", TOKENS.NZDS.decimals), curvenNZDS.address],
-      ]);
+      [TOKENS.USDC.address, user2, parseUnits("300000000", TOKENS.USDC.decimals), curvenNZDS.address],
+      [TOKENS.NZDS.address, user2, parseUnits("300000000", TOKENS.NZDS.decimals), curvenNZDS.address],
+    ]);
 
     console.log("-----------------  user 2 nzds balance is ", await getNZDSBalance(user2));
     console.log("-----------------  user 2 usdc balance is ", await getUSDCBalance(user2));
@@ -144,7 +143,13 @@ describe("NZDS-USDC", function () {
     console.log("-----------------  user 1 usdc balance is ", await getUSDCBalance(user1));
     await poolStats(usdc, nzds, curvenNZDS);
     // now trying swap
-    await curvenNZDS.originSwap(TOKENS.USDC.address, TOKENS.NZDS.address,parseUnits("1000000", TOKENS.USDC.decimals),0,await getFutureTime());
+    await curvenNZDS.originSwap(
+      TOKENS.USDC.address,
+      TOKENS.NZDS.address,
+      parseUnits("1000000", TOKENS.USDC.decimals),
+      0,
+      await getFutureTime(),
+    );
     console.log("----------------- after 1m usdc swap, pool stats\n");
     console.log("-----------------  user 1 nzds balance is ", await getNZDSBalance(user1));
     console.log("-----------------  user 1 usdc balance is ", await getUSDCBalance(user1));
@@ -170,51 +175,62 @@ describe("NZDS-USDC", function () {
 
     console.log("----------------- user2 swaps 5m nzds\n");
     // user 2 swaps 5m nzds
-    await curvenNZDS.connect(user2).originSwap( TOKENS.NZDS.address,TOKENS.USDC.address,parseUnits("5000000", TOKENS.NZDS.decimals),0,await getFutureTime());
+    await curvenNZDS
+      .connect(user2)
+      .originSwap(
+        TOKENS.NZDS.address,
+        TOKENS.USDC.address,
+        parseUnits("5000000", TOKENS.NZDS.decimals),
+        0,
+        await getFutureTime(),
+      );
     console.log("-----------------  user 2 nzds balance is ", await getNZDSBalance(user2));
     console.log("-----------------  user 2 usdc balance is ", await getUSDCBalance(user2));
-    await poolStats(usdc,nzds,curvenNZDS);
+    await poolStats(usdc, nzds, curvenNZDS);
 
     console.log("----------------- user2 swaps 1m usdc\n");
     // user 2 swaps 5m nzds
-    await curvenNZDS.connect(user2).originSwap( TOKENS.USDC.address,TOKENS.NZDS.address,parseUnits("1000000", TOKENS.NZDS.decimals),0,await getFutureTime());
+    await curvenNZDS
+      .connect(user2)
+      .originSwap(
+        TOKENS.USDC.address,
+        TOKENS.NZDS.address,
+        parseUnits("1000000", TOKENS.NZDS.decimals),
+        0,
+        await getFutureTime(),
+      );
     console.log("-----------------  user 2 nzds balance is ", await getNZDSBalance(user2));
     console.log("-----------------  user 2 usdc balance is ", await getUSDCBalance(user2));
-    await poolStats(usdc,nzds,curvenNZDS);
-
+    await poolStats(usdc, nzds, curvenNZDS);
 
     console.log("----------------- user2 withdraws 10m liquidity\n");
     // user2 now withdraws 10m liquidity
     await curvenNZDS.connect(user2).withdraw(parseUnits("10000000"), await getFutureTime());
     console.log("-----------------  user 2 nzds balance is ", await getNZDSBalance(user2));
     console.log("-----------------  user 2 usdc balance is ", await getUSDCBalance(user2));
-    await poolStats(usdc,nzds,curvenNZDS);
+    await poolStats(usdc, nzds, curvenNZDS);
   });
 
-  const getNZDSBalance =async (user:Signer) => {
+  const getNZDSBalance = async (user: Signer) => {
     let _user_n_bal = await nzds.balanceOf(await user.getAddress());
-    let user_n_bal = formatUnits(_user_n_bal,TOKENS.NZDS.decimals);
+    let user_n_bal = formatUnits(_user_n_bal, TOKENS.NZDS.decimals);
     return user_n_bal;
-  }
+  };
 
-  const getUSDCBalance =async (user:Signer) => {
+  const getUSDCBalance = async (user: Signer) => {
     let _user_n_bal = await usdc.balanceOf(await user.getAddress());
-    let user_n_bal = formatUnits(_user_n_bal,TOKENS.USDC.decimals);
+    let user_n_bal = formatUnits(_user_n_bal, TOKENS.USDC.decimals);
     return user_n_bal;
-  }
+  };
 
-  const poolStats = async (
-    usdc: Contract,
-    forexTokenContract: Contract,
-    pool: Contract
-  ) => {
+  const poolStats = async (usdc: Contract, forexTokenContract: Contract, pool: Contract) => {
     const viewCurve = await pool.viewCurve();
     console.log(`curve state\n`);
-    console.log(viewCurve,"\n");
+    console.log(viewCurve, "\n");
     const rawTotalSupply = await pool.totalSupply();
     const totalSupply = formatUnits(rawTotalSupply);
-  
-    const rawLiq = await pool.liquidity()
+
+    const rawLiq = await pool.liquidity();
     const totalValueUsd = formatUnits(rawLiq[0], 18);
     const nzdsValueUsd = formatUnits(rawLiq[1][0], 18);
     const usdcValueUsd = formatUnits(rawLiq[1][1], 18);
@@ -222,9 +238,9 @@ describe("NZDS-USDC", function () {
     console.log(`total value in usd is ${totalValueUsd}\n`);
     console.log(`nzds usd value: ${nzdsValueUsd}\n`);
     console.log(`usdc value : ${usdcValueUsd}\n`);
-    console.log("\nTotal LPT:", totalSupply,"\n");
-    console.log("Pool NZDS ratio:", nzdsRatio,"\n");
-  }
+    console.log("\nTotal LPT:", totalSupply, "\n");
+    console.log("Pool NZDS ratio:", nzdsRatio, "\n");
+  };
 
   const routerViewTargetSwapAndCheck = async ({
     user,

@@ -5,7 +5,7 @@ import { formatEther, formatUnits } from "ethers/lib/utils";
 import chai from "chai";
 import chaiBigNumber from "chai-bignumber";
 
-import {CurveFactory} from '../../typechain/CurveFactory'
+import { CurveFactory } from "../../typechain/CurveFactory";
 import { Curve } from "../../typechain/Curve";
 import { ERC20 } from "../../typechain/ERC20";
 import { Router } from "../../typechain/Router";
@@ -71,9 +71,8 @@ describe("TRYB-USDC", function () {
     }));
   });
   beforeEach(async function () {
-
-    let trybCurveAddress : string = "0xc574a613a3900e4314da13eb2287f13689a5b64d";
-    let curvenTRYB = await ethers.getContractAt("Curve",trybCurveAddress) as Curve;
+    let trybCurveAddress: string = "0xc574a613a3900e4314da13eb2287f13689a5b64d";
+    let curvenTRYB = (await ethers.getContractAt("Curve", trybCurveAddress)) as Curve;
 
     // Supply liquidity to the pools
     // Mint tokens and approve
@@ -85,10 +84,9 @@ describe("TRYB-USDC", function () {
     // Supply liquidity to the pools
     // Mint tokens and approve
     await multiMintAndApprove([
-        [TOKENS.USDC.address, user2, parseUnits("30000000000", TOKENS.USDC.decimals), curvenTRYB.address],
-        [TOKENS.TRYB.address, user2, parseUnits("30000000000", TOKENS.TRYB.decimals), curvenTRYB.address],
-      ]);
-    
+      [TOKENS.USDC.address, user2, parseUnits("30000000000", TOKENS.USDC.decimals), curvenTRYB.address],
+      [TOKENS.TRYB.address, user2, parseUnits("30000000000", TOKENS.TRYB.decimals), curvenTRYB.address],
+    ]);
 
     await poolStats(usdc, tryb, curvenTRYB);
     console.log(`before deposit, lp supply is ${await getTotalSupply(curvenTRYB)}`);
@@ -98,67 +96,64 @@ describe("TRYB-USDC", function () {
     console.log(`user1 lp balance is ${await getLPBalance(user1, curvenTRYB)}`);
     console.log(`after deposit, lp supply is ${await getTotalSupply(curvenTRYB)}`);
     console.log("user withdraws all deposited amount");
-    await curvenTRYB.connect(user1).withdraw(parseUnits(await getLPBalance(user1, curvenTRYB),18),await getFutureTime());
+    await curvenTRYB
+      .connect(user1)
+      .withdraw(parseUnits(await getLPBalance(user1, curvenTRYB), 18), await getFutureTime());
     await poolStats(usdc, tryb, curvenTRYB);
-    console.log(`after withdrawl, lp supply is ${await getTotalSupply(curvenTRYB)}`); 
+    console.log(`after withdrawl, lp supply is ${await getTotalSupply(curvenTRYB)}`);
     console.log(`user 1 usdc balance is ${await getUSDCBalance(user1)}`);
     console.log(`user1 tryb balance is ${await getTRYBBalace(user1)}`);
     console.log(`pool usdc balance is ${await getUSDCBalanceOfPool(curvenTRYB.address)}`);
     console.log(`pool tryb balance is ${await getTRYBBalaceOfPool(curvenTRYB.address)}`);
-//     console.log("tryb token balances");
-//     console.log(`user 1 usdc balance is ${await getUSDCBalance(user1)}`);
-//     console.log(`user1 tryb balance is ${await getTRYBBalace(user1)}`);
-//     console.log(`pool usdc balance is ${await getUSDCBalanceOfPool(curvenTRYB.address)}`);
-//     console.log(`pool tryb balance is ${await getTRYBBalaceOfPool(curvenTRYB.address)}`);
+    //     console.log("tryb token balances");
+    //     console.log(`user 1 usdc balance is ${await getUSDCBalance(user1)}`);
+    //     console.log(`user1 tryb balance is ${await getTRYBBalace(user1)}`);
+    //     console.log(`pool usdc balance is ${await getUSDCBalanceOfPool(curvenTRYB.address)}`);
+    //     console.log(`pool tryb balance is ${await getTRYBBalaceOfPool(curvenTRYB.address)}`);
 
-//     console.log("original mainnet forked curve state");
+    //     console.log("original mainnet forked curve state");
 
-//     await poolStats(usdc, tryb, curvenTRYB);
-//     console.log(`user 1 usdc balance is ${await getUSDCBalance(user1)}`);
-//     console.log(`user1 tryb balance is ${await getTRYBBalace(user1)}`);
-//     console.log(`pool usdc balance is ${await getUSDCBalanceOfPool(curvenTRYB.address)}`);
-//     console.log(`pool tryb balance is ${await getTRYBBalaceOfPool(curvenTRYB.address)}`);
+    //     await poolStats(usdc, tryb, curvenTRYB);
+    //     console.log(`user 1 usdc balance is ${await getUSDCBalance(user1)}`);
+    //     console.log(`user1 tryb balance is ${await getTRYBBalace(user1)}`);
+    //     console.log(`pool usdc balance is ${await getUSDCBalanceOfPool(curvenTRYB.address)}`);
+    //     console.log(`pool tryb balance is ${await getTRYBBalaceOfPool(curvenTRYB.address)}`);
 
-//     // now trying 0.1m usdc swap
-//     await curvenTRYB.originSwap(TOKENS.TRYB.address, TOKENS.USDC.address,parseUnits("2000000", TOKENS.TRYB.decimals),parseUnits("80000", TOKENS.USDC.decimals),await getFutureTime());
-//     console.log("----------------- after 0.1m usdc swap, pool stats\n");
-//     await poolStats(usdc, tryb, curvenTRYB);
-//     console.log(`user 1 usdc balance is ${await getUSDCBalance(user1)}`);
-//     console.log(`user1 tryb balance is ${await getTRYBBalace(user1)}`);
-//     console.log(`pool usdc balance is ${await getUSDCBalanceOfPool(curvenTRYB.address)}`);
-//     console.log(`pool tryb balance is ${await getTRYBBalaceOfPool(curvenTRYB.address)}`);
+    //     // now trying 0.1m usdc swap
+    //     await curvenTRYB.originSwap(TOKENS.TRYB.address, TOKENS.USDC.address,parseUnits("2000000", TOKENS.TRYB.decimals),parseUnits("80000", TOKENS.USDC.decimals),await getFutureTime());
+    //     console.log("----------------- after 0.1m usdc swap, pool stats\n");
+    //     await poolStats(usdc, tryb, curvenTRYB);
+    //     console.log(`user 1 usdc balance is ${await getUSDCBalance(user1)}`);
+    //     console.log(`user1 tryb balance is ${await getTRYBBalace(user1)}`);
+    //     console.log(`pool usdc balance is ${await getUSDCBalanceOfPool(curvenTRYB.address)}`);
+    //     console.log(`pool tryb balance is ${await getTRYBBalaceOfPool(curvenTRYB.address)}`);
 
-//     await poolStats(usdc, tryb, curvenTRYB);
-//     await deposit("20000", user1,curvenTRYB);
-//     await poolStats(usdc, tryb, curvenTRYB);
+    //     await poolStats(usdc, tryb, curvenTRYB);
+    //     await deposit("20000", user1,curvenTRYB);
+    //     await poolStats(usdc, tryb, curvenTRYB);
 
-//     await poolStats(usdc, tryb, curvenTRYB);
-//     await deposit("1000000", user1,curvenTRYB);
-//     await poolStats(usdc, tryb, curvenTRYB);
+    //     await poolStats(usdc, tryb, curvenTRYB);
+    //     await deposit("1000000", user1,curvenTRYB);
+    //     await poolStats(usdc, tryb, curvenTRYB);
 
-    
-//     await poolStats(usdc, tryb, curvenTRYB);
-//     await deposit("5000000", user1,curvenTRYB);
-//     await poolStats(usdc, tryb, curvenTRYB);
+    //     await poolStats(usdc, tryb, curvenTRYB);
+    //     await deposit("5000000", user1,curvenTRYB);
+    //     await poolStats(usdc, tryb, curvenTRYB);
 
-    
-//     await poolStats(usdc, tryb, curvenTRYB);
-//     await deposit("5000000", user2,curvenTRYB);
-//     await poolStats(usdc, tryb, curvenTRYB);
+    //     await poolStats(usdc, tryb, curvenTRYB);
+    //     await deposit("5000000", user2,curvenTRYB);
+    //     await poolStats(usdc, tryb, curvenTRYB);
 
+    //     await poolStats(usdc, tryb, curvenTRYB);
+    //     await deposit("20000000", user1,curvenTRYB);
+    //     await poolStats(usdc, tryb, curvenTRYB);
 
-
-    
-//     await poolStats(usdc, tryb, curvenTRYB);
-//     await deposit("20000000", user1,curvenTRYB);
-//     await poolStats(usdc, tryb, curvenTRYB);
-    
-//     await poolStats(usdc, tryb, curvenTRYB);
-//     await deposit("100000000", user1,curvenTRYB);
-//     await poolStats(usdc, tryb, curvenTRYB);
+    //     await poolStats(usdc, tryb, curvenTRYB);
+    //     await deposit("100000000", user1,curvenTRYB);
+    //     await poolStats(usdc, tryb, curvenTRYB);
   });
 
-  async function deposit(amount : string, user : Signer,curvenTRYB : Curve ) {
+  async function deposit(amount: string, user: Signer, curvenTRYB: Curve) {
     console.log(`user deposits ${amount}`);
     let userUSDCBalanceBefore = await getUSDCBalance(user);
     let userTRYBBalanceBefore = await getTRYBBalace(user);
@@ -180,58 +175,54 @@ describe("TRYB-USDC", function () {
     console.log(`after deposit, user's try balance : ${userTRYBBalanceAfter}`);
     console.log(`after deposit, pool usdc balance is ${poolUSDCBanaceAfter}`);
     console.log(`after deposit, pool tryb balance is ${poolTRYBBalanceAfter}`);
-    console.log(`user usdc balance diff is ${parseInt(userUSDCBalanceBefore) - parseInt (userUSDCBalanceAfter)}`);
-    console.log(`user tryb balance diff is ${parseInt(userTRYBBalanceBefore) - parseInt (userTRYBBalanceAfter)}`);
+    console.log(`user usdc balance diff is ${parseInt(userUSDCBalanceBefore) - parseInt(userUSDCBalanceAfter)}`);
+    console.log(`user tryb balance diff is ${parseInt(userTRYBBalanceBefore) - parseInt(userTRYBBalanceAfter)}`);
   }
 
-  const getTRYBBalace =async (user:Signer) => {
+  const getTRYBBalace = async (user: Signer) => {
     let _user_n_bal = await tryb.balanceOf(await user.getAddress());
-    let user_n_bal = formatUnits(_user_n_bal,TOKENS.TRYB.decimals);
+    let user_n_bal = formatUnits(_user_n_bal, TOKENS.TRYB.decimals);
     return user_n_bal;
-  }
+  };
 
-  const getUSDCBalance =async (user:Signer) => {
+  const getUSDCBalance = async (user: Signer) => {
     let _user_n_bal = await usdc.balanceOf(await user.getAddress());
-    let user_n_bal = formatUnits(_user_n_bal,TOKENS.USDC.decimals);
+    let user_n_bal = formatUnits(_user_n_bal, TOKENS.USDC.decimals);
     return user_n_bal;
-  }
+  };
 
-  const getUSDCBalanceOfPool =async (address:string) => {
+  const getUSDCBalanceOfPool = async (address: string) => {
     let _user_n_bal = await usdc.balanceOf(address);
-    let user_n_bal = formatUnits(_user_n_bal,TOKENS.USDC.decimals);
+    let user_n_bal = formatUnits(_user_n_bal, TOKENS.USDC.decimals);
     return user_n_bal;
-  }
+  };
 
-  const getTRYBBalaceOfPool =async (address:string) => {
+  const getTRYBBalaceOfPool = async (address: string) => {
     let _user_n_bal = await tryb.balanceOf(address);
-    let user_n_bal = formatUnits(_user_n_bal,TOKENS.TRYB.decimals);
+    let user_n_bal = formatUnits(_user_n_bal, TOKENS.TRYB.decimals);
     return user_n_bal;
-  }
+  };
 
-  const getLPBalance =async (user:Signer , curvenTRYB : Curve) => {
-      let _user_bal = await curvenTRYB.balanceOf(await user.getAddress());
-      let user_bal = formatUnits(_user_bal, 18);
-      return user_bal;
-  }
+  const getLPBalance = async (user: Signer, curvenTRYB: Curve) => {
+    let _user_bal = await curvenTRYB.balanceOf(await user.getAddress());
+    let user_bal = formatUnits(_user_bal, 18);
+    return user_bal;
+  };
 
-  const getTotalSupply =async (curvenTRYB:Curve) => {
-      let _ts = await curvenTRYB.totalSupply();
-      let ts = formatUnits(_ts,18);
-      return ts;
-  }
+  const getTotalSupply = async (curvenTRYB: Curve) => {
+    let _ts = await curvenTRYB.totalSupply();
+    let ts = formatUnits(_ts, 18);
+    return ts;
+  };
 
-  const poolStats = async (
-    usdc: Contract,
-    forexTokenContract: Contract,
-    pool: Contract
-  ) => {
+  const poolStats = async (usdc: Contract, forexTokenContract: Contract, pool: Contract) => {
     const viewCurve = await pool.viewCurve();
     console.log(`curve state\n`);
-    console.log(viewCurve,"\n");
+    console.log(viewCurve, "\n");
     const rawTotalSupply = await pool.totalSupply();
     const totalSupply = formatUnits(rawTotalSupply);
-  
-    const rawLiq = await pool.liquidity()
+
+    const rawLiq = await pool.liquidity();
     const totalValueUsd = formatUnits(rawLiq[0], 18);
     const trybValueUsd = formatUnits(rawLiq[1][0], 18);
     const usdcValueUsd = formatUnits(rawLiq[1][1], 18);
@@ -239,9 +230,9 @@ describe("TRYB-USDC", function () {
     console.log(`total value in usd is ${totalValueUsd}\n`);
     console.log(`tryb usd value: ${trybValueUsd}\n`);
     console.log(`usdc value : ${usdcValueUsd}\n`);
-    console.log("\nTotal LPT:", totalSupply,"\n");
-    console.log("Pool TRYB ratio:", trybRatio,"\n");
-  }
+    console.log("\nTotal LPT:", totalSupply, "\n");
+    console.log("Pool TRYB ratio:", trybRatio, "\n");
+  };
 
   const routerViewTargetSwapAndCheck = async ({
     user,
@@ -278,7 +269,7 @@ describe("TRYB-USDC", function () {
 
     console.log(`sent amount is ${sent}`);
     console.log(`expected amount is ${expected}`);
-    console.log(`from decimal value is ${fromDecimals}`)
+    console.log(`from decimal value is ${fromDecimals}`);
     expectBNAproxEq(sent, expected, parseUnits("3", fromDecimals));
   };
 

@@ -410,9 +410,7 @@
   },
   {
     "anonymous": false,
-    "inputs": [
-      { "indexed": true, "name": "newMasterMinter", "type": "address" }
-    ],
+    "inputs": [{ "indexed": true, "name": "newMasterMinter", "type": "address" }],
     "name": "MasterMinterChanged",
     "type": "event"
   },
@@ -430,9 +428,7 @@
   },
   {
     "anonymous": false,
-    "inputs": [
-      { "indexed": true, "name": "newBlacklister", "type": "address" }
-    ],
+    "inputs": [{ "indexed": true, "name": "newBlacklister", "type": "address" }],
     "name": "BlacklisterChanged",
     "type": "event"
   },

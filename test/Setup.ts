@@ -6,7 +6,7 @@ import { TOKENS } from "./Constants";
 import { ERC20, Curve, CurveFactory } from "../typechain";
 import { BigNumberish, Signer } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
-import { mintCADC, mintEURS, mintNZDS, mintUSDC, mintXSGD, mintXIDR,mintTRYB } from "./Utils";
+import { mintCADC, mintEURS, mintNZDS, mintUSDC, mintXSGD, mintXIDR, mintTRYB } from "./Utils";
 
 export const ALPHA = parseUnits("0.5");
 export const BETA = parseUnits("0.35");

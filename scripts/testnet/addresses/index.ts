@@ -3,15 +3,7 @@ import { SushiPools } from "./sushi";
 import { CurvePools } from "./curve";
 import { BalancerPools } from "./balancer";
 
-export const Stablecoins = [
-  "cadc",
-  "usdc",
-  "eurs",
-  "xsgd",
-  "xidr",
-  "nzds",
-  "tryb",
-] as const;
+export const Stablecoins = ["cadc", "usdc", "eurs", "xsgd", "xidr", "nzds", "tryb"] as const;
 export const Tokens = ["dfx", "weth", "tel", ...Stablecoins] as const;
 
 export interface PoolInfo {
@@ -27,11 +19,7 @@ export interface PoolInfo {
   oracle?: string;
 }
 
-const ethPools: PoolInfo[] = [
-  ...DfxPools[1],
-  ...SushiPools[1],
-  ...CurvePools[1],
-];
+const ethPools: PoolInfo[] = [...DfxPools[1], ...SushiPools[1], ...CurvePools[1]];
 
 const ethereum = {
   dfx: {
@@ -53,11 +41,7 @@ const ethereum = {
   pools: ethPools,
 };
 
-const polygonPools: PoolInfo[] = [
-  ...DfxPools[137],
-  ...SushiPools[137],
-  ...BalancerPools[137],
-];
+const polygonPools: PoolInfo[] = [...DfxPools[137], ...SushiPools[137], ...BalancerPools[137]];
 
 const polygon = {
   dfx: {
@@ -78,7 +62,6 @@ const polygon = {
   },
   pools: polygonPools,
 };
-
 
 export const Addresses = {
   1: ethereum,
