@@ -25,19 +25,13 @@ import "./interfaces/ICurveFactory.sol";
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-import  "hardhat/console.sol";
-
-
-
-
 contract CurveFactory is ICurveFactory, Ownable {
-
     // add protocol fee
     int128 public totoalFeePercentage = 100;
     int128 public protocolFee;
     address public protocolTreasury;
-    
-    event TreasuryUpdated(address indexed newTreasury); 
+
+    event TreasuryUpdated(address indexed newTreasury);
     event ProtocolFeeUpdated(address indexed treasury, int128 indexed fee);
     event NewCurve(address indexed caller, bytes32 indexed id, address indexed curve);
 
@@ -50,22 +44,22 @@ contract CurveFactory is ICurveFactory, Ownable {
         protocolTreasury = _treasury;
     }
 
-    function getProtocolFee() virtual external view override returns (int128) {
+    function getProtocolFee() external view virtual override returns (int128) {
         return protocolFee;
     }
 
-    function getProtocolTreasury() virtual external view override returns(address) {
+    function getProtocolTreasury() external view virtual override returns (address) {
         return protocolTreasury;
     }
 
-    function updateProtocolTreasury (address _newTreasury) external onlyOwner {
+    function updateProtocolTreasury(address _newTreasury) external onlyOwner {
         require(_newTreasury != protocolTreasury, "same treasury address!");
         require(_newTreasury != address(0), "invalid treasury address!");
         protocolTreasury = _newTreasury;
         emit TreasuryUpdated(protocolTreasury);
     }
 
-    function updateProtocolFee (int128 _newFee) external onlyOwner {
+    function updateProtocolFee(int128 _newFee) external onlyOwner {
         require(totoalFeePercentage >= _newFee, "protocol fee can't be over 100%");
         require(_newFee != protocolFee, "same protocol fee!");
         protocolFee = _newFee;

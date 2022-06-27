@@ -35,7 +35,7 @@ contract CadcToUsdAssimilator is IAssimilator {
     IERC20 private constant cadc = IERC20(0xcaDC0acd4B445166f12d2C07EAc6E2544FbE2Eef);
 
     IERC20 private constant usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
-    
+
     // solhint-disable-next-line
     constructor() {}
 
@@ -139,8 +139,7 @@ contract CadcToUsdAssimilator is IAssimilator {
     }
 
     // takes a numeraire value of cadc, figures out the raw amount, transfers raw amount out, and returns raw amount
-    function outputNumeraire(address _dst,int128 _amount) external override returns (uint256 amount_) {
-        
+    function outputNumeraire(address _dst, int128 _amount) external override returns (uint256 amount_) {
         uint256 _rate = getRate();
 
         amount_ = (_amount.mulu(1e18) * 1e8) / _rate;
@@ -230,9 +229,9 @@ contract CadcToUsdAssimilator is IAssimilator {
         balance_ = ((_cadcBal * _rate) / 1e6).divu(1e18);
     }
 
-    function transferFee (int128 _amount, address _treasury) external override returns(bool transferSuccess_) {
+    function transferFee(int128 _amount, address _treasury) external override returns (bool transferSuccess_) {
         uint256 _rate = getRate();
-        uint256 amount = (_amount.mulu(1e18)*1e8)/_rate;
+        uint256 amount = (_amount.mulu(1e18) * 1e8) / _rate;
         transferSuccess_ = cadc.transfer(_treasury, amount);
         require(transferSuccess_, "cadc-usdc fee transfer failed");
     }

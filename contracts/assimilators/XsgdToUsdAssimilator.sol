@@ -144,7 +144,6 @@ contract XsgdToUsdAssimilator is IAssimilator {
 
     // takes a numeraire value of xsgd, figures out the raw amount, transfers raw amount out, and returns raw amount
     function outputNumeraire(address _dst, int128 _amount) external override returns (uint256 amount_) {
-        
         uint256 _rate = getRate();
 
         amount_ = (_amount.mulu(1e6) * 1e8) / _rate;
@@ -238,9 +237,9 @@ contract XsgdToUsdAssimilator is IAssimilator {
         balance_ = ((_xsgdBal * _rate) / 1e6).divu(1e18);
     }
 
-    function transferFee (int128 _amount, address _treasury) external override returns(bool transferSuccess_) {
+    function transferFee(int128 _amount, address _treasury) external override returns (bool transferSuccess_) {
         uint256 _rate = getRate();
-        uint256 amount = (_amount.mulu(1e6)*1e8)/_rate;
+        uint256 amount = (_amount.mulu(1e6) * 1e8) / _rate;
         transferSuccess_ = xsgd.transfer(_treasury, amount);
         require(transferSuccess_, "xsgd-usdc fee transfer failed");
     }

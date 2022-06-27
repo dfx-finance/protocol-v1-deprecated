@@ -119,7 +119,6 @@ contract UsdcToUsdAssimilator is IAssimilator {
     }
 
     function outputNumeraire(address _dst, int128 _amount) external override returns (uint256 amount_) {
-        
         uint256 _rate = getRate();
 
         amount_ = (_amount.mulu(1e6) * 1e8) / _rate;
@@ -187,9 +186,9 @@ contract UsdcToUsdAssimilator is IAssimilator {
         balance_ = ((_balance * _rate) / 1e8).divu(1e6);
     }
 
-    function transferFee (int128 _amount, address _treasury) external override returns(bool transferSuccess_) {
+    function transferFee(int128 _amount, address _treasury) external override returns (bool transferSuccess_) {
         uint256 _rate = getRate();
-        uint256 amount = (_amount.abs().mulu(1e6)*1e8)/_rate;
+        uint256 amount = (_amount.abs().mulu(1e6) * 1e8) / _rate;
         transferSuccess_ = usdc.transfer(_treasury, amount);
         require(transferSuccess_, "usdc-usdc fee transfer failed");
     }

@@ -143,12 +143,10 @@ describe("Router", function () {
     console.log("Pool TRYB ratio:", trybRatio);
   };
 
-  const tokenStats = async (
-    user: Signer
-  ) => {
-    console.log('USDC: ', (await usdc.balanceOf(await user.getAddress())).toString());
-    console.log('NZDS: ', (await nzds.balanceOf(await user.getAddress())).toString());
-  }
+  const tokenStats = async (user: Signer) => {
+    console.log("USDC: ", (await usdc.balanceOf(await user.getAddress())).toString());
+    console.log("NZDS: ", (await nzds.balanceOf(await user.getAddress())).toString());
+  };
 
   const routerOriginSwapAndCheck = async ({
     user,
@@ -193,7 +191,6 @@ describe("Router", function () {
       .then(x => x.wait());
     await poolStats(usdc, nzds, curvenNZDS);
 
-
     await routerOriginSwapAndCheck({
       user: user2,
       fromToken: TOKENS.NZDS.address,
@@ -232,9 +229,9 @@ describe("Router", function () {
 
     await tokenStats(user1);
     await curvenNZDS
-    .connect(user1)
-    .withdraw(parseUnits("2000000000"), await getFutureTime())
-    .then(x => x.wait());
+      .connect(user1)
+      .withdraw(parseUnits("2000000000"), await getFutureTime())
+      .then(x => x.wait());
     await poolStats(usdc, nzds, curvenNZDS);
     await tokenStats(user1);
   });

@@ -30,7 +30,7 @@ const LAMBDA = parseUnits("1"); //0.3
 
 describe("CADC-USDC", function () {
   let [user1, user2, treasury]: Signer[] = [];
-  let [user1Address, user2Address,treasuryAddress]: string[] = [];
+  let [user1Address, user2Address, treasuryAddress]: string[] = [];
 
   let usdcToUsdAssimilator: Contract;
   let cadcToUsdAssimilator: Contract;
@@ -74,8 +74,8 @@ describe("CADC-USDC", function () {
 
   before(async () => {
     ({
-      users: [user1, user2,treasury],
-      userAddresses: [user1Address, user2Address,treasuryAddress],
+      users: [user1, user2, treasury],
+      userAddresses: [user1Address, user2Address, treasuryAddress],
       usdcToUsdAssimilator,
       cadcToUsdAssimilator,
       CurveFactory,
@@ -87,7 +87,7 @@ describe("CADC-USDC", function () {
   });
 
   beforeEach(async () => {
-    curveFactory = (await CurveFactory.deploy(50,treasuryAddress)) as CurveFactory;
+    curveFactory = (await CurveFactory.deploy(50, treasuryAddress)) as CurveFactory;
     router = (await RouterFactory.deploy(curveFactory.address)) as Router;
 
     ({ createCurveAndSetParams, multiMintAndApprove } = await scaffoldHelpers({
@@ -123,10 +123,10 @@ describe("CADC-USDC", function () {
       [TOKENS.USDC.address, user1, parseUnits("300000000", TOKENS.USDC.decimals), cadcCurve.address],
       [TOKENS.CADC.address, user1, parseUnits("300000000", TOKENS.CADC.decimals), cadcCurve.address],
     ]);
-        
+
     // // deposit 6M worth of cadc & 4M worth of usdc to the curve
     // await cadcCurve.connect(user1).deposit(parseUnits("10000000"), await getFutureTime());
-    
+
     // // deposit 60M worth of cadc & 40M worth of usdc to the curve
     // await cadcCurve.connect(user1).deposit(parseUnits("100000000"), await getFutureTime());
 
@@ -152,16 +152,13 @@ describe("CADC-USDC", function () {
 
     // only swap 227114 usdc into cadc
 
-        // await getPoolStats(cadcCurve);
-
+    // await getPoolStats(cadcCurve);
 
     // // swap back usdc to cadc
     // usdc.connect(user1).transfer(await user2.getAddress(),parseUnits("227114.74615", TOKENS.USDC.decimals));
     // await cadcCurve.connect(user2).originSwap(TOKENS.USDC.address, TOKENS.CADC.address,parseUnits("227114.74615", TOKENS.USDC.decimals),0, await getFutureTime());
     // let afterReverseSwapCADCBalance = await getCADCBalance(await user2.getAddress());
     // let afterReverseSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
-    
-
 
     // mint 300k cadc to user2
     await multiMintAndApprove([
@@ -174,14 +171,8 @@ describe("CADC-USDC", function () {
     let originalUSDCBalance = await getUSDCBalance(await user2.getAddress());
 
     console.log("-----Start: After deposit-----");
-    console.log('CADC Bal', 
-      (await cadc.balanceOf(cadcCurve.address)
-      ).toString(),
-    );
-    console.log('USDC Bal', 
-      (await usdc.balanceOf(cadcCurve.address)
-      ).toString(),
-    );
+    console.log("CADC Bal", (await cadc.balanceOf(cadcCurve.address)).toString());
+    console.log("USDC Bal", (await usdc.balanceOf(cadcCurve.address)).toString());
     console.log("-----End: After deposit-----");
 
     // swap 300k cadc into usdc
@@ -195,16 +186,9 @@ describe("CADC-USDC", function () {
         await getFutureTime(),
       );
 
-
     console.log("-----Start: 1st Swap-----");
-    console.log('CADC Bal', 
-      (await cadc.balanceOf(cadcCurve.address)
-      ).toString(),
-    );
-    console.log('USDC Bal', 
-      (await usdc.balanceOf(cadcCurve.address)
-      ).toString(),
-    );
+    console.log("CADC Bal", (await cadc.balanceOf(cadcCurve.address)).toString());
+    console.log("USDC Bal", (await usdc.balanceOf(cadcCurve.address)).toString());
     console.log("-----End: 1st Swap-----");
 
     let afterSwapCADCBalance = await getCADCBalance(await user2.getAddress());
@@ -213,7 +197,8 @@ describe("CADC-USDC", function () {
     await usdc.connect(user2).approve(cadcCurve.address, parseUnits(afterSwapUSDCBalance, TOKENS.USDC.decimals));
 
     // swap back usdc to cadc
-    console.log('viewOriginSwap: ',
+    console.log(
+      "viewOriginSwap: ",
       (
         await cadcCurve
           .connect(user2)
@@ -234,20 +219,18 @@ describe("CADC-USDC", function () {
         await getFutureTime(),
       );
 
-      let afterReverseSwapCADCBalance = await getCADCBalance(await user2.getAddress());
-      let afterReverseSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
+    let afterReverseSwapCADCBalance = await getCADCBalance(await user2.getAddress());
+    let afterReverseSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
 
-      console.log(originalCADCBalance, "     ", originalUSDCBalance);
-      console.log(afterSwapCADCBalance, "     ", afterSwapUSDCBalance);
-      console.log(afterReverseSwapCADCBalance, "     ", afterReverseSwapUSDCBalance);
-    });
+    console.log(originalCADCBalance, "     ", originalUSDCBalance);
+    console.log(afterSwapCADCBalance, "     ", afterSwapUSDCBalance);
+    console.log(afterReverseSwapCADCBalance, "     ", afterReverseSwapUSDCBalance);
+  });
 
-    const getPoolStats =async (cadcCurve:Contract) => {
-        let stats = await cadcCurve.viewCurve();
-        console.log(stats);
-    }
+  const getPoolStats = async (cadcCurve: Contract) => {
+    let stats = await cadcCurve.viewCurve();
+    console.log(stats);
+  };
 
-    it("cadc-usdc swap",async () => {
-        
-    })
-})
+  it("cadc-usdc swap", async () => {});
+});

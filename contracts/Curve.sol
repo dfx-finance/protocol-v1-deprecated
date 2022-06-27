@@ -405,7 +405,7 @@ contract Curve is Storage, MerkleProver {
         uint256 _minTargetAmount,
         uint256 _deadline
     ) external deadline(_deadline) transactable nonReentrant returns (uint256 targetAmount_) {
-        OriginSwapData memory _swapData; 
+        OriginSwapData memory _swapData;
         _swapData._origin = _origin;
         _swapData._target = _target;
         _swapData._originAmount = _originAmount;
@@ -445,12 +445,12 @@ contract Curve is Storage, MerkleProver {
         uint256 _deadline
     ) external deadline(_deadline) transactable nonReentrant returns (uint256 originAmount_) {
         TargetSwapData memory _swapData;
-        _swapData._origin=_origin;
-        _swapData._target=_target;
-        _swapData._targetAmount=_targetAmount;
-        _swapData._recipient=msg.sender;
-        _swapData._curveFactory=curveFactory;
-        originAmount_ = Swaps.targetSwap(curve,_swapData);
+        _swapData._origin = _origin;
+        _swapData._target = _target;
+        _swapData._targetAmount = _targetAmount;
+        _swapData._recipient = msg.sender;
+        _swapData._curveFactory = curveFactory;
+        originAmount_ = Swaps.targetSwap(curve, _swapData);
         // originAmount_ = Swaps.targetSwap(curve, _origin, _target, _targetAmount, msg.sender,curveFactory);
 
         require(originAmount_ <= _maxOriginAmount, "Curve/above-max-origin-amount");

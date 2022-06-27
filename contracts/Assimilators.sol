@@ -152,8 +152,12 @@ library Assimilators {
         amt_ = abi.decode(delegate(_assim, data), (uint256));
     }
 
-    function transferFee(address _assim, int128 _amt, address _treasury) internal {
-        bytes memory data = abi.encodeWithSelector(iAsmltr.transferFee.selector, _amt,_treasury);
+    function transferFee(
+        address _assim,
+        int128 _amt,
+        address _treasury
+    ) internal {
+        bytes memory data = abi.encodeWithSelector(iAsmltr.transferFee.selector, _amt, _treasury);
         delegate(_assim, data);
     }
 }
