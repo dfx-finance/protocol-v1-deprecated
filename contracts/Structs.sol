@@ -28,3 +28,16 @@ struct SwapInfo {
     address treasury;
     ICurveFactory curveFactory;
 }
+
+struct CurveInfo {
+    string _name;
+    string _symbol;
+    address _baseCurrency;
+    address _quoteCurrency;
+    uint256 _baseWeight;
+    uint256 _quoteWeight;
+    address _baseOracle;
+    uint256 _baseDec;
+    address _quoteOracle;
+    uint256 _quoteDec;
+}

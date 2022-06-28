@@ -13,7 +13,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./CurveFactory.sol";
-import "./SwapData.sol";
+import "./Structs.sol";
 
 library Swaps {
     using ABDKMath64x64 for int128;

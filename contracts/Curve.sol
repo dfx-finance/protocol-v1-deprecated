@@ -32,7 +32,7 @@ import "./MerkleProver.sol";
 
 import "./interfaces/IFreeFromUpTo.sol";
 
-import "./SwapData.sol";
+import "./Structs.sol";
 
 library Curves {
     using ABDKMath64x64 for int128;
