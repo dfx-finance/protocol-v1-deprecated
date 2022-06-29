@@ -8,7 +8,7 @@ contract AssimilatorFactory is IAssimilatorFactory,Ownable {
     event NewAssimilator (address indexed caller, bytes32 indexed id, address indexed assimilator);
     event AssimilatorRevoked (address indexed caller, bytes32 indexed id, address indexed assimilator);
     mapping(bytes32 => AssimilatorV2) public assimilators;
-
+    
     function getAssimilator (address _token) external view override returns (AssimilatorV2) {
         bytes32 assimilatorID = keccak256(abi.encode(_token));
         return assimilators[assimilatorID];

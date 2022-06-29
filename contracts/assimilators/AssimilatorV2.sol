@@ -240,7 +240,7 @@ contract AssimilatorV2 is IAssimilator {
 
     function transferFee(int128 _amount, address _treasury) external override returns (bool transferSuccess_) {
         uint256 _rate = getRate();
-        uint256 amount = (_amount.mulu(1e6) * 1e8) / _rate;
+        uint256 amount = (_amount.mulu(10 ** tokenDecimals) * 1e8) / _rate;
         transferSuccess_ = token.transfer(_treasury, amount);
         require(transferSuccess_, "fee transfer failed");
     }

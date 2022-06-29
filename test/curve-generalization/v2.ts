@@ -2,19 +2,22 @@
 import { ethers } from "hardhat";
 import { Signer, Contract, ContractFactory, BigNumber, BigNumberish } from "ethers";
 import { formatUnits } from "ethers/lib/utils";
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiBigNumber from "chai-bignumber";
 
 import { CurveFactory } from "../../typechain/CurveFactory";
 import { Curve } from "../../typechain/Curve";
 import { ERC20 } from "../../typechain/ERC20";
 import { Router } from "../../typechain/Router";
+import { AssimilatorFactory } from "../../typechain/AssimilatorFactory";
 
 import { ORACLES, TOKENS } from "../Constants";
 import { getFutureTime, expectBNAproxEq, getOracleAnswer } from "../Utils";
 
 import { scaffoldTest, scaffoldHelpers } from "../Setup";
 import { isBigNumberish } from "@ethersproject/bignumber/lib/bignumber";
+import { solidity } from "ethereum-waffle";
+chai.use(solidity);
 
 chai.use(chaiBigNumber(BigNumber));
 
@@ -55,6 +58,7 @@ describe("CADC-USDC", function () {
     baseAssimilator,
     quoteAssimilator,
     params,
+    factoryAddress
   }: {
     name: string;
     symbol: string;
@@ -65,6 +69,7 @@ describe("CADC-USDC", function () {
     baseAssimilator: string;
     quoteAssimilator: string;
     params: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
+    factoryAddress: string;
   }) => Promise<{
     curve: Curve;
     curveLpToken: ERC20;
@@ -106,7 +111,7 @@ describe("CADC-USDC", function () {
     return formatUnits(_user_n_bal, TOKENS.CADC.decimals);
   };
 
-  it("cadc-usdc swap", async () => {
+  it.skip("cadc-usdc swap", async () => {
     const { curve: cadcCurve } = await createCurveAndSetParams({
       name: NAME,
       symbol: SYMBOL,
@@ -117,6 +122,7 @@ describe("CADC-USDC", function () {
       baseAssimilator: cadcToUsdAssimilator.address,
       quoteAssimilator: usdcToUsdAssimilator.address,
       params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+      factoryAddress: curveFactory.address
     });
 
     await multiMintAndApprove([
@@ -232,5 +238,17 @@ describe("CADC-USDC", function () {
     console.log(stats);
   };
 
-  it("cadc-usdc swap", async () => {});
+  it("AssimilatorFactory", async () => {
+    const AssimFactory = await ethers.getContractFactory("AssimilatorFactory");
+    // console.log(AssimFactory);
+    const assimFactory = (await AssimFactory.deploy()) as AssimilatorFactory;
+    const tx = await assimFactory.newAssimilator(cadc.address, usdc.address, 18);
+    const assim = await tx.wait();
+    console.log(assim);
+    console.log(await assimFactory.getAssimilator(usdc.address));
+    await expect(assimFactory.newAssimilator(cadc.address, usdc.address, 18)).to.be.revertedWith("AssimilatorFactory/currency-pair-already-exists");
+    await assimFactory.revokeAssimilator(usdc.address);
+    await assimFactory.newAssimilator(cadc.address, usdc.address, 18);
+    console.log(await assimFactory.getAssimilator(usdc.address));
+  });
 });
