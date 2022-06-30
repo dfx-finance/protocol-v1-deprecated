@@ -6,10 +6,11 @@ import chai, { expect } from "chai";
 import chaiBigNumber from "chai-bignumber";
 
 import { CurveFactory } from "../../typechain/CurveFactory";
+import  {CurveFactoryV2 } from "../../typechain/CurveFactoryV2";
+import { AssimilatorFactory } from "../../typechain/AssimilatorFactory";
 import { Curve } from "../../typechain/Curve";
 import { ERC20 } from "../../typechain/ERC20";
 import { Router } from "../../typechain/Router";
-import { AssimilatorFactory } from "../../typechain/AssimilatorFactory";
 
 import { ORACLES, TOKENS } from "../Constants";
 import { getFutureTime, expectBNAproxEq, getOracleAnswer } from "../Utils";
@@ -40,8 +41,12 @@ describe("CADC-USDC", function () {
 
   let CurveFactory: ContractFactory;
   let RouterFactory: ContractFactory;
+  let CurveFactoryV2 : ContractFactory;
+  let AssimilatorFactory : ContractFactory;
 
   let curveFactory: CurveFactory;
+  let curveFactoryV2 : CurveFactoryV2;
+  let assimFactory : AssimilatorFactory;
   let router: Router;
 
   let usdc: ERC20;
@@ -84,6 +89,8 @@ describe("CADC-USDC", function () {
       usdcToUsdAssimilator,
       cadcToUsdAssimilator,
       CurveFactory,
+      CurveFactoryV2,
+      AssimilatorFactory,
       RouterFactory,
       usdc,
       cadc,
@@ -92,6 +99,13 @@ describe("CADC-USDC", function () {
   });
 
   beforeEach(async () => {
+    //   deploy assim & curve factory v2
+    assimFactory = (await AssimilatorFactory.deploy()) as AssimilatorFactory;
+    curveFactoryV2 = (await CurveFactoryV2.deploy(50, treasuryAddress, assimFactory.address)) as CurveFactoryV2;
+    
+    console.log("assim factory deployed at ", assimFactory.address);
+    console.log("curve factory v2 deployed at ", curveFactoryV2.address);
+
     curveFactory = (await CurveFactory.deploy(50, treasuryAddress)) as CurveFactory;
     router = (await RouterFactory.deploy(curveFactory.address)) as Router;
 
@@ -129,42 +143,6 @@ describe("CADC-USDC", function () {
       [TOKENS.USDC.address, user1, parseUnits("300000000", TOKENS.USDC.decimals), cadcCurve.address],
       [TOKENS.CADC.address, user1, parseUnits("300000000", TOKENS.CADC.decimals), cadcCurve.address],
     ]);
-
-    // // deposit 6M worth of cadc & 4M worth of usdc to the curve
-    // await cadcCurve.connect(user1).deposit(parseUnits("10000000"), await getFutureTime());
-
-    // // deposit 60M worth of cadc & 40M worth of usdc to the curve
-    // await cadcCurve.connect(user1).deposit(parseUnits("100000000"), await getFutureTime());
-
-    // // swap 60k cadc into usdc
-    // await cadcCurve.connect(user2).originSwap(TOKENS.CADC.address,TOKENS.USDC.address,parseUnits("60000", TOKENS.CADC.decimals),0,await getFutureTime());
-    // let afterSwapCADCBalance = await getCADCBalance(await user2.getAddress());
-    // let afterSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
-
-    // swap 80k cadc into usdc
-    // await cadcCurve.connect(user2).originSwap(TOKENS.CADC.address,TOKENS.USDC.address,parseUnits("80000", TOKENS.CADC.decimals),0,await getFutureTime());
-    // let afterSwapCADCBalance = await getCADCBalance(await user2.getAddress());
-    // let afterSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
-
-    // // swap 200k cadc into usdc
-    // await cadcCurve.connect(user2).originSwap(TOKENS.CADC.address,TOKENS.USDC.address,parseUnits("200000", TOKENS.CADC.decimals),0,await getFutureTime());
-    // let afterSwapCADCBalance = await getCADCBalance(await user2.getAddress());
-    // let afterSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
-
-    // // swap back usdc to cadc
-    // await cadcCurve.connect(user2).originSwap(TOKENS.USDC.address, TOKENS.CADC.address,parseUnits(afterSwapUSDCBalance, TOKENS.USDC.decimals),0, await getFutureTime());
-    // let afterReverseSwapCADCBalance = await getCADCBalance(await user2.getAddress());
-    // let afterReverseSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
-
-    // only swap 227114 usdc into cadc
-
-    // await getPoolStats(cadcCurve);
-
-    // // swap back usdc to cadc
-    // usdc.connect(user1).transfer(await user2.getAddress(),parseUnits("227114.74615", TOKENS.USDC.decimals));
-    // await cadcCurve.connect(user2).originSwap(TOKENS.USDC.address, TOKENS.CADC.address,parseUnits("227114.74615", TOKENS.USDC.decimals),0, await getFutureTime());
-    // let afterReverseSwapCADCBalance = await getCADCBalance(await user2.getAddress());
-    // let afterReverseSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
 
     // mint 300k cadc to user2
     await multiMintAndApprove([
@@ -239,12 +217,10 @@ describe("CADC-USDC", function () {
   };
 
   it("AssimilatorFactory", async () => {
-    const AssimFactory = await ethers.getContractFactory("AssimilatorFactory");
-    // console.log(AssimFactory);
-    const assimFactory = (await AssimFactory.deploy()) as AssimilatorFactory;
     const tx = await assimFactory.newAssimilator(cadc.address, usdc.address, 18);
     const assim = await tx.wait();
     console.log(assim);
+
     console.log(await assimFactory.getAssimilator(usdc.address));
     await expect(assimFactory.newAssimilator(cadc.address, usdc.address, 18)).to.be.revertedWith("AssimilatorFactory/currency-pair-already-exists");
     await assimFactory.revokeAssimilator(usdc.address);

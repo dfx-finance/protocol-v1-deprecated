@@ -3,7 +3,7 @@
 import { ethers } from "hardhat";
 import { TOKENS } from "./Constants";
 
-import { ERC20, Curve, CurveFactory } from "../typechain";
+import { ERC20, Curve, CurveFactory, AssimilatorFactory, CurveFactoryV2 } from "../typechain";
 import { BigNumberish, Signer } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 import { mintCADC, mintEURS, mintNZDS, mintUSDC, mintXSGD, mintXIDR, mintTRYB } from "./Utils";
@@ -24,6 +24,8 @@ export const scaffoldTest = async () => {
   const ProportionalLiquidityLib = await ethers.getContractFactory("ProportionalLiquidity");
   const SwapsLib = await ethers.getContractFactory("Swaps");
   const ViewLiquidityLib = await ethers.getContractFactory("ViewLiquidity");
+  const AssimilatorFactory = await ethers.getContractFactory("AssimilatorFactory");
+  
 
   const curvesLib = await CurvesLib.deploy();
   const orchestratorLib = await OrchestratorLib.deploy();
@@ -67,6 +69,16 @@ export const scaffoldTest = async () => {
     },
   });
 
+  const CurveFactoryV2 = await ethers.getContractFactory("CurveFactoryV2", {
+    libraries: {
+      Curves: curvesLib.address,
+      Orchestrator: orchestratorLib.address,
+      ProportionalLiquidity: proportionalLiquidityLib.address,
+      Swaps: swapsLib.address,
+      ViewLiquidity: viewLiquidityLib.address,
+    },
+  });
+
   const RouterFactory = await ethers.getContractFactory("Router");
 
   return {
@@ -89,6 +101,8 @@ export const scaffoldTest = async () => {
     erc20,
     CurveFactory,
     RouterFactory,
+    AssimilatorFactory,
+    CurveFactoryV2
   };
 };
 
