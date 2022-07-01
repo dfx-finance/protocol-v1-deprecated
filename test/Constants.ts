@@ -51,7 +51,7 @@ export const ORACLES = {
     decimals: 8,
   },
   USDC: {
-    address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    address: "0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6",
     decimals: 8,
   },
   NZDS: {

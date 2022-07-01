@@ -21,6 +21,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "../lib/ABDKMath64x64.sol";
 import "../interfaces/IAssimilator.sol";
 import "../interfaces/IOracle.sol";
+import "hardhat/console.sol";
 
 contract AssimilatorV2 is IAssimilator {
     using ABDKMath64x64 for int128;
@@ -44,6 +45,7 @@ contract AssimilatorV2 is IAssimilator {
     }
 
     function getRate() public view override returns (uint256) {
+        console.log(address(oracle));
         (, int256 price, , , ) = oracle.latestRoundData();
         return uint256(price);
     }

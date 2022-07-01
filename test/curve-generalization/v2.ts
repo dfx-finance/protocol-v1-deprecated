@@ -53,15 +53,17 @@ describe("CADC-USDC", function () {
   let cadc: ERC20;
   let erc20: ERC20;
 
-  let createCurveAndSetParams: ({
+  let createCurveAndSetParamsV2: ({
     name,
     symbol,
     base,
     quote,
     baseWeight,
     quoteWeight,
-    baseAssimilator,
-    quoteAssimilator,
+    baseOracle,
+    quoteOracle,
+    baseDec,
+    quoteDec,
     params,
     factoryAddress
   }: {
@@ -71,8 +73,10 @@ describe("CADC-USDC", function () {
     quote: string;
     baseWeight: BigNumberish;
     quoteWeight: BigNumberish;
-    baseAssimilator: string;
-    quoteAssimilator: string;
+    baseOracle: string;
+    quoteOracle: string;
+    baseDec: BigNumberish;
+    quoteDec: BigNumberish;
     params: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
     factoryAddress: string;
   }) => Promise<{
@@ -102,6 +106,7 @@ describe("CADC-USDC", function () {
     //   deploy assim & curve factory v2
     assimFactory = (await AssimilatorFactory.deploy()) as AssimilatorFactory;
     curveFactoryV2 = (await CurveFactoryV2.deploy(50, treasuryAddress, assimFactory.address)) as CurveFactoryV2;
+    await assimFactory.setCurveFactory(curveFactoryV2.address);
     
     console.log("assim factory deployed at ", assimFactory.address);
     console.log("curve factory v2 deployed at ", curveFactoryV2.address);
@@ -109,8 +114,9 @@ describe("CADC-USDC", function () {
     curveFactory = (await CurveFactory.deploy(50, treasuryAddress)) as CurveFactory;
     router = (await RouterFactory.deploy(curveFactory.address)) as Router;
 
-    ({ createCurveAndSetParams, multiMintAndApprove } = await scaffoldHelpers({
+    ({ createCurveAndSetParamsV2, multiMintAndApprove } = await scaffoldHelpers({
       curveFactory,
+      curveFactoryV2,
       erc20,
     }));
   });
@@ -125,19 +131,23 @@ describe("CADC-USDC", function () {
     return formatUnits(_user_n_bal, TOKENS.CADC.decimals);
   };
 
-  it.skip("cadc-usdc swap", async () => {
-    const { curve: cadcCurve } = await createCurveAndSetParams({
+  it("cadc-usdc swap", async () => {
+    const { curve: cadcCurve } = await createCurveAndSetParamsV2({
       name: NAME,
       symbol: SYMBOL,
       base: cadc.address,
       quote: usdc.address,
       baseWeight: parseUnits("0.6"),
       quoteWeight: parseUnits("0.4"),
-      baseAssimilator: cadcToUsdAssimilator.address,
-      quoteAssimilator: usdcToUsdAssimilator.address,
+      baseOracle: ORACLES.CADC.address,
+      quoteOracle: ORACLES.USDC.address,
+      baseDec: 18,
+      quoteDec: 6,
       params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
       factoryAddress: curveFactory.address
     });
+
+    console.log("after curve creation", cadcCurve.address);
 
     await multiMintAndApprove([
       [TOKENS.USDC.address, user1, parseUnits("300000000", TOKENS.USDC.decimals), cadcCurve.address],
@@ -148,6 +158,7 @@ describe("CADC-USDC", function () {
     await multiMintAndApprove([
       [TOKENS.CADC.address, user2, parseUnits("3000", TOKENS.CADC.decimals), cadcCurve.address],
     ]);
+    console.log("after mint");
 
     // deposit 600k worth of cadc & 400k worth of usdc to the curve
     await cadcCurve.connect(user1).deposit(parseUnits("1000000"), await getFutureTime());
@@ -217,14 +228,11 @@ describe("CADC-USDC", function () {
   };
 
   it("AssimilatorFactory", async () => {
-    const tx = await assimFactory.newAssimilator(cadc.address, usdc.address, 18);
-    const assim = await tx.wait();
-    console.log(assim);
-
-    console.log(await assimFactory.getAssimilator(usdc.address));
-    await expect(assimFactory.newAssimilator(cadc.address, usdc.address, 18)).to.be.revertedWith("AssimilatorFactory/currency-pair-already-exists");
-    await assimFactory.revokeAssimilator(usdc.address);
-    await assimFactory.newAssimilator(cadc.address, usdc.address, 18);
-    console.log(await assimFactory.getAssimilator(usdc.address));
+    await expect(assimFactory.newAssimilator(cadc.address, usdc.address, 18)).to.be.revertedWith("unauthorized");
+    // console.log(await assimFactory.getAssimilator(usdc.address));
+    // await expect(assimFactory.newAssimilator(cadc.address, usdc.address, 18)).to.be.revertedWith("AssimilatorFactory/currency-pair-already-exists");
+    // await assimFactory.revokeAssimilator(usdc.address);
+    // await assimFactory.newAssimilator(cadc.address, usdc.address, 18);
+    // console.log(await assimFactory.getAssimilator(usdc.address));
   });
 });

@@ -23,6 +23,7 @@ import "./lib/ABDKMath64x64.sol";
 import "./Storage.sol";
 
 import "./CurveMath.sol";
+import "hardhat/console.sol";
 
 library Orchestrator {
     using SafeERC20 for IERC20;
@@ -146,6 +147,7 @@ library Orchestrator {
         require(_reserveAssim != address(0), "Curve/reserve-assimilator-cannot-be-zeroth-address");
 
         require(_weight < 1e18, "Curve/weight-must-be-less-than-one");
+        console.log(_reserveApproveTo);
 
         if (_numeraire != _reserve) IERC20(_numeraire).safeApprove(_reserveApproveTo, uint256(-1));
 

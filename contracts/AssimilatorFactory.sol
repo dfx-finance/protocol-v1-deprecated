@@ -13,7 +13,7 @@ contract AssimilatorFactory is IAssimilatorFactory,Ownable {
     address public curveFactory;
 
     modifier onlyCurveFactory {
-        require(msg.sender == curveFactory, "unauthorised");
+        require(msg.sender == curveFactory, "unauthorized");
         _;
     }
 
