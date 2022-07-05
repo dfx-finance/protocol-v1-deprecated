@@ -3,6 +3,7 @@ pragma solidity ^0.7.3;
 import "./assimilators/AssimilatorV2.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/IAssimilatorFactory.sol";
+import "./interfaces/IOracle.sol";
 
 contract AssimilatorFactory is IAssimilatorFactory,Ownable {
     event NewAssimilator (address indexed caller, bytes32 indexed id, address indexed assimilator);
@@ -31,7 +32,7 @@ contract AssimilatorFactory is IAssimilatorFactory,Ownable {
     onlyCurveFactory returns (AssimilatorV2) {
         bytes32 assimilatorID = keccak256(abi.encode(_token));
         if (address(assimilators[assimilatorID]) != address(0)) revert("AssimilatorFactory/currency-pair-already-exists");
-        AssimilatorV2 assimilator = new AssimilatorV2(_oracle, _token, _tokenDecimals);
+        AssimilatorV2 assimilator = new AssimilatorV2(_oracle, _token, _tokenDecimals, IOracle(_oracle).decimals());
         assimilators[assimilatorID] = assimilator;
         emit NewAssimilator(msg.sender, assimilatorID, address(assimilator));
         return assimilator;
