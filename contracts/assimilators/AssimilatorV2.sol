@@ -31,7 +31,7 @@ contract AssimilatorV2 is IAssimilator {
 
     IERC20 private constant usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
 
-    IOracle private oracle;
+    IOracle private immutable oracle;
     IERC20 private immutable token;
     uint256 private immutable oracleDecimals;
     uint256 private immutable tokenDecimals;
@@ -40,12 +40,11 @@ contract AssimilatorV2 is IAssimilator {
     constructor(address _oracle, address _token, uint256 _tokenDecimals) {
         oracle = IOracle(_oracle);
         token = IERC20(_token);
-        oracleDecimals = uint256(oracle.decimals());
+        oracleDecimals = 8;
         tokenDecimals = _tokenDecimals;
     }
 
     function getRate() public view override returns (uint256) {
-        console.log(address(oracle));
         (, int256 price, , , ) = oracle.latestRoundData();
         return uint256(price);
     }
@@ -80,7 +79,7 @@ contract AssimilatorV2 is IAssimilator {
     function intakeNumeraire(int128 _amount) external override returns (uint256 amount_) {
         uint256 _rate = getRate();
 
-        amount_ = (_amount.mulu(10 ** tokenDecimals) * oracleDecimals) / _rate;
+        amount_ = (_amount.mulu(10 ** tokenDecimals) * 10 ** oracleDecimals) / _rate;
 
         bool _transferSuccess = token.transferFrom(msg.sender, address(this), amount_);
 

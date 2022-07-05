@@ -10,6 +10,7 @@ import "./lib/UnsafeMath64x64.sol";
 import "./lib/ABDKMath64x64.sol";
 
 import "./CurveMath.sol";
+import  "hardhat/console.sol";
 
 library ProportionalLiquidity {
     using ABDKMath64x64 for uint256;
@@ -25,7 +26,9 @@ library ProportionalLiquidity {
         external
         returns (uint256 curves_, uint256[] memory)
     {
+        console.log(_deposit);
         int128 __deposit = _deposit.divu(1e18);
+        console.logInt(__deposit);
 
         uint256 _length = curve.assets.length;
 
@@ -41,6 +44,7 @@ library ProportionalLiquidity {
             for (uint256 i = 0; i < _length; i++) {
                 // Variable here to avoid stack-too-deep errors
                 int128 _d = __deposit.mul(curve.weights[i]);
+                console.logInt(_d);
                 deposits_[i] = Assimilators.intakeNumeraire(curve.assets[i].addr, _d.add(ONE_WEI));
             }
         } else {
@@ -58,6 +62,7 @@ library ProportionalLiquidity {
                     _quoteWeight,
                     _oBals[i].mul(_multiplier).add(ONE_WEI)
                 );
+        console.log(deposits_[i]);
             }
         }
 
