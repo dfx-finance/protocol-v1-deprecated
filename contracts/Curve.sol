@@ -34,6 +34,8 @@ import "./interfaces/IFreeFromUpTo.sol";
 
 import "./Structs.sol";
 
+import "hardhat/console.sol";
+
 library Curves {
     using ABDKMath64x64 for int128;
 
@@ -515,6 +517,7 @@ contract Curve is Storage, MerkleProver {
         notInWhitelistingStage
         returns (uint256, uint256[] memory)
     {
+        console.logString("called deposit");
         // (curvesMinted_,  deposits_)
         return ProportionalLiquidity.proportionalDeposit(curve, _deposit);
     }

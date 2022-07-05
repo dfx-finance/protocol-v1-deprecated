@@ -18,6 +18,7 @@ pragma solidity ^0.7.3;
 import "@openzeppelin/contracts/utils/Address.sol";
 import "./interfaces/IAssimilator.sol";
 import "./lib/ABDKMath64x64.sol";
+import "hardhat/console.sol";
 
 library Assimilators {
     using ABDKMath64x64 for int128;
@@ -30,7 +31,8 @@ library Assimilators {
 
         // solhint-disable-next-line
         (bool _success, bytes memory returnData_) = _callee.delegatecall(_data);
-
+        console.logString(_success? "delegate call succeeded" : "delegateCall failed");
+        console.logBytes(returnData_);
         // solhint-disable-next-line
         assembly {
             if eq(_success, 0) {

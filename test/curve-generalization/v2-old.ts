@@ -5,8 +5,6 @@ import { formatUnits } from "ethers/lib/utils";
 import chai, { expect } from "chai";
 import chaiBigNumber from "chai-bignumber";
 
-import { mintCADC, mintEURS, mintNZDS, mintUSDC, mintXSGD, mintXIDR, mintTRYB } from ".././Utils";
-
 import { CurveFactory } from "../../typechain/CurveFactory";
 import  {CurveFactoryV2 } from "../../typechain/CurveFactoryV2";
 import { AssimilatorFactory } from "../../typechain/AssimilatorFactory";
@@ -17,7 +15,7 @@ import { Router } from "../../typechain/Router";
 import { ORACLES, TOKENS } from "../Constants";
 import { getFutureTime, expectBNAproxEq, getOracleAnswer } from "../Utils";
 
-import { scaffoldTest, scaffoldHelpers } from "../SetupV2";
+import { scaffoldTest, scaffoldHelpers } from "../Setup";
 import { isBigNumberish } from "@ethersproject/bignumber/lib/bignumber";
 import { solidity } from "ethereum-waffle";
 chai.use(solidity);
@@ -28,7 +26,7 @@ const { parseUnits } = ethers.utils;
 
 const NAME = "DFX V1";
 const SYMBOL = "DFX-V1";
-const ALPHA = parseUnits("0.5");
+const ALPHA = parseUnits("0.6");
 const BETA = parseUnits("0.35");
 const MAX = parseUnits("0.15");
 const EPSILON = parseUnits("0.0004");
@@ -67,6 +65,7 @@ describe("CADC-USDC", function () {
     baseDec,
     quoteDec,
     params,
+    factoryAddress
   }: {
     name: string;
     symbol: string;
@@ -79,6 +78,7 @@ describe("CADC-USDC", function () {
     baseDec: BigNumberish;
     quoteDec: BigNumberish;
     params: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
+    factoryAddress: string;
   }) => Promise<{
     curve: Curve;
     curveLpToken: ERC20;
@@ -92,6 +92,7 @@ describe("CADC-USDC", function () {
       userAddresses: [user1Address, user2Address, treasuryAddress],
       usdcToUsdAssimilator,
       cadcToUsdAssimilator,
+      CurveFactory,
       CurveFactoryV2,
       AssimilatorFactory,
       RouterFactory,
@@ -145,6 +146,8 @@ describe("CADC-USDC", function () {
       baseDec: 18,
       quoteDec: 6,
       params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+      // factoryAddress: curveFactory.address
+      factoryAddress : curveFactoryV2.address
     });
 
     console.log("after curve creation", cadcCurve.address);

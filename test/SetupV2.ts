@@ -59,16 +59,6 @@ export const scaffoldTest = async () => {
 
   const erc20 = (await ethers.getContractAt("ERC20", ethers.constants.AddressZero)) as ERC20;
 
-  const CurveFactory = await ethers.getContractFactory("CurveFactory", {
-    libraries: {
-      Curves: curvesLib.address,
-      Orchestrator: orchestratorLib.address,
-      ProportionalLiquidity: proportionalLiquidityLib.address,
-      Swaps: swapsLib.address,
-      ViewLiquidity: viewLiquidityLib.address,
-    },
-  });
-
   const CurveFactoryV2 = await ethers.getContractFactory("CurveFactoryV2", {
     libraries: {
       Curves: curvesLib.address,
@@ -99,7 +89,6 @@ export const scaffoldTest = async () => {
     xidr,
     tryb,
     erc20,
-    CurveFactory,
     RouterFactory,
     AssimilatorFactory,
     CurveFactoryV2
@@ -108,101 +97,6 @@ export const scaffoldTest = async () => {
 
 // eslint-disable-next-line
 export const scaffoldHelpers = async ({ curveFactory, curveFactoryV2, erc20 }: { curveFactory: CurveFactory; curveFactoryV2: CurveFactoryV2; erc20: ERC20 }) => {
-  const createCurve = async function ({
-    name,
-    symbol,
-    base,
-    quote,
-    baseWeight,
-    quoteWeight,
-    baseAssimilator,
-    quoteAssimilator,
-    params,
-    yesWhitelisting,
-  }: {
-    name: string;
-    symbol: string;
-    base: string;
-    quote: string;
-    baseWeight: BigNumberish;
-    quoteWeight: BigNumberish;
-    baseAssimilator: string;
-    quoteAssimilator: string;
-    params?: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
-    yesWhitelisting?: boolean;
-  }): Promise<{ curve: Curve; curveLpToken: ERC20 }> {
-    await curveFactory.newCurve(name, symbol, base, quote, baseWeight, quoteWeight, baseAssimilator, quoteAssimilator);
-
-    // Get curve address
-    const curveAddress = await curveFactory.curves(
-      ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["address", "address"], [base, quote])),
-    );
-    const curveLpToken = (await ethers.getContractAt("ERC20", curveAddress)) as ERC20;
-    const curve = (await ethers.getContractAt("Curve", curveAddress)) as Curve;
-
-    if (!yesWhitelisting) {
-      await curve.turnOffWhitelisting();
-    }
-
-    // Set params for the curve
-    if (params) {
-      await curve.setParams(...params);
-    } else {
-      await curve.setParams(ALPHA, BETA, MAX, EPSILON, LAMBDA);
-    }
-
-    return {
-      curve,
-      curveLpToken,
-    };
-  };
-
-  const createCurveAndSetParams = async function ({
-    name,
-    symbol,
-    base,
-    quote,
-    baseWeight,
-    quoteWeight,
-    baseAssimilator,
-    quoteAssimilator,
-    params,
-    yesWhitelisting,
-    factoryAddress,
-  }: {
-    name: string;
-    symbol: string;
-    base: string;
-    quote: string;
-    baseWeight: BigNumberish;
-    quoteWeight: BigNumberish;
-    baseAssimilator: string;
-    quoteAssimilator: string;
-    params: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
-    yesWhitelisting?: boolean;
-    factoryAddress: String;
-  }) {
-    const { curve, curveLpToken } = await createCurve({
-      name,
-      symbol,
-      base,
-      quote,
-      baseWeight,
-      quoteWeight,
-      baseAssimilator,
-      quoteAssimilator,
-      yesWhitelisting,
-    });
-
-    const tx = await curve.setParams(...params);
-    await tx.wait();
-
-    return {
-      curve,
-      curveLpToken,
-    };
-  };
-
   const createCurveV2 = async function ({
     name,
     symbol,
@@ -232,11 +126,8 @@ export const scaffoldHelpers = async ({ curveFactory, curveFactoryV2, erc20 }: {
   }): Promise<{ curve: Curve; curveLpToken: ERC20 }> {
     await curveFactoryV2.newCurve({_name: name, _symbol: symbol, _baseCurrency: base, _quoteCurrency: quote, _baseWeight: baseWeight, _quoteWeight: quoteWeight, _baseOracle: baseOracle, _quoteOracle: quoteOracle, _baseDec: baseDec, _quoteDec: quoteDec });
 
-    // Get curve address
-    // const curveAddress = await curveFactoryV2.curves(
-    //   ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["address", "address"], [base, quote])),
-    // );
-    const curveAddress = await curveFactoryV2.getCurve(base,quote)
+    const curveAddress = await curveFactoryV2.getCurve(base,quote);
+    console.log(`curve address is ${curveAddress}`);
     const curveLpToken = (await ethers.getContractAt("ERC20", curveAddress)) as ERC20;
     const curve = (await ethers.getContractAt("Curve", curveAddress)) as Curve;
     // console.log(curve);
@@ -271,7 +162,6 @@ export const scaffoldHelpers = async ({ curveFactory, curveFactoryV2, erc20 }: {
     quoteDec,
     params,
     yesWhitelisting,
-    factoryAddress,
   }: {
     name: string;
     symbol: string;
@@ -285,7 +175,6 @@ export const scaffoldHelpers = async ({ curveFactory, curveFactoryV2, erc20 }: {
     quoteDec: BigNumberish;
     params: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
     yesWhitelisting?: boolean;
-    factoryAddress: String;
   }) {
     const { curve, curveLpToken } = await createCurveV2({
       name,
@@ -355,5 +244,5 @@ export const scaffoldHelpers = async ({ curveFactory, curveFactoryV2, erc20 }: {
     }
   };
 
-  return { createCurveAndSetParams, createCurve, createCurveAndSetParamsV2, createCurveV2, mintAndApprove, multiMintAndApprove };
+  return { createCurveAndSetParamsV2, createCurveV2, mintAndApprove, multiMintAndApprove };
 };

@@ -29,6 +29,8 @@ import "./interfaces/ICurveFactory.sol";
 import "./interfaces/IAssimilatorFactory.sol";
 import "./Structs.sol";
 
+import "hardhat/console.sol";
+
 contract CurveFactoryV2 is ICurveFactory,Ownable {
 
     using Address for address;
@@ -80,8 +82,8 @@ contract CurveFactoryV2 is ICurveFactory,Ownable {
         emit ProtocolFeeUpdated(protocolTreasury, protocolFee);
     }
 
-    function getCurve(address _token) external view returns (address) {
-        bytes32 curveId = keccak256(abi.encode(_token));
+    function getCurve(address _base, address _quote) external view returns (address) {
+        bytes32 curveId = keccak256(abi.encode(_base, _quote));
         return (curves[curveId]);
     }
 

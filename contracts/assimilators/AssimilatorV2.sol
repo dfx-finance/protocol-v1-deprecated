@@ -45,7 +45,6 @@ contract AssimilatorV2 is IAssimilator {
     }
 
     function getRate() public view override returns (uint256) {
-        console.log(address(oracle));
         (, int256 price, , , ) = oracle.latestRoundData();
         return uint256(price);
     }
@@ -79,12 +78,8 @@ contract AssimilatorV2 is IAssimilator {
     // takes a numeraire amount, calculates the raw amount of eurs, transfers it in and returns the corresponding raw amount
     function intakeNumeraire(int128 _amount) external override returns (uint256 amount_) {
         uint256 _rate = getRate();
-
-        amount_ = (_amount.mulu(10 ** tokenDecimals) * oracleDecimals) / _rate;
-
-        bool _transferSuccess = token.transferFrom(msg.sender, address(this), amount_);
-
-        require(_transferSuccess, "Curve/Token-transfer-from-failed");
+        amount_ = (_amount.mulu(10 ** tokenDecimals) * (10**oracleDecimals)) / _rate;
+        require(token.transferFrom(msg.sender, address(this), amount_), "Curve/Token-transfer-from-failed");
     }
 
     // takes a numeraire amount, calculates the raw amount of eurs, transfers it in and returns the corresponding raw amount

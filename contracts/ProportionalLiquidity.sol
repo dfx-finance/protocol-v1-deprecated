@@ -10,6 +10,7 @@ import "./lib/UnsafeMath64x64.sol";
 import "./lib/ABDKMath64x64.sol";
 
 import "./CurveMath.sol";
+import "hardhat/console.sol";
 
 library ProportionalLiquidity {
     using ABDKMath64x64 for uint256;
@@ -25,24 +26,33 @@ library ProportionalLiquidity {
         external
         returns (uint256 curves_, uint256[] memory)
     {
+        console.logString("1");
         int128 __deposit = _deposit.divu(1e18);
+        console.logString("1.1");
 
         uint256 _length = curve.assets.length;
+        console.logString("1.2");
 
         uint256[] memory deposits_ = new uint256[](_length);
+        console.logString("1.3");
 
         (int128 _oGLiq, int128[] memory _oBals) = getGrossLiquidityAndBalancesForDeposit(curve);
 
+        console.logString("1.4");
         // Needed to calculate liquidity invariant
         (int128 _oGLiqProp, int128[] memory _oBalsProp) = getGrossLiquidityAndBalances(curve);
 
+        console.logString("1.5");
         // No liquidity, oracle sets the ratio
+        console.logString("1.5.1");
         if (_oGLiq == 0) {
             for (uint256 i = 0; i < _length; i++) {
                 // Variable here to avoid stack-too-deep errors
                 int128 _d = __deposit.mul(curve.weights[i]);
+                console.logString("1.5.1.1");
                 deposits_[i] = Assimilators.intakeNumeraire(curve.assets[i].addr, _d.add(ONE_WEI));
             }
+        console.logString("1.5.2");
         } else {
             // We already have an existing pool ratio
             // which must be respected
@@ -50,6 +60,7 @@ library ProportionalLiquidity {
 
             uint256 _baseWeight = curve.weights[0].mulu(1e18);
             uint256 _quoteWeight = curve.weights[1].mulu(1e18);
+            console.logString("1.5.3");
 
             for (uint256 i = 0; i < _length; i++) {
                 deposits_[i] = Assimilators.intakeNumeraireLPRatio(
@@ -59,20 +70,26 @@ library ProportionalLiquidity {
                     _oBals[i].mul(_multiplier).add(ONE_WEI)
                 );
             }
+        console.logString("1.5.4");
         }
+        console.logString("2");
 
         int128 _totalShells = curve.totalSupply.divu(1e18);
+        console.logString("3");
 
         int128 _newShells = __deposit;
+        console.logString("4");
 
         if (_totalShells > 0) {
             _newShells = __deposit.div(_oGLiq);
             _newShells = _newShells.mul(_totalShells);
         }
+        console.logString("5");
 
         // requireLiquidityInvariant(curve, _totalShells, _newShells, _oGLiqProp, _oBalsProp);
 
         mint(curve, msg.sender, curves_ = _newShells.mulu(1e18));
+        console.logString("6");
 
         return (curves_, deposits_);
     }
