@@ -1,3 +1,4 @@
+
 // SPDX-License-Identifier: MIT
 
 // This program is free software: you can redistribute it and/or modify
@@ -21,50 +22,12 @@ import "./Curve.sol";
 
 import "./interfaces/IFreeFromUpTo.sol";
 
-import "./interfaces/ICurveFactory.sol";
-
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract CurveFactory is ICurveFactory, Ownable {
-    // add protocol fee
-    int128 public totoalFeePercentage = 100;
-    int128 public protocolFee;
-    address public protocolTreasury;
-
-    event TreasuryUpdated(address indexed newTreasury);
-    event ProtocolFeeUpdated(address indexed treasury, int128 indexed fee);
+contract CurveFactory is Ownable {
     event NewCurve(address indexed caller, bytes32 indexed id, address indexed curve);
 
     mapping(bytes32 => address) public curves;
-
-    constructor(int128 _protocolFee, address _treasury) Ownable() {
-        require(totoalFeePercentage >= _protocolFee, "protocol fee can't be over 100%");
-        require(_treasury != address(0), "invalid treasury address");
-        protocolFee = uint8(_protocolFee);
-        protocolTreasury = _treasury;
-    }
-
-    function getProtocolFee() external view virtual override returns (int128) {
-        return protocolFee;
-    }
-
-    function getProtocolTreasury() external view virtual override returns (address) {
-        return protocolTreasury;
-    }
-
-    function updateProtocolTreasury(address _newTreasury) external onlyOwner {
-        require(_newTreasury != protocolTreasury, "same treasury address!");
-        require(_newTreasury != address(0), "invalid treasury address!");
-        protocolTreasury = _newTreasury;
-        emit TreasuryUpdated(protocolTreasury);
-    }
-
-    function updateProtocolFee(int128 _newFee) external onlyOwner {
-        require(totoalFeePercentage >= _newFee, "protocol fee can't be over 100%");
-        require(_newFee != protocolFee, "same protocol fee!");
-        protocolFee = _newFee;
-        emit ProtocolFeeUpdated(protocolTreasury, protocolFee);
-    }
 
     function getCurve(address _baseCurrency, address _quoteCurrency) external view returns (address) {
         bytes32 curveId = keccak256(abi.encode(_baseCurrency, _quoteCurrency));

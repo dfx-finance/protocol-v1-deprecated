@@ -37,7 +37,7 @@ library ProportionalLiquidity {
         (int128 _oGLiq, int128[] memory _oBals) = getGrossLiquidityAndBalancesForDeposit(curve);
 
         // Needed to calculate liquidity invariant
-        (int128 _oGLiqProp, int128[] memory _oBalsProp) = getGrossLiquidityAndBalances(curve);
+        // (int128 _oGLiqProp, int128[] memory _oBalsProp) = getGrossLiquidityAndBalances(curve);
 
         // No liquidity, oracle sets the ratio
         if (_oGLiq == 0) {
