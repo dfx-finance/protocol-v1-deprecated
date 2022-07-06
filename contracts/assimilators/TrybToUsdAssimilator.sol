@@ -88,18 +88,18 @@ contract TrybToUsdAssimilator is IAssimilator {
         address _addr,
         int128 _amount
     ) external override returns (uint256 amount_) {
-        uint256 _xsgdBal = tryb.balanceOf(_addr);
+        uint256 _trybBal = tryb.balanceOf(_addr);
 
-        if (_xsgdBal <= 0) return 0;
+        if (_trybBal <= 0) return 0;
 
         // 1e6
-        _xsgdBal = _xsgdBal.mul(1e18).div(_baseWeight);
+        _trybBal = _trybBal.mul(1e18).div(_baseWeight);
 
         // 1e6
         uint256 _usdcBal = usdc.balanceOf(_addr).mul(1e18).div(_quoteWeight);
 
         // Rate is in 1e6
-        uint256 _rate = _usdcBal.mul(1e6).div(_xsgdBal);
+        uint256 _rate = _usdcBal.mul(1e6).div(_trybBal);
 
         amount_ = (_amount.mulu(1e6) * 1e6) / _rate;
 
@@ -166,18 +166,18 @@ contract TrybToUsdAssimilator is IAssimilator {
         address _addr,
         int128 _amount
     ) external view override returns (uint256 amount_) {
-        uint256 _xsgdBal = tryb.balanceOf(_addr);
+        uint256 _trybBal = tryb.balanceOf(_addr);
 
-        if (_xsgdBal <= 0) return 0;
+        if (_trybBal <= 0) return 0;
 
         // 1e6
-        _xsgdBal = _xsgdBal.mul(1e18).div(_baseWeight);
+        _trybBal = _trybBal.mul(1e18).div(_baseWeight);
 
         // 1e6
         uint256 _usdcBal = usdc.balanceOf(_addr).mul(1e18).div(_quoteWeight);
 
         // Rate is in 1e6
-        uint256 _rate = _usdcBal.mul(1e6).div(_xsgdBal);
+        uint256 _rate = _usdcBal.mul(1e6).div(_trybBal);
 
         amount_ = (_amount.mulu(1e6) * 1e6) / _rate;
     }
@@ -225,16 +225,16 @@ contract TrybToUsdAssimilator is IAssimilator {
         uint256 _quoteWeight,
         address _addr
     ) external view override returns (int128 balance_) {
-        uint256 _xsgdBal = tryb.balanceOf(_addr);
+        uint256 _trybBal = tryb.balanceOf(_addr);
 
-        if (_xsgdBal <= 0) return ABDKMath64x64.fromUInt(0);
+        if (_trybBal <= 0) return ABDKMath64x64.fromUInt(0);
 
         uint256 _usdcBal = usdc.balanceOf(_addr).mul(1e18).div(_quoteWeight);
 
         // Rate is in 1e6
-        uint256 _rate = _usdcBal.mul(1e18).div(_xsgdBal.mul(1e18).div(_baseWeight));
+        uint256 _rate = _usdcBal.mul(1e18).div(_trybBal.mul(1e18).div(_baseWeight));
 
-        balance_ = ((_xsgdBal * _rate) / 1e6).divu(1e18);
+        balance_ = ((_trybBal * _rate) / 1e6).divu(1e18);
     }
 
     function transferFee(int128 _amount, address _treasury) external override returns (bool transferSuccess_) {

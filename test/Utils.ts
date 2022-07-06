@@ -40,7 +40,8 @@ export const unlockAccountAndGetSigner = async (address: string): Promise<Signer
 
 // eslint-disable-next-line
 export const mintFiatTokenV2 = async ({ ownerAddress, tokenAddress, recipient, amount }) => {
-  // Send owner some ETH
+  try {
+    // Send owner some ETH
   await sendETH(ownerAddress);
 
   const minter = await provider.getSigner(8);
@@ -52,6 +53,10 @@ export const mintFiatTokenV2 = async ({ ownerAddress, tokenAddress, recipient, a
   await FiatTokenV2.updateMasterMinter(minterAddress);
   await FiatTokenV2.connect(minter).configureMinter(minterAddress, amount);
   await FiatTokenV2.connect(minter).mint(recipient, amount);
+  } catch (error) {
+    console.log("cause is ");
+    console.log(error.toString())
+  }
 };
 
 export const mintCADC = async (recipient: string, amount: BigNumberish | number): Promise<void> => {
