@@ -132,7 +132,7 @@ describe("CADC-USDC", function () {
     return formatUnits(_user_n_bal, TOKENS.CADC.decimals);
   };
 
-  it.skip("cadc-usdc swap", async () => {
+  it("cadc-usdc swap", async () => {
     const { curve: cadcCurve } = await createCurveAndSetParamsV2({
       name: NAME,
       symbol: SYMBOL,
