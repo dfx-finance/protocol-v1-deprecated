@@ -40,7 +40,7 @@ contract ChainLinkOracle is IOracle {
     function confirmAggregator(address _aggregator) external override {}
 
     function getAnswer(uint256 _roundId) external view override returns (int256) {
-        return price * int256(10 ** decimals);
+        return price;
     }
 
     function getRoundData(uint80 _roundId)
@@ -65,7 +65,7 @@ contract ChainLinkOracle is IOracle {
     }
 
     function latestAnswer() external view override returns (int256) {
-        return price * int256(10 ** decimals);
+        return price;
     }
 
     function latestRound() external view override returns (uint256) {
@@ -83,7 +83,7 @@ contract ChainLinkOracle is IOracle {
             uint80 answeredInRound
         ) {
             roundId = 0;
-            answer = price * int256(10 ** decimals);
+            answer = price;
             startedAt = 0;
             updatedAt = 0;
             answeredInRound = 0;
@@ -122,7 +122,7 @@ contract ChainLinkOracle is IOracle {
             uint80 answeredInRound
         ) {
             roundId = 0;
-            answer = price * int256(10 ** decimals);
+            answer = price;
             startedAt = 0;
             updatedAt = 0;
             answeredInRound = 0;
@@ -139,7 +139,7 @@ contract ChainLinkOracle is IOracle {
             uint80 answeredInRound
         ){
             roundId = 0;
-            answer = price * int256(10 ** decimals);
+            answer = price;
             startedAt = 0;
             updatedAt = 0;
             answeredInRound = 0;
