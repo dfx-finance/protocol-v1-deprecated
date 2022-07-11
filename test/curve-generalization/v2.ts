@@ -22,6 +22,7 @@ import { IOracle } from "../../typechain";
 chai.use(solidity);
 
 chai.use(chaiBigNumber(BigNumber));
+const BN = BigNumber.from;
 
 const { parseUnits } = ethers.utils;
 
@@ -112,7 +113,7 @@ describe("CADC-USDC", function () {
     console.log("assim factory deployed at ", assimFactory.address);
     console.log("curve factory v2 deployed at ", curveFactoryV2.address);
 
-    curveFactory = (await CurveFactory.deploy(50, treasuryAddress)) as CurveFactory;
+    curveFactory = (await CurveFactory.deploy()) as CurveFactory;
     router = (await RouterFactory.deploy(curveFactory.address)) as Router;
 
     ({ createCurveAndSetParamsV2, multiMintAndApprove } = await scaffoldHelpers({
@@ -131,6 +132,86 @@ describe("CADC-USDC", function () {
     let _user_n_bal = await cadc.balanceOf(address);
     return formatUnits(_user_n_bal, TOKENS.CADC.decimals);
   };
+
+  const customOracleTest = async (basis: number, quote: number) => {
+    const oracleFact = await ethers.getContractFactory("ChainLinkOracle");
+    const cadcOracle = await oracleFact.deploy(cadc.address, "CADC Oracle", basis, BN(77780319).mul(BN(10).pow(BN(basis - 8))));
+    const usdcOracle = await oracleFact.deploy(usdc.address, "USDC Oracle", quote, BN(10003520).mul(BN(10).pow(BN(quote - 8))));
+    const { curve: cadcCurve } = await createCurveAndSetParamsV2({
+      name: NAME,
+      symbol: SYMBOL,
+      base: cadc.address,
+      quote: usdc.address,
+      baseWeight: parseUnits("0.6"),
+      quoteWeight: parseUnits("0.4"),
+      baseOracle: cadcOracle.address,
+      quoteOracle: usdcOracle.address,
+      baseDec: 18,
+      quoteDec: 6,
+      params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
+      factoryAddress: curveFactory.address
+    });
+
+    console.log("after curve creation", cadcCurve.address);
+
+    await multiMintAndApprove([
+      [TOKENS.USDC.address, user1, parseUnits("300000000", TOKENS.USDC.decimals), cadcCurve.address],
+      [TOKENS.CADC.address, user1, parseUnits("300000000", TOKENS.CADC.decimals), cadcCurve.address],
+    ]);
+
+    // mint 300k cadc to user2
+    await multiMintAndApprove([
+      [TOKENS.CADC.address, user2, parseUnits("3000", TOKENS.CADC.decimals), cadcCurve.address],
+    ]);
+
+    // deposit 600k worth of cadc & 400k worth of usdc to the curve
+    await cadcCurve.connect(user1).deposit(parseUnits("10000000"), await getFutureTime());
+    let originalCADCBalance = await getCADCBalance(cadcCurve.address);
+    let originalUSDCBalance = await getUSDCBalance(cadcCurve.address);
+    console.log("after deposit");
+
+    console.log("-----Start: After deposit-----");
+    console.log(originalCADCBalance, "     ", originalUSDCBalance);
+    console.log("-----End: After deposit-----");
+
+    // swap 300k cadc into usdc
+    await cadcCurve
+      .connect(user2)
+      .originSwap(
+        TOKENS.CADC.address,
+        TOKENS.USDC.address,
+        parseUnits("3000", TOKENS.CADC.decimals),
+        0,
+        await getFutureTime(),
+      );
+
+    console.log("-----Start: 1st Swap-----");
+    console.log("CADC Bal", (await cadc.balanceOf(cadcCurve.address)).toString());
+    console.log("USDC Bal", (await usdc.balanceOf(cadcCurve.address)).toString());
+    console.log("-----End: 1st Swap-----");
+
+    let afterSwapCADCBalance = await getCADCBalance(await user2.getAddress());
+    let afterSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
+
+    await usdc.connect(user2).approve(cadcCurve.address, parseUnits(afterSwapUSDCBalance, TOKENS.USDC.decimals));
+
+    await cadcCurve
+      .connect(user2)
+      .originSwap(
+        TOKENS.USDC.address,
+        TOKENS.CADC.address,
+        parseUnits(afterSwapUSDCBalance, TOKENS.USDC.decimals),
+        0,
+        await getFutureTime(),
+      );
+
+    let afterReverseSwapCADCBalance = await getCADCBalance(await user2.getAddress());
+    let afterReverseSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
+
+    console.log(afterSwapCADCBalance, "     ", afterSwapUSDCBalance);
+    console.log(afterReverseSwapCADCBalance, "     ", afterReverseSwapUSDCBalance);
+    
+  }
 
   it("cadc-usdc swap", async () => {
     const { curve: cadcCurve } = await createCurveAndSetParamsV2({
@@ -222,81 +303,12 @@ describe("CADC-USDC", function () {
   });
 
   it("Custom Oracle test", async () => {
-    const oracleFact = await ethers.getContractFactory("ChainLinkOracle");
-    const cadcOracle = await oracleFact.deploy(cadc.address, "CADC Oracle", 8, 77780319);
-    const usdcOracle = await oracleFact.deploy(cadc.address, "USDC Oracle", 12, 1000352000000);
-    const { curve: cadcCurve } = await createCurveAndSetParamsV2({
-      name: NAME,
-      symbol: SYMBOL,
-      base: cadc.address,
-      quote: usdc.address,
-      baseWeight: parseUnits("0.6"),
-      quoteWeight: parseUnits("0.4"),
-      baseOracle: cadcOracle.address,
-      quoteOracle: usdcOracle.address,
-      baseDec: 18,
-      quoteDec: 6,
-      params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
-      factoryAddress: curveFactory.address
-    });
-
-    console.log("after curve creation", cadcCurve.address);
-
-    await multiMintAndApprove([
-      [TOKENS.USDC.address, user1, parseUnits("300000000", TOKENS.USDC.decimals), cadcCurve.address],
-      [TOKENS.CADC.address, user1, parseUnits("300000000", TOKENS.CADC.decimals), cadcCurve.address],
-    ]);
-
-    // mint 300k cadc to user2
-    await multiMintAndApprove([
-      [TOKENS.CADC.address, user2, parseUnits("3000", TOKENS.CADC.decimals), cadcCurve.address],
-    ]);
-
-    // deposit 600k worth of cadc & 400k worth of usdc to the curve
-    await cadcCurve.connect(user1).deposit(parseUnits("10000000"), await getFutureTime());
-    let originalCADCBalance = await getCADCBalance(cadcCurve.address);
-    let originalUSDCBalance = await getUSDCBalance(cadcCurve.address);
-    console.log("after deposit");
-
-    console.log("-----Start: After deposit-----");
-    console.log(originalCADCBalance, "     ", originalUSDCBalance);
-    console.log("-----End: After deposit-----");
-
-    // swap 300k cadc into usdc
-    await cadcCurve
-      .connect(user2)
-      .originSwap(
-        TOKENS.CADC.address,
-        TOKENS.USDC.address,
-        parseUnits("3000", TOKENS.CADC.decimals),
-        0,
-        await getFutureTime(),
-      );
-
-    console.log("-----Start: 1st Swap-----");
-    console.log("CADC Bal", (await cadc.balanceOf(cadcCurve.address)).toString());
-    console.log("USDC Bal", (await usdc.balanceOf(cadcCurve.address)).toString());
-    console.log("-----End: 1st Swap-----");
-
-    let afterSwapCADCBalance = await getCADCBalance(await user2.getAddress());
-    let afterSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
-
-    await usdc.connect(user2).approve(cadcCurve.address, parseUnits(afterSwapUSDCBalance, TOKENS.USDC.decimals));
-
-    await cadcCurve
-      .connect(user2)
-      .originSwap(
-        TOKENS.USDC.address,
-        TOKENS.CADC.address,
-        parseUnits(afterSwapUSDCBalance, TOKENS.USDC.decimals),
-        0,
-        await getFutureTime(),
-      );
-
-    let afterReverseSwapCADCBalance = await getCADCBalance(await user2.getAddress());
-    let afterReverseSwapUSDCBalance = await getUSDCBalance(await user2.getAddress());
-
-    console.log(afterSwapCADCBalance, "     ", afterSwapUSDCBalance);
-    console.log(afterReverseSwapCADCBalance, "     ", afterReverseSwapUSDCBalance);
+    await customOracleTest(8, 12);
+  });
+  it("Custom Oracle test 2", async () => {
+    await customOracleTest(18, 12);
+  });
+  it("Custom Oracle test 3", async () => {
+    await customOracleTest(8, 18);
   });
 });
