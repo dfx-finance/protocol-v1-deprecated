@@ -249,26 +249,6 @@ library ProportionalLiquidity {
         return (grossLiquidity_, balances_);
     }
 
-    function requireLiquidityInvariant(
-        Storage.Curve storage curve,
-        int128 _curves,
-        int128 _newShells,
-        int128 _oGLiq,
-        int128[] memory _oBals
-    ) private view {
-        (int128 _nGLiq, int128[] memory _nBals) = getGrossLiquidityAndBalances(curve);
-
-        int128 _beta = curve.beta;
-        int128 _delta = curve.delta;
-        int128[] memory _weights = curve.weights;
-
-        int128 _omega = CurveMath.calculateFee(_oGLiq, _oBals, _beta, _delta, _weights);
-
-        int128 _psi = CurveMath.calculateFee(_nGLiq, _nBals, _beta, _delta, _weights);
-
-        CurveMath.enforceLiquidityInvariant(_curves, _newShells, _oGLiq, _nGLiq, _omega, _psi);
-    }
-
     function burn(
         Storage.Curve storage curve,
         address account,

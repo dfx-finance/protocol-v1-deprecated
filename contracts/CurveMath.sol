@@ -178,8 +178,6 @@ library CurveMath {
 
         if (_totalShells != 0) {
             curves_ = _totalShells.mul(_curveMultiplier);
-
-            enforceLiquidityInvariant(_totalShells, curves_, _oGLiq, _nGLiq, _omega, _psi);
         }
     }
 
@@ -196,25 +194,6 @@ library CurveMath {
         int128 _diff = _nextUtil - _prevUtil;
 
         require(0 < _diff || _diff >= MAX_DIFF, "Curve/swap-invariant-violation");
-    }
-
-    function enforceLiquidityInvariant(
-        int128 _totalShells,
-        int128 _newShells,
-        int128 _oGLiq,
-        int128 _nGLiq,
-        int128 _omega,
-        int128 _psi
-    ) internal view {
-        if (_totalShells == 0 || 0 == _totalShells + _newShells) return;
-
-        int128 _prevUtilPerShell = _oGLiq.sub(_omega).div(_totalShells);
-
-        int128 _nextUtilPerShell = _nGLiq.sub(_psi).div(_totalShells.add(_newShells));
-
-        int128 _diff = _nextUtilPerShell - _prevUtilPerShell;
-
-        require(0 < _diff || _diff >= MAX_DIFF, "Curve/liquidity-invariant-violation");
     }
 
     function enforceHalts(
