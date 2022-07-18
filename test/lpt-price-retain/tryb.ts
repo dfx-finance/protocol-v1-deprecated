@@ -31,12 +31,9 @@ const LAMBDA = parseUnits("0.3");
 
 const holder = "0x062ea073afbcd4109567544ac0ff97c0d572705e";
 
-
-
 describe("TRYB-USDC", function () {
   let [user1, user2]: Signer[] = [];
   let [user1Address, user2Address]: string[] = [];
-
 
   let usdcToUsdAssimilator: Contract;
   let trybToUsdAssimilator: Contract;
@@ -114,44 +111,42 @@ describe("TRYB-USDC", function () {
       params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
     });
 
-    const poolBalances =async () => {
+    const poolBalances = async () => {
       let _usdcBal = await usdc.balanceOf(curvenTRYB.address);
-      let usdcBal = formatUnits(_usdcBal,6);
+      let usdcBal = formatUnits(_usdcBal, 6);
       let _trybBal = await tryb.balanceOf(curvenTRYB.address);
-      let trybBal = formatUnits(_trybBal,6);
+      let trybBal = formatUnits(_trybBal, 6);
 
       console.log(`pool usdc : ${usdcBal},   tryb : ${trybBal}`);
-
-    }
+    };
 
     // func to read lpt balance
-    const getLPTBalance = async (user : Signer) => {
+    const getLPTBalance = async (user: Signer) => {
       let _user_n_bal = await curvenTRYB.balanceOf(await user.getAddress());
       let user_n_bal = formatUnits(_user_n_bal, await curvenTRYB.decimals());
       return user_n_bal;
-    }
+    };
 
-    const getLPTTotalSupply =async () => {
+    const getLPTTotalSupply = async () => {
       let _ts = await curvenTRYB.totalSupply();
       let ts = formatUnits(_ts, await curvenTRYB.decimals());
       console.log(`lp token total supply is ${ts}`);
-    }
+    };
 
-    const  setupBalance = async(hodler : string, user : Signer) => {
+    const setupBalance = async (hodler: string, user: Signer) => {
       console.log(`addr ${curvenTRYB.address}`);
       await hre.network.provider.request({
-        method : "hardhat_impersonateAccount",
-        params : [
-          hodler
-        ]
+        method: "hardhat_impersonateAccount",
+        params: [hodler],
       });
-      user1.sendTransaction({value : ethers.utils.parseEther("10"), to : hodler});
+      user1.sendTransaction({ value: ethers.utils.parseEther("10"), to: hodler });
       const hodlerSigner = ethers.provider.getSigner(hodler);
-      await curvenTRYB.connect(hodlerSigner).transfer(await user.getAddress(), await curvenTRYB.balanceOf(await hodlerSigner.getAddress()) );
-    }
+      await curvenTRYB
+        .connect(hodlerSigner)
+        .transfer(await user.getAddress(), await curvenTRYB.balanceOf(await hodlerSigner.getAddress()));
+    };
     await setupBalance(holder, user1);
     console.log(`lpt token amount of user1 is ${await getLPTBalance(user1)}`);
-    
 
     // Supply liquidity to the pools
     // Mint tokens and approve
@@ -172,15 +167,17 @@ describe("TRYB-USDC", function () {
 
     console.log("let user 2 deposit 39k usdc");
     await curvenTRYB
-    .connect(user2)
-    .deposit(parseUnits("78000"), await getFutureTime())
-    .then(x => x.wait());
+      .connect(user2)
+      .deposit(parseUnits("78000"), await getFutureTime())
+      .then(x => x.wait());
     console.log("-----------------  user 2 tryb balance is ", await getTRYBBalance(user2));
     console.log("-----------------  user 2 usdc balance is ", await getUSDCBalance(user2));
     console.log("-----------------  user 2 lpt balance is ", await getLPTBalance(user2));
     await poolBalances();
     await getLPTTotalSupply();
-    await curvenTRYB.connect(user2).withdraw(await curvenTRYB.balanceOf(await user2.getAddress()), await getFutureTime());
+    await curvenTRYB
+      .connect(user2)
+      .withdraw(await curvenTRYB.balanceOf(await user2.getAddress()), await getFutureTime());
 
     console.log("-----------------  user 2 tryb balance is ", await getTRYBBalance(user2));
     console.log("-----------------  user 2 usdc balance is ", await getUSDCBalance(user2));
@@ -195,7 +192,6 @@ describe("TRYB-USDC", function () {
     let user_n_bal = formatUnits(_user_n_bal, TOKENS.TRYB.decimals);
     return user_n_bal;
   };
-
 
   const getUSDCBalance = async (user: Signer) => {
     let _user_n_bal = await usdc.balanceOf(await user.getAddress());
@@ -258,6 +254,5 @@ describe("TRYB-USDC", function () {
     expectBNAproxEq(sent, expected, parseUnits("2", fromDecimals));
   };
 
-  it("TRYB -> USDC", async function () {
-  });
+  it("TRYB -> USDC", async function () {});
 });

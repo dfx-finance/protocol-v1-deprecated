@@ -25,7 +25,6 @@ export const scaffoldTest = async () => {
   const SwapsLib = await ethers.getContractFactory("Swaps");
   const ViewLiquidityLib = await ethers.getContractFactory("ViewLiquidity");
   const AssimilatorFactory = await ethers.getContractFactory("AssimilatorFactory");
-  
 
   const curvesLib = await CurvesLib.deploy();
   const orchestratorLib = await OrchestratorLib.deploy();
@@ -102,12 +101,20 @@ export const scaffoldTest = async () => {
     CurveFactory,
     RouterFactory,
     AssimilatorFactory,
-    CurveFactoryV2
+    CurveFactoryV2,
   };
 };
 
 // eslint-disable-next-line
-export const scaffoldHelpers = async ({ curveFactory, curveFactoryV2, erc20 }: { curveFactory: CurveFactory; curveFactoryV2: CurveFactoryV2; erc20: ERC20 }) => {
+export const scaffoldHelpers = async ({
+  curveFactory,
+  curveFactoryV2,
+  erc20,
+}: {
+  curveFactory: CurveFactory;
+  curveFactoryV2: CurveFactoryV2;
+  erc20: ERC20;
+}) => {
   const createCurve = async function ({
     name,
     symbol,
@@ -230,7 +237,18 @@ export const scaffoldHelpers = async ({ curveFactory, curveFactoryV2, erc20 }: {
     params?: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish];
     yesWhitelisting?: boolean;
   }): Promise<{ curve: Curve; curveLpToken: ERC20 }> {
-    await curveFactoryV2.newCurve({_name: name, _symbol: symbol, _baseCurrency: base, _quoteCurrency: quote, _baseWeight: baseWeight, _quoteWeight: quoteWeight, _baseOracle: baseOracle, _quoteOracle: quoteOracle, _baseDec: baseDec, _quoteDec: quoteDec });
+    await curveFactoryV2.newCurve({
+      _name: name,
+      _symbol: symbol,
+      _baseCurrency: base,
+      _quoteCurrency: quote,
+      _baseWeight: baseWeight,
+      _quoteWeight: quoteWeight,
+      _baseOracle: baseOracle,
+      _quoteOracle: quoteOracle,
+      _baseDec: baseDec,
+      _quoteDec: quoteDec,
+    });
 
     // Get curve address
     const curveAddress = await curveFactoryV2.curves(
@@ -353,5 +371,12 @@ export const scaffoldHelpers = async ({ curveFactory, curveFactoryV2, erc20 }: {
     }
   };
 
-  return { createCurveAndSetParams, createCurve, createCurveAndSetParamsV2, createCurveV2, mintAndApprove, multiMintAndApprove };
+  return {
+    createCurveAndSetParams,
+    createCurve,
+    createCurveAndSetParamsV2,
+    createCurveV2,
+    mintAndApprove,
+    multiMintAndApprove,
+  };
 };

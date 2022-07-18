@@ -5,10 +5,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/IAssimilatorFactory.sol";
 import "./interfaces/IOracle.sol";
 
-contract AssimilatorFactory is IAssimilatorFactory,Ownable {
-    event NewAssimilator (address indexed caller, bytes32 indexed id, address indexed assimilator);
-    event AssimilatorRevoked (address indexed caller, bytes32 indexed id, address indexed assimilator);
-    event CurveFactoryUpdated (address indexed caller, address indexed curveFactory);
+contract AssimilatorFactory is IAssimilatorFactory, Ownable {
+    event NewAssimilator(address indexed caller, bytes32 indexed id, address indexed assimilator);
+    event AssimilatorRevoked(address indexed caller, bytes32 indexed id, address indexed assimilator);
+    event CurveFactoryUpdated(address indexed caller, address indexed curveFactory);
     mapping(bytes32 => AssimilatorV2) public assimilators;
 
     address public curveFactory;
@@ -18,20 +18,24 @@ contract AssimilatorFactory is IAssimilatorFactory,Ownable {
         _;
     }
 
-    function setCurveFactory (address _curveFactory) external onlyOwner {
+    function setCurveFactory(address _curveFactory) external onlyOwner {
         curveFactory = _curveFactory;
         emit CurveFactoryUpdated(msg.sender, curveFactory);
     }
-    
-    function getAssimilator (address _token) external view override returns (AssimilatorV2) {
+
+    function getAssimilator(address _token) external view override returns (AssimilatorV2) {
         bytes32 assimilatorID = keccak256(abi.encode(_token));
         return assimilators[assimilatorID];
     }
 
-    function newAssimilator (address _oracle, address _token, uint256 _tokenDecimals) external override 
-    onlyCurveFactory returns (AssimilatorV2) {
+    function newAssimilator(
+        address _oracle,
+        address _token,
+        uint256 _tokenDecimals
+    ) external override onlyCurveFactory returns (AssimilatorV2) {
         bytes32 assimilatorID = keccak256(abi.encode(_token));
-        if (address(assimilators[assimilatorID]) != address(0)) revert("AssimilatorFactory/currency-pair-already-exists");
+        if (address(assimilators[assimilatorID]) != address(0))
+            revert("AssimilatorFactory/currency-pair-already-exists");
         AssimilatorV2 assimilator = new AssimilatorV2(_oracle, _token, _tokenDecimals, IOracle(_oracle).decimals());
         assimilators[assimilatorID] = assimilator;
         emit NewAssimilator(msg.sender, assimilatorID, address(assimilator));

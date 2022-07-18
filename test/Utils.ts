@@ -42,20 +42,20 @@ export const unlockAccountAndGetSigner = async (address: string): Promise<Signer
 export const mintFiatTokenV2 = async ({ ownerAddress, tokenAddress, recipient, amount }) => {
   try {
     // Send owner some ETH
-  await sendETH(ownerAddress);
+    await sendETH(ownerAddress);
 
-  const minter = await provider.getSigner(8);
-  const minterAddress = await minter.getAddress();
+    const minter = await provider.getSigner(8);
+    const minterAddress = await minter.getAddress();
 
-  const owner = await unlockAccountAndGetSigner(ownerAddress);
-  const FiatTokenV2 = new ethers.Contract(tokenAddress, FiatTokenV2ABI, owner);
+    const owner = await unlockAccountAndGetSigner(ownerAddress);
+    const FiatTokenV2 = new ethers.Contract(tokenAddress, FiatTokenV2ABI, owner);
 
-  await FiatTokenV2.updateMasterMinter(minterAddress);
-  await FiatTokenV2.connect(minter).configureMinter(minterAddress, amount);
-  await FiatTokenV2.connect(minter).mint(recipient, amount);
+    await FiatTokenV2.updateMasterMinter(minterAddress);
+    await FiatTokenV2.connect(minter).configureMinter(minterAddress, amount);
+    await FiatTokenV2.connect(minter).mint(recipient, amount);
   } catch (error) {
     console.log("cause is ");
-    console.log(error.toString())
+    console.log(error.toString());
   }
 };
 

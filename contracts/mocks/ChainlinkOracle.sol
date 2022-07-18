@@ -13,8 +13,11 @@ contract ChainLinkOracle is IOracle {
 
     // dummy constructor
     constructor(
-        address _token, string memory _name, uint8 _decimals, int256 _price
-    ){
+        address _token,
+        string memory _name,
+        uint8 _decimals,
+        int256 _price
+    ) {
         underlying = _token;
         name = _name;
         decimals = _decimals;
@@ -22,7 +25,7 @@ contract ChainLinkOracle is IOracle {
         price = _price;
     }
 
-    function getUnderlyingToken () external view returns (address) {
+    function getUnderlyingToken() external view returns (address) {
         return underlying;
     }
 
@@ -45,20 +48,22 @@ contract ChainLinkOracle is IOracle {
 
     function getRoundData(uint80 _roundId)
         external
-        view override
+        view
+        override
         returns (
             uint80 roundId,
             int256 answer,
             uint256 startedAt,
             uint256 updatedAt,
             uint80 answeredInRound
-        ) {
-            roundId = 0;
-            answer = 0;
-            startedAt = 0;
-            updatedAt = 0;
-            answeredInRound = 0;
-        }
+        )
+    {
+        roundId = 0;
+        answer = 0;
+        startedAt = 0;
+        updatedAt = 0;
+        answeredInRound = 0;
+    }
 
     function getTimestamp(uint256 _roundId) external view override returns (uint256) {
         return block.timestamp;
@@ -74,20 +79,22 @@ contract ChainLinkOracle is IOracle {
 
     function latestRoundData()
         external
-        view override
+        view
+        override
         returns (
             uint80 roundId,
             int256 answer,
             uint256 startedAt,
             uint256 updatedAt,
             uint80 answeredInRound
-        ) {
-            roundId = 0;
-            answer = price;
-            startedAt = 0;
-            updatedAt = 0;
-            answeredInRound = 0;
-        }
+        )
+    {
+        roundId = 0;
+        answer = price;
+        startedAt = 0;
+        updatedAt = 0;
+        answeredInRound = 0;
+    }
 
     function latestTimestamp() external view override returns (uint256) {
         return 0;
@@ -113,45 +120,45 @@ contract ChainLinkOracle is IOracle {
 
     function proposedGetRoundData(uint80 _roundId)
         external
-        view override
+        view
+        override
         returns (
             uint80 roundId,
             int256 answer,
             uint256 startedAt,
             uint256 updatedAt,
             uint80 answeredInRound
-        ) {
-            roundId = 0;
-            answer = price;
-            startedAt = 0;
-            updatedAt = 0;
-            answeredInRound = 0;
-        }
+        )
+    {
+        roundId = 0;
+        answer = price;
+        startedAt = 0;
+        updatedAt = 0;
+        answeredInRound = 0;
+    }
 
     function proposedLatestRoundData()
         external
-        view override
+        view
+        override
         returns (
             uint80 roundId,
             int256 answer,
             uint256 startedAt,
             uint256 updatedAt,
             uint80 answeredInRound
-        ){
-            roundId = 0;
-            answer = price;
-            startedAt = 0;
-            updatedAt = 0;
-            answeredInRound = 0;
-        }
-
-    function setController(address _accessController) external override {
-
+        )
+    {
+        roundId = 0;
+        answer = price;
+        startedAt = 0;
+        updatedAt = 0;
+        answeredInRound = 0;
     }
 
-    function transferOwnership(address _to) external override {
+    function setController(address _accessController) external override {}
 
-    }
+    function transferOwnership(address _to) external override {}
 
     function version() external view override returns (uint256) {
         return 0;

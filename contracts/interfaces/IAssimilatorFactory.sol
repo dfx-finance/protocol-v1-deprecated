@@ -18,7 +18,11 @@ pragma solidity ^0.7.3;
 import "../assimilators/AssimilatorV2.sol";
 
 interface IAssimilatorFactory {
-    function getAssimilator (address _token) external view returns (AssimilatorV2);
-    function newAssimilator (address _oracle, address _token, uint256 _tokenDecimals) external returns (AssimilatorV2);
+    function getAssimilator(address _token) external view returns (AssimilatorV2);
 
+    function newAssimilator(
+        address _oracle,
+        address _token,
+        uint256 _tokenDecimals
+    ) external returns (AssimilatorV2);
 }

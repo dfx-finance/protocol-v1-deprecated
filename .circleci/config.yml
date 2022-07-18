@@ -48,7 +48,7 @@ jobs:
             npm run compile
             RPC_URL=https://eth-mainnet.alchemyapi.io/v2/TKLrQ9-f0AahbCEYRaPGh7EsJRVYYLh2 npm run test
           when: always
-      
+
   security-test:
     <<: *job_python
     steps:
@@ -63,7 +63,7 @@ jobs:
       - <<: *step_save_cache
       - run:
           name: "Run slither on infrastructure contracts"
-          command:  |
+          command: |
             slither --exclude-informational --filter-paths lib . || true
           when: always
 

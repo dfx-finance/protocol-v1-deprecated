@@ -6,7 +6,7 @@ import chai, { expect } from "chai";
 import chaiBigNumber from "chai-bignumber";
 
 import { CurveFactory } from "../../typechain/CurveFactory";
-import  {CurveFactoryV2 } from "../../typechain/CurveFactoryV2";
+import { CurveFactoryV2 } from "../../typechain/CurveFactoryV2";
 import { AssimilatorFactory } from "../../typechain/AssimilatorFactory";
 import { Curve } from "../../typechain/Curve";
 import { ERC20 } from "../../typechain/ERC20";
@@ -43,12 +43,12 @@ describe("CADC-USDC", function () {
 
   let CurveFactory: ContractFactory;
   let RouterFactory: ContractFactory;
-  let CurveFactoryV2 : ContractFactory;
-  let AssimilatorFactory : ContractFactory;
+  let CurveFactoryV2: ContractFactory;
+  let AssimilatorFactory: ContractFactory;
 
   let curveFactory: CurveFactory;
-  let curveFactoryV2 : CurveFactoryV2;
-  let assimFactory : AssimilatorFactory;
+  let curveFactoryV2: CurveFactoryV2;
+  let assimFactory: AssimilatorFactory;
   let router: Router;
 
   let usdc: ERC20;
@@ -67,7 +67,7 @@ describe("CADC-USDC", function () {
     baseDec,
     quoteDec,
     params,
-    factoryAddress
+    factoryAddress,
   }: {
     name: string;
     symbol: string;
@@ -109,7 +109,7 @@ describe("CADC-USDC", function () {
     assimFactory = (await AssimilatorFactory.deploy()) as AssimilatorFactory;
     curveFactoryV2 = (await CurveFactoryV2.deploy(50, treasuryAddress, assimFactory.address)) as CurveFactoryV2;
     await assimFactory.setCurveFactory(curveFactoryV2.address);
-    
+
     console.log("assim factory deployed at ", assimFactory.address);
     console.log("curve factory v2 deployed at ", curveFactoryV2.address);
 
@@ -121,7 +121,7 @@ describe("CADC-USDC", function () {
       curveFactoryV2,
       erc20,
     }));
-    await cadc.connect(user2).transfer(user1Address,await cadc.balanceOf(user2Address));
+    await cadc.connect(user2).transfer(user1Address, await cadc.balanceOf(user2Address));
   });
 
   const getUSDCBalance = async (address: string) => {
@@ -136,8 +136,18 @@ describe("CADC-USDC", function () {
 
   const customOracleTest = async (basis: number, quote: number) => {
     const oracleFact = await ethers.getContractFactory("ChainLinkOracle");
-    const cadcOracle = await oracleFact.deploy(cadc.address, "CADC Oracle", basis, BN(77780319).mul(BN(10).pow(BN(basis - 8))));
-    const usdcOracle = await oracleFact.deploy(usdc.address, "USDC Oracle", quote, BN(10003520).mul(BN(10).pow(BN(quote - 8))));
+    const cadcOracle = await oracleFact.deploy(
+      cadc.address,
+      "CADC Oracle",
+      basis,
+      BN(77780319).mul(BN(10).pow(BN(basis - 8))),
+    );
+    const usdcOracle = await oracleFact.deploy(
+      usdc.address,
+      "USDC Oracle",
+      quote,
+      BN(10003520).mul(BN(10).pow(BN(quote - 8))),
+    );
     const { curve: cadcCurve } = await createCurveAndSetParamsV2({
       name: NAME,
       symbol: SYMBOL,
@@ -150,7 +160,7 @@ describe("CADC-USDC", function () {
       baseDec: 18,
       quoteDec: 6,
       params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
-      factoryAddress: curveFactory.address
+      factoryAddress: curveFactory.address,
     });
 
     console.log("after curve creation", cadcCurve.address);
@@ -211,8 +221,7 @@ describe("CADC-USDC", function () {
 
     console.log(afterSwapCADCBalance, "     ", afterSwapUSDCBalance);
     console.log(afterReverseSwapCADCBalance, "     ", afterReverseSwapUSDCBalance);
-    
-  }
+  };
 
   it("cadc-usdc swap", async () => {
     const { curve: cadcCurve } = await createCurveAndSetParamsV2({
@@ -227,7 +236,7 @@ describe("CADC-USDC", function () {
       baseDec: 18,
       quoteDec: 6,
       params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
-      factoryAddress: curveFactory.address
+      factoryAddress: curveFactory.address,
     });
 
     console.log("after curve creation", cadcCurve.address);

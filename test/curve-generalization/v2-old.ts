@@ -6,7 +6,7 @@ import chai, { expect } from "chai";
 import chaiBigNumber from "chai-bignumber";
 
 import { CurveFactory } from "../../typechain/CurveFactory";
-import  {CurveFactoryV2 } from "../../typechain/CurveFactoryV2";
+import { CurveFactoryV2 } from "../../typechain/CurveFactoryV2";
 import { AssimilatorFactory } from "../../typechain/AssimilatorFactory";
 import { Curve } from "../../typechain/Curve";
 import { ERC20 } from "../../typechain/ERC20";
@@ -41,12 +41,12 @@ describe("CADC-USDC", function () {
 
   let CurveFactory: ContractFactory;
   let RouterFactory: ContractFactory;
-  let CurveFactoryV2 : ContractFactory;
-  let AssimilatorFactory : ContractFactory;
+  let CurveFactoryV2: ContractFactory;
+  let AssimilatorFactory: ContractFactory;
 
   let curveFactory: CurveFactory;
-  let curveFactoryV2 : CurveFactoryV2;
-  let assimFactory : AssimilatorFactory;
+  let curveFactoryV2: CurveFactoryV2;
+  let assimFactory: AssimilatorFactory;
   let router: Router;
 
   let usdc: ERC20;
@@ -65,7 +65,7 @@ describe("CADC-USDC", function () {
     baseDec,
     quoteDec,
     params,
-    factoryAddress
+    factoryAddress,
   }: {
     name: string;
     symbol: string;
@@ -107,7 +107,7 @@ describe("CADC-USDC", function () {
     assimFactory = (await AssimilatorFactory.deploy()) as AssimilatorFactory;
     curveFactoryV2 = (await CurveFactoryV2.deploy(50, treasuryAddress, assimFactory.address)) as CurveFactoryV2;
     await assimFactory.setCurveFactory(curveFactoryV2.address);
-    
+
     console.log("assim factory deployed at ", assimFactory.address);
     console.log("curve factory v2 deployed at ", curveFactoryV2.address);
     // console.log(assimFactory);
@@ -147,7 +147,7 @@ describe("CADC-USDC", function () {
       quoteDec: 6,
       params: [ALPHA, BETA, MAX, EPSILON, LAMBDA],
       // factoryAddress: curveFactory.address
-      factoryAddress : curveFactoryV2.address
+      factoryAddress: curveFactoryV2.address,
     });
 
     console.log("after curve creation", cadcCurve.address);
@@ -169,7 +169,7 @@ describe("CADC-USDC", function () {
     let originalCADCBalance = await getCADCBalance(await user2.getAddress());
     let originalUSDCBalance = await getUSDCBalance(await user2.getAddress());
 
-    console.log(`original cadc balance is ${originalCADCBalance}`)
+    console.log(`original cadc balance is ${originalCADCBalance}`);
 
     console.log("-----Start: After deposit-----");
     console.log("CADC Bal", (await cadc.balanceOf(cadcCurve.address)).toString());

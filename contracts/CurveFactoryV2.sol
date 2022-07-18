@@ -29,8 +29,7 @@ import "./interfaces/ICurveFactory.sol";
 import "./interfaces/IAssimilatorFactory.sol";
 import "./Structs.sol";
 
-contract CurveFactoryV2 is ICurveFactory,Ownable {
-
+contract CurveFactoryV2 is ICurveFactory, Ownable {
     using Address for address;
 
     IAssimilatorFactory public immutable assimilatorFactory;
@@ -43,12 +42,15 @@ contract CurveFactoryV2 is ICurveFactory,Ownable {
     event TreasuryUpdated(address indexed newTreasury);
     event ProtocolFeeUpdated(address indexed treasury, int128 indexed fee);
 
-    
     event NewCurve(address indexed caller, bytes32 indexed id, address indexed curve);
 
     mapping(bytes32 => address) public curves;
 
-    constructor(int128 _protocolFee, address _treasury,address _assimFactory) {
+    constructor(
+        int128 _protocolFee,
+        address _treasury,
+        address _assimFactory
+    ) {
         require(totoalFeePercentage >= _protocolFee, "protocol fee can't be over 100%");
         require(_treasury != address(0), "invalid treasury address");
         protocolFee = uint8(_protocolFee);
@@ -85,19 +87,19 @@ contract CurveFactoryV2 is ICurveFactory,Ownable {
         return (curves[curveId]);
     }
 
-    function newCurve (
-        CurveInfo memory _info
-    ) public returns (Curve) {
+    function newCurve(CurveInfo memory _info) public returns (Curve) {
         bytes32 curveId = keccak256(abi.encode(_info._baseCurrency, _info._quoteCurrency));
         if (curves[curveId] != address(0)) revert("CurveFactory/currency-pair-already-exists");
         AssimilatorV2 _baseAssim;
         _baseAssim = (assimilatorFactory.getAssimilator(_info._baseCurrency));
-        if(address(_baseAssim) == address(0))
+        if (address(_baseAssim) == address(0))
             _baseAssim = (assimilatorFactory.newAssimilator(_info._baseOracle, _info._baseCurrency, _info._baseDec));
         AssimilatorV2 _quoteAssim;
         _quoteAssim = (assimilatorFactory.getAssimilator(_info._quoteCurrency));
-        if(address(_quoteAssim) == address(0))
-            _quoteAssim = (assimilatorFactory.newAssimilator(_info._quoteOracle, _info._quoteCurrency, _info._quoteDec));
+        if (address(_quoteAssim) == address(0))
+            _quoteAssim = (
+                assimilatorFactory.newAssimilator(_info._quoteOracle, _info._quoteCurrency, _info._quoteDec)
+            );
 
         address[] memory _assets = new address[](10);
         uint256[] memory _assetWeights = new uint256[](2);
@@ -121,13 +123,12 @@ contract CurveFactoryV2 is ICurveFactory,Ownable {
         _assetWeights[1] = _info._quoteWeight;
 
         // New curve
-        Curve curve = new Curve(_info._name, _info._symbol, _assets, _assetWeights,address(this));
+        Curve curve = new Curve(_info._name, _info._symbol, _assets, _assetWeights, address(this));
         curve.transferOwnership(msg.sender);
         curves[curveId] = address(curve);
 
         emit NewCurve(msg.sender, curveId, address(curve));
 
         return curve;
-
     }
 }
