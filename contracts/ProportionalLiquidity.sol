@@ -70,8 +70,6 @@ library ProportionalLiquidity {
             _newShells = _newShells.mul(_totalShells);
         }
 
-        // requireLiquidityInvariant(curve, _totalShells, _newShells, _oGLiqProp, _oBalsProp);
-
         mint(curve, msg.sender, curves_ = _newShells.mulu(1e18));
 
         return (curves_, deposits_);
@@ -181,8 +179,6 @@ library ProportionalLiquidity {
                 _oBals[i].mul(_multiplier)
             );
         }
-
-        // requireLiquidityInvariant(curve, _totalShells, __withdrawal.neg(), _oGLiq, _oBals);
 
         burn(curve, msg.sender, _withdrawal);
 
