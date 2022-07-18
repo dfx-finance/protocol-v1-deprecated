@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.3;
+pragma solidity ^0.8.7;
 
-import "./ChainLinkOracle.sol";
+import "./ChainlinkOracle.sol";
 
 contract OracleFactory {
     mapping(bytes32 => address) public oracles;

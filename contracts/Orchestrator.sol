@@ -13,10 +13,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pragma solidity ^0.7.3;
+pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import "./lib/ABDKMath64x64.sol";
 
@@ -147,7 +147,7 @@ library Orchestrator {
 
         require(_weight < 1e18, "Curve/weight-must-be-less-than-one");
 
-        if (_numeraire != _reserve) IERC20(_numeraire).safeApprove(_reserveApproveTo, uint256(-1));
+        if (_numeraire != _reserve) IERC20(_numeraire).safeApprove(_reserveApproveTo, type(uint).max);
 
         Storage.Assimilator storage _numeraireAssimilator = curve.assimilators[_numeraire];
 
@@ -192,7 +192,7 @@ library Orchestrator {
 
         require(_assimilator != address(0), "Curve/assimilator-cannot-be-zeroth-address");
 
-        IERC20(_numeraire).safeApprove(_derivativeApproveTo, uint256(-1));
+        IERC20(_numeraire).safeApprove(_derivativeApproveTo, type(uint).max);
 
         Storage.Assimilator storage _numeraireAssim = curve.assimilators[_numeraire];
 

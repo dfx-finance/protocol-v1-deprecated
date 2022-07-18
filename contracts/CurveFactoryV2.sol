@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pragma solidity ^0.7.3;
+pragma solidity ^0.8.7;
 pragma experimental ABIEncoderV2;
 
 // Finds new Curves! logs their addresses and provides `isCurve(address) -> (bool)`
@@ -53,7 +53,7 @@ contract CurveFactoryV2 is ICurveFactory, Ownable {
     ) {
         require(totoalFeePercentage >= _protocolFee, "protocol fee can't be over 100%");
         require(_treasury != address(0), "invalid treasury address");
-        protocolFee = uint8(_protocolFee);
+        protocolFee = _protocolFee;
         protocolTreasury = _treasury;
 
         require(_assimFactory.isContract(), "invalid assimilatorFactory");

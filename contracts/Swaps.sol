@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.7.3;
+pragma solidity ^0.8.7;
 pragma experimental ABIEncoderV2;
 
 import "./Assimilators.sol";
@@ -9,7 +9,7 @@ import "./CurveMath.sol";
 import "./lib/UnsafeMath64x64.sol";
 import "./lib/ABDKMath64x64.sol";
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./CurveFactory.sol";

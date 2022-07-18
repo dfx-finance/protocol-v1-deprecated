@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.7.3;
+pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts/cryptography/MerkleProof.sol";
+import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract MerkleProver {
     bytes32 public immutable merkleRoot = bytes32(0xf4dbd0fb1957570029a847490cb3d731a45962072953ba7da80ff132ccd97d51);
