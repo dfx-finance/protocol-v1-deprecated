@@ -15,7 +15,7 @@ import { Router } from "../../typechain/Router";
 import { ORACLES, TOKENS } from "../Constants";
 import { getFutureTime, expectBNAproxEq, getOracleAnswer } from "../Utils";
 
-import { scaffoldTest, scaffoldHelpers } from "../Setup";
+import { scaffoldTest, scaffoldHelpers } from "../SetupV2";
 import { isBigNumberish } from "@ethersproject/bignumber/lib/bignumber";
 import { solidity } from "ethereum-waffle";
 import { IOracle } from "../../typechain";

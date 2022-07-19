@@ -148,6 +148,7 @@ describe("Curve", function () {
         [TOKENS.USDC.address, user2, parseUnits("10000000", 6), c.address],
       ]);
       await c.deposit(parseUnits("1000000"), await getFutureTime());
+      console.log("after deposit");
 
       await c
         .connect(user2)
