@@ -53,7 +53,7 @@ contract CurveFactoryV2 is ICurveFactory, Ownable {
     ) {
         require(totoalFeePercentage >= _protocolFee, "protocol fee can't be over 100%");
         require(_treasury != address(0), "invalid treasury address");
-        protocolFee = uint8(_protocolFee);
+        protocolFee = _protocolFee;
         protocolTreasury = _treasury;
 
         require(_assimFactory.isContract(), "invalid assimilatorFactory");
