@@ -22,7 +22,7 @@ import "../lib/ABDKMath64x64.sol";
 import "../interfaces/IAssimilator.sol";
 import "../interfaces/IOracle.sol";
 
-contract NzdsToUsdAssimilator is IAssimilator {
+contract GyenToUsdAssimilator is IAssimilator {
     using ABDKMath64x64 for int128;
     using ABDKMath64x64 for uint256;
 
@@ -31,7 +31,7 @@ contract NzdsToUsdAssimilator is IAssimilator {
     IERC20 private constant usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
 
     IOracle private constant oracle = IOracle(0x3977CFc9e4f29C184D4675f4EB8e0013236e5f3e);
-    IERC20 private constant nzds = IERC20(0xDa446fAd08277B4D2591536F204E018f32B6831c);
+    IERC20 private constant gyen = IERC20(0xDa446fAd08277B4D2591536F204E018f32B6831c);
 
     // solhint-disable-next-line
     constructor() {}
@@ -41,13 +41,13 @@ contract NzdsToUsdAssimilator is IAssimilator {
         return uint256(price);
     }
 
-    // takes raw nzds amount, transfers it in, calculates corresponding numeraire amount and returns it
+    // takes raw gyen amount, transfers it in, calculates corresponding numeraire amount and returns it
     function intakeRawAndGetBalance(uint256 _amount) external override returns (int128 amount_, int128 balance_) {
-        bool _transferSuccess = nzds.transferFrom(msg.sender, address(this), _amount);
+        bool _transferSuccess = gyen.transferFrom(msg.sender, address(this), _amount);
 
-        require(_transferSuccess, "Curve/nzds-transfer-from-failed");
+        require(_transferSuccess, "Curve/gyen-transfer-from-failed");
 
-        uint256 _balance = nzds.balanceOf(address(this));
+        uint256 _balance = gyen.balanceOf(address(this));
 
         uint256 _rate = getRate();
 
@@ -56,56 +56,56 @@ contract NzdsToUsdAssimilator is IAssimilator {
         amount_ = ((_amount * _rate) / 1e8).divu(1e6);
     }
 
-    // takes raw nzds amount, transfers it in, calculates corresponding numeraire amount and returns it
+    // takes raw gyen amount, transfers it in, calculates corresponding numeraire amount and returns it
     function intakeRaw(uint256 _amount) external override returns (int128 amount_) {
-        bool _transferSuccess = nzds.transferFrom(msg.sender, address(this), _amount);
+        bool _transferSuccess = gyen.transferFrom(msg.sender, address(this), _amount);
 
-        require(_transferSuccess, "Curve/nzds-transfer-from-failed");
+        require(_transferSuccess, "Curve/gyen-transfer-from-failed");
 
         uint256 _rate = getRate();
 
         amount_ = ((_amount * _rate) / 1e8).divu(1e6);
     }
 
-    // takes a numeraire amount, calculates the raw amount of nzds, transfers it in and returns the corresponding raw amount
+    // takes a numeraire amount, calculates the raw amount of gyen, transfers it in and returns the corresponding raw amount
     function intakeNumeraire(int128 _amount) external override returns (uint256 amount_) {
         uint256 _rate = getRate();
 
         amount_ = (_amount.mulu(1e6) * 1e8) / _rate;
 
-        bool _transferSuccess = nzds.transferFrom(msg.sender, address(this), amount_);
+        bool _transferSuccess = gyen.transferFrom(msg.sender, address(this), amount_);
 
-        require(_transferSuccess, "Curve/nzds-transfer-from-failed");
+        require(_transferSuccess, "Curve/gyen-transfer-from-failed");
     }
 
-    // takes a numeraire amount, calculates the raw amount of nzds, transfers it in and returns the corresponding raw amount
+    // takes a numeraire amount, calculates the raw amount of gyen, transfers it in and returns the corresponding raw amount
     function intakeNumeraireLPRatio(
         uint256 _baseWeight,
         uint256 _quoteWeight,
         address _addr,
         int128 _amount
     ) external override returns (uint256 amount_) {
-        uint256 _nzdsBal = nzds.balanceOf(_addr);
+        uint256 _gyenBal = gyen.balanceOf(_addr);
 
-        if (_nzdsBal <= 0) return 0;
+        if (_gyenBal <= 0) return 0;
 
         // 1e6
-        _nzdsBal = _nzdsBal.mul(1e18).div(_baseWeight);
+        _gyenBal = _gyenBal.mul(1e18).div(_baseWeight);
 
         // 1e6
         uint256 _usdcBal = usdc.balanceOf(_addr).mul(1e18).div(_quoteWeight);
 
         // Rate is in 1e6
-        uint256 _rate = _usdcBal.mul(1e6).div(_nzdsBal);
+        uint256 _rate = _usdcBal.mul(1e6).div(_gyenBal);
 
         amount_ = (_amount.mulu(1e6) * 1e6) / _rate;
 
-        bool _transferSuccess = nzds.transferFrom(msg.sender, address(this), amount_);
+        bool _transferSuccess = gyen.transferFrom(msg.sender, address(this), amount_);
 
-        require(_transferSuccess, "Curve/nzds-transfer-failed");
+        require(_transferSuccess, "Curve/gyen-transfer-failed");
     }
 
-    // takes a raw amount of nzds and transfers it out, returns numeraire value of the raw amount
+    // takes a raw amount of gyen and transfers it out, returns numeraire value of the raw amount
     function outputRawAndGetBalance(address _dst, uint256 _amount)
         external
         override
@@ -113,41 +113,41 @@ contract NzdsToUsdAssimilator is IAssimilator {
     {
         uint256 _rate = getRate();
 
-        uint256 _nzdsAmount = ((_amount) * _rate) / 1e8;
+        uint256 _gyenAmount = ((_amount) * _rate) / 1e8;
 
-        bool _transferSuccess = nzds.transfer(_dst, _nzdsAmount);
+        bool _transferSuccess = gyen.transfer(_dst, _gyenAmount);
 
-        require(_transferSuccess, "Curve/nzds-transfer-failed");
+        require(_transferSuccess, "Curve/gyen-transfer-failed");
 
-        uint256 _balance = nzds.balanceOf(address(this));
+        uint256 _balance = gyen.balanceOf(address(this));
 
-        amount_ = _nzdsAmount.divu(1e6);
+        amount_ = _gyenAmount.divu(1e6);
 
         balance_ = ((_balance * _rate) / 1e8).divu(1e6);
     }
 
-    // takes a raw amount of nzds and transfers it out, returns numeraire value of the raw amount
+    // takes a raw amount of gyen and transfers it out, returns numeraire value of the raw amount
     function outputRaw(address _dst, uint256 _amount) external override returns (int128 amount_) {
         uint256 _rate = getRate();
 
-        uint256 _nzdsAmount = (_amount * _rate) / 1e8;
+        uint256 _gyenAmount = (_amount * _rate) / 1e8;
 
-        bool _transferSuccess = nzds.transfer(_dst, _nzdsAmount);
+        bool _transferSuccess = gyen.transfer(_dst, _gyenAmount);
 
-        require(_transferSuccess, "Curve/nzds-transfer-failed");
+        require(_transferSuccess, "Curve/gyen-transfer-failed");
 
-        amount_ = _nzdsAmount.divu(1e6);
+        amount_ = _gyenAmount.divu(1e6);
     }
 
-    // takes a numeraire value of nzds, figures out the raw amount, transfers raw amount out, and returns raw amount
+    // takes a numeraire value of gyen, figures out the raw amount, transfers raw amount out, and returns raw amount
     function outputNumeraire(address _dst, int128 _amount) external override returns (uint256 amount_) {
         uint256 _rate = getRate();
 
         amount_ = (_amount.mulu(1e6) * 1e8) / _rate;
 
-        bool _transferSuccess = nzds.transfer(_dst, amount_);
+        bool _transferSuccess = gyen.transfer(_dst, amount_);
 
-        require(_transferSuccess, "Curve/nzds-transfer-failed");
+        require(_transferSuccess, "Curve/gyen-transfer-failed");
     }
 
     // takes a numeraire amount and returns the raw amount
@@ -163,18 +163,18 @@ contract NzdsToUsdAssimilator is IAssimilator {
         address _addr,
         int128 _amount
     ) external view override returns (uint256 amount_) {
-        uint256 _nzdsBal = nzds.balanceOf(_addr);
+        uint256 _gyenBal = gyen.balanceOf(_addr);
 
-        if (_nzdsBal <= 0) return 0;
+        if (_gyenBal <= 0) return 0;
 
         // 1e6
-        _nzdsBal = _nzdsBal.mul(1e18).div(_baseWeight);
+        _gyenBal = _gyenBal.mul(1e18).div(_baseWeight);
 
         // 1e6
         uint256 _usdcBal = usdc.balanceOf(_addr).mul(1e18).div(_quoteWeight);
 
         // Rate is in 1e6
-        uint256 _rate = _usdcBal.mul(1e6).div(_nzdsBal);
+        uint256 _rate = _usdcBal.mul(1e6).div(_gyenBal);
 
         amount_ = (_amount.mulu(1e6) * 1e6) / _rate;
     }
@@ -186,18 +186,18 @@ contract NzdsToUsdAssimilator is IAssimilator {
         amount_ = ((_amount * _rate) / 1e8).divu(1e6);
     }
 
-    // views the numeraire value of the current balance of the reserve, in this case nzds
+    // views the numeraire value of the current balance of the reserve, in this case gyen
     function viewNumeraireBalance(address _addr) external view override returns (int128 balance_) {
         uint256 _rate = getRate();
 
-        uint256 _balance = nzds.balanceOf(_addr);
+        uint256 _balance = gyen.balanceOf(_addr);
 
         if (_balance <= 0) return ABDKMath64x64.fromUInt(0);
 
         balance_ = ((_balance * _rate) / 1e8).divu(1e6);
     }
 
-    // views the numeraire value of the current balance of the reserve, in this case nzds
+    // views the numeraire value of the current balance of the reserve, in this case gyen
     function viewNumeraireAmountAndBalance(address _addr, uint256 _amount)
         external
         view
@@ -208,12 +208,12 @@ contract NzdsToUsdAssimilator is IAssimilator {
 
         amount_ = ((_amount * _rate) / 1e8).divu(1e6);
 
-        uint256 _balance = nzds.balanceOf(_addr);
+        uint256 _balance = gyen.balanceOf(_addr);
 
         balance_ = ((_balance * _rate) / 1e8).divu(1e6);
     }
 
-    // views the numeraire value of the current balance of the reserve, in this case nzds
+    // views the numeraire value of the current balance of the reserve, in this case gyen
     // instead of calculating with chainlink's "rate" it'll be determined by the existing
     // token ratio
     // Mainly to protect LP from losing
@@ -222,15 +222,15 @@ contract NzdsToUsdAssimilator is IAssimilator {
         uint256 _quoteWeight,
         address _addr
     ) external view override returns (int128 balance_) {
-        uint256 _nzdsBal = nzds.balanceOf(_addr);
+        uint256 _gyenBal = gyen.balanceOf(_addr);
 
-        if (_nzdsBal <= 0) return ABDKMath64x64.fromUInt(0);
+        if (_gyenBal <= 0) return ABDKMath64x64.fromUInt(0);
 
         uint256 _usdcBal = usdc.balanceOf(_addr).mul(1e18).div(_quoteWeight);
 
         // Rate is in 1e6
-        uint256 _rate = _usdcBal.mul(1e18).div(_nzdsBal.mul(1e18).div(_baseWeight));
+        uint256 _rate = _usdcBal.mul(1e18).div(_gyenBal.mul(1e18).div(_baseWeight));
 
-        balance_ = ((_nzdsBal * _rate) / 1e6).divu(1e18);
+        balance_ = ((_gyenBal * _rate) / 1e6).divu(1e18);
     }
 }
