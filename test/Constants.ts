@@ -29,6 +29,11 @@ export const TOKENS = {
     masterMinter: "0x3f02a96cE54f043efAd2C35DDB0c42CC5777df13",
     decimals: 6,
   },
+  GYEN: {
+    address: "0xC08512927D12348F6620a698105e1BAac6EcD911",
+    owner: "0xFB5dAE5bf48Df4492b3101F00D844eF1C0268c6D",
+    decimals: 6
+  }
 };
 
 export const ORACLES = {
@@ -56,4 +61,8 @@ export const ORACLES = {
     address: "0x91b99C9b75aF469a71eE1AB528e8da994A5D7030",
     decimals: 8,
   },
+  GYEN: {
+    address: "0xBcE206caE7f0ec07b545EddE332A47C2F75bbeb3",
+    decimals: 8
+  }
 };
