@@ -31,7 +31,7 @@ contract GyenToUsdAssimilator is IAssimilator {
     IERC20 private constant usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
 
     IOracle private constant oracle = IOracle(0xBcE206caE7f0ec07b545EddE332A47C2F75bbeb3);
-    IERC20 private constant gyen = IERC20(0xDa446fAd08277B4D2591536F204E018f32B6831c);
+    IERC20 private constant gyen = IERC20(0xC08512927D12348F6620a698105e1BAac6EcD911);
 
     // solhint-disable-next-line
     constructor() {}
